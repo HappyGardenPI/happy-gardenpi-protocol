@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2021. Happy GardenPI
+// Copyright (c) 2021 Happy GardenPI
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -19,35 +19,15 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-//
 
-//
-// Created by Antonio Salsi on 16/08/21.
-//
+#ifndef HGARDENPI_CONFIG_H
+#define HGARDENPI_CONFIG_H
 
-#pragma once
-#include <string>
+#define HGARDENPI_NAME "hgardenpi_protocol"
+#define HGARDENPI_VER "0.10.0"
+#define HGARDENPI_VER_MAJOR 0
+#define HGARDENPI_VER_MINOR 10
+#define HGARDENPI_VER_PATCH 0
+#define HGARDENPI_TEST 1
 
-#include <hgardenpi-protocol/packages/package.hpp>
-
-namespace hgardenpi::protocol
-{
-    inline namespace v1
-    {
-
-        using std::string;
-
-#pragma pack(push, n)
-        /**
-         * Synchro package utilize for init communication
-         */
-        struct Synchro final : public Package
-        {
-            /**
-             * @brief serial of device
-             */
-            string serial;
-        };
-#pragma pack(pop)
-    }
-}
+#endif // HGARDENPI_CONFIG_H

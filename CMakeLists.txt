@@ -18,13 +18,14 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-configure_file(config.h.in ../src/config.h)
+configure_file(config.h.in ../include/config.h)
 include_directories("include")
 include_directories("/usr/include/machine/")
 
 add_library(hgardenpi_protocol
         include/hgardenpi-protocol/3thparts/CRC.h
         include/hgardenpi-protocol/packages/aggregation.hpp
+        include/hgardenpi-protocol/packages/package.hpp
         include/hgardenpi-protocol/packages/station.hpp
         include/hgardenpi-protocol/packages/synchro.hpp
         include/hgardenpi-protocol/utils/shiftutils.hpp

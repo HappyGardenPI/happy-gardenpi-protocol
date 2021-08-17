@@ -27,21 +27,44 @@
 
 #include <gtest/gtest.h>
 
+#include <vector>
+
+using std::vector;
+
 #include <hgardenpi-protocol/protocol.hpp>
+#include <hgardenpi-protocol/packages/aggregation.hpp>
+#include <hgardenpi-protocol/packages/station.hpp>
+#include <hgardenpi-protocol/packages/synchro.hpp>
 
 using namespace hgardenpi::protocol;
 
-// Demonstrate some basic assertions.
-TEST(SendTest, BasicSend)
+
+TEST(ProtocolTest, decode)
 {
-    const uint8_t data[]{0x11, 0x01, 0x0F, 0x63,0x69,0x61,0x6f,0x5f,0x73,0x6f,0x6e,0x6f,0x5f,0x70,0x69,0x70,0x70,0x6f, 0xbe, 0x7a};
+    const uint8_t data[]{0x01, 0x01, 0x0F, 0x63, 0x69, 0x61, 0x6f, 0x5f, 0x73, 0x6f, 0x6e, 0x6f, 0x5f, 0x70, 0x69, 0x70,
+                         0x70, 0x6f, 0x41, 0x88};
 
-    auto head = decode(data, 20);
+    auto head = decode(data);
 
-    EXPECT_EQ(head->version, 1);
+    EXPECT_EQ(head->version, 0);
     EXPECT_EQ(head->flags, 1);
-    EXPECT_EQ(head->txId, 1);
+    EXPECT_EQ(head->id, 1);
     EXPECT_EQ(head->length, 15);
-    EXPECT_EQ(head->crc16, 31422);
+    EXPECT_EQ(head->crc16, 34881);
+
+}
+
+TEST(ProtocolTest, encode)
+{
+
+    auto s = new Synchro;
+    s->serial = "12345678";
+
+    vector<Package *> packages;
+    packages.push_back(s);
+    packages.push_back(new Aggregation);
+    packages.push_back(new Station);
+    packages.push_back(new Station);
+    auto a = encode(packages);
 
 }

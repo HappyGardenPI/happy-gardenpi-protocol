@@ -27,11 +27,16 @@
 
 #include <hgardenpi-protocol/protocol.hpp>
 
+#include <stdexcept>
 #include <iostream>
+#include <memory>
 using namespace std;
 
 #include <hgardenpi-protocol/3thparts/CRC.h>
 
+#include <hgardenpi-protocol/packages/aggregation.hpp>
+#include <hgardenpi-protocol/packages/station.hpp>
+#include <hgardenpi-protocol/packages/synchro.hpp>
 
 namespace hgardenpi::protocol
 {
@@ -39,15 +44,23 @@ namespace hgardenpi::protocol
     {
 
 
-        Head::Ptr decode(const uint8_t *data, size_t size)
+        Head::Ptr decode(const uint8_t *data)
         {
-            Head::Ptr ret = Head::Ptr(new Head{
-                .version = static_cast<uint8_t>((data[0] & 0xF0) >> 0x04),
-                .flags = static_cast<uint8_t>(data[0] & 0x0F),
-                .txId = static_cast<uint8_t>(data[1]),
+            Head::Ptr ret(new Head{
+                .version = static_cast<uint8_t>((data[0] & 0x80) >> 0x07),
+                .flags = static_cast<uint8_t>(data[0] & 0x7F),
+                .id = static_cast<uint8_t>(data[1]),
                 .length = static_cast<uint8_t>(data[2])
             });
 
+            if (ret->version > 1)
+            {
+                throw runtime_error("head version out of range");
+            }
+            if (ret->flags > 31)
+            {
+                throw runtime_error("head flags out of range");
+            }
             memcpy(ret->payload, &data[2], ret->length);
             ret->crc16 = static_cast<uint16_t>((data[ret->length + 4] << 0x08) | data[ret->length + 3]);
 
@@ -61,6 +74,43 @@ namespace hgardenpi::protocol
             if (crc16Calc != ret->crc16)
             {
                 throw runtime_error("crc not match");
+            }
+            return ret;
+        }
+
+        vector<Head::Ptr> encode(const vector<Package *> &packages)
+        {
+            if (packages.empty())
+            {
+                throw runtime_error("packages empty");
+            }
+            vector<Head::Ptr> ret;
+            vector<uint8_t *> payload;
+
+
+            for(auto it : packages)
+            {
+                if (dynamic_cast<Synchro *>(it))
+                {
+                    cout << "Synchro" << endl;
+                }
+                else if (dynamic_cast<Aggregation *>(it))
+                {
+                    cout << "Aggregation" << endl;
+                }
+                else if (dynamic_cast<Station *>(it))
+                {
+                    cout << "Station" << endl;
+                }
+                else
+                {
+                    throw runtime_error("class not child of Package");
+                }
+            }
+
+            for(auto it : packages)
+            {
+                delete it;
             }
             return ret;
         }

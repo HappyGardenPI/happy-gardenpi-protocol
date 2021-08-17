@@ -22,53 +22,20 @@
 //
 
 //
-// Created by Antonio Salsi on 16/08/21.
+// Created by Antonio Salsi on 17/08/21.
 //
 
 #pragma once
-
-#include <memory>
-
-#include <hgardenpi-protocol/constants.hpp>
 
 namespace hgardenpi::protocol
 {
     inline namespace v1
     {
-        using std::shared_ptr;
 
 #pragma pack(push, n)
-        /**
-         * Head of data
-         */
-        struct Head
+        struct Package
         {
-            typedef shared_ptr<Head> Ptr;
-
-            /**
-             * @brief Protocol version
-             */
-            uint8_t version = 0x01;
-            /**
-             * @brief Flags of transmission
-             */
-            uint8_t flags = FIN;
-            /**
-             * @brief Transmission id
-             */
-            uint8_t id = 0;
-            /**
-             * @brief Data length
-             */
-            uint8_t length = 0;
-            /**
-             * @brief Payload data
-             */
-            uint8_t payload[PACKAGE_MAX_PAYLOAD]{};
-            /**
-             * @brief CRC16 XMODEM calculate with version + flags + id + length + payload
-             */
-            uint16_t crc16 = 0;
+            virtual ~Package() = default;
         };
 #pragma pack(pop)
     }

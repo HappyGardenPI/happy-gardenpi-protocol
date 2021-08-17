@@ -27,17 +27,52 @@
 
 #pragma once
 
-#include <hgardenpi-protocol/head.hpp>
+#include <hgardenpi-protocol/packages/package.hpp>
+#include <hgardenpi-protocol/constants.hpp>
+
+#include <string>
 
 namespace hgardenpi::protocol
 {
     inline namespace v1
     {
 
-#pragma pack(push, n)
-        struct Station final : public Head
-        {
+        using std::string;
 
+#pragma pack(push, n)
+        /**
+ * @brief pod who describe a irrigation station
+ */
+        struct Station final : public Package
+        {
+            /**
+                        * @brief id in db
+                        */
+            uint id;
+            /**
+             * @brief name of station
+             */
+            string name;
+            /**
+             * @brief description of station
+             */
+            string description;
+            /**
+             * @brief relay number association
+             */
+            uint8_t relayNumber;
+            /**
+             * @brief watering time in minutes
+             */
+            uint wateringTime;
+            /**
+             * @brief for manage order of execution lighter is first then weightier
+             */
+            uint16_t weight;
+            /**
+             * @brief status of station
+             */
+            Status status = Status::ACTIVE;
         };
 #pragma pack(pop)
     }

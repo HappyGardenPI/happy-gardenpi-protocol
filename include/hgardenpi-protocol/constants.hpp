@@ -34,6 +34,9 @@ namespace hgardenpi::protocol
     inline namespace v1
     {
 
+        /**
+         * Flags used in Head
+         */
         enum Flags : uint8_t
         {
             SYN = 0x01,
@@ -41,8 +44,20 @@ namespace hgardenpi::protocol
             CRT = 0x03,
             AGG = 0x04,
             STA = 0x05,
-            FIN = 0x0F
+            PAR = 0x06,
+            FIN = 0x07
         };
+
+        /**
+         * Status of an element in the project
+         */
+        enum class Status : uint8_t
+        {
+            UNACTIVE = 0,
+            ACTIVE,
+            ERROR,
+        };
+
 
         constexpr const inline uint8_t PACKAGE_MAX_PAYLOAD = 255;
 
