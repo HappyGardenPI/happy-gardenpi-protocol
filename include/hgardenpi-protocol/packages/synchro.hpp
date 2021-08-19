@@ -29,6 +29,7 @@
 #include <string>
 
 #include <hgardenpi-protocol/packages/package.hpp>
+#include <hgardenpi-protocol/constants.hpp>
 
 namespace hgardenpi::protocol
 {
@@ -39,14 +40,24 @@ namespace hgardenpi::protocol
 
 #pragma pack(push, n)
         /**
-         * Synchro package utilize for init communication
+         * @brief Synchro package utilize for init communication, linked to Flags::SYN
          */
         struct Synchro final : public Package
         {
             /**
              * @brief serial of device
              */
-            string serial;
+            char *serial = nullptr;
+
+            inline ~Synchro() noexcept override
+            {
+                if (serial)
+                {
+                    delete[] serial;
+                    serial = nullptr;
+                }
+            }
+
         };
 #pragma pack(pop)
     }

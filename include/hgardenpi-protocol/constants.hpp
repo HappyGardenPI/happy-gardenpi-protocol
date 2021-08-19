@@ -39,27 +39,75 @@ namespace hgardenpi::protocol
          */
         enum Flags : uint8_t
         {
+            //only one flags/packages
+            NOT_SET = 0x00,
+            /**
+             * @brief Synchronization package for start communication
+             * @note this flag can contain only one flag/package
+             */
             SYN = 0x01,
-            ACK = 0x02,
-            CRT = 0x03,
+            /**
+             * @brief Certificare package contain certificate for enable point to point communication
+             * @note this flag can contain only one flag/package
+             */
+            CRT = 0x02,
+            /**
+             * @brief Aggregation package contain info about it
+             * @note this flag can contain only one flag/package
+             */
             AGG = 0x04,
-            STA = 0x05,
-            PAR = 0x06,
-            FIN = 0x07
+            /**
+             * @brief Station package contain info about it
+             * @note this flag can contain only one flag/package
+             */
+            STA = 0x08,
+            /**
+             * @brief End package, empty package for end communication
+             * @note this flag can contain only one flag/package
+             */
+            FIN = 0x10,
+
+            //flags
+            /**
+             * @brief End package, empty package for end communication
+             * @note this flag can be added to flag/package to deoration of the information passed
+             */
+            PAR = 0x20,
+            /**
+             * @brief End package, empty package for end communication
+             * @note this flag can be added to flag/package to deoration of the information passed
+             */
+            ACK = 0x40,
         };
 
         /**
-         * Status of an element in the project
+         * @brief Status of an element in the project
          */
         enum class Status : uint8_t
         {
+            /**
+             * @brief element not active
+             */
             UNACTIVE = 0,
+            /**
+             * @brief element active
+             */
             ACTIVE,
+            /**
+             * @brief element error
+             */
             ERROR,
         };
 
+        /**
+         * @brief max payload size
+         */
+        constexpr const inline uint8_t PACKAGE_MAX_PAYLOAD_SIZE = 255;
 
-        constexpr const inline uint8_t PACKAGE_MAX_PAYLOAD = 255;
+        /**
+         * @brief max serial size
+         */
+        constexpr const inline uint8_t PACKAGE_MAX_SERIAL_SIZE = 32;
 
     }
 }

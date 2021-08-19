@@ -25,4 +25,24 @@
 // Created by Antonio Salsi on 16/08/21.
 //
 
-#include "hgardenpi-protocol/utils/shiftutils.hpp"
+#pragma once
+#include <string>
+
+#include <hgardenpi-protocol/packages/package.hpp>
+#include <hgardenpi-protocol/constants.hpp>
+
+namespace hgardenpi::protocol
+{
+    inline namespace v1
+    {
+        using std::string;
+
+#pragma pack(push, n)
+        /**
+         * @brief Package for finish communication, linked to Flags::FIN
+         * @note not contain field
+         */
+        struct Finish final : public Package {};
+#pragma pack(pop)
+    }
+}

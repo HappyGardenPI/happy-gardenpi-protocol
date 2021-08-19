@@ -39,9 +39,7 @@ namespace hgardenpi::protocol
 
 #pragma pack(push, n)
         /**
-         * @brief pod who describe an aggregation of station
-         *
-         * in this struct there are all information for scheduling a single or block of station
+         * @brief Package for manage aggregation, linked to Flags::AGG
          */
         struct Aggregation final : public Package
         {

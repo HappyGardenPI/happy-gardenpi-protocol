@@ -48,11 +48,11 @@ namespace hgardenpi::protocol
             /**
              * @brief Protocol version
              */
-            uint8_t version = 0x01;
+            uint8_t version = 0x00;
             /**
              * @brief Flags of transmission
              */
-            uint8_t flags = FIN;
+            uint8_t flags = NOT_SET;
             /**
              * @brief Transmission id
              */
@@ -64,7 +64,7 @@ namespace hgardenpi::protocol
             /**
              * @brief Payload data
              */
-            uint8_t payload[PACKAGE_MAX_PAYLOAD]{};
+            uint8_t payload[PACKAGE_MAX_PAYLOAD_SIZE]{};
             /**
              * @brief CRC16 XMODEM calculate with version + flags + id + length + payload
              */

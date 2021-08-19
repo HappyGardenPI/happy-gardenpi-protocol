@@ -26,45 +26,76 @@
 //
 
 #pragma once
+#include <string>
 
 #include <hgardenpi-protocol/packages/package.hpp>
 #include <hgardenpi-protocol/constants.hpp>
-
-#include <string>
 
 namespace hgardenpi::protocol
 {
     inline namespace v1
     {
-
         using std::string;
 
 #pragma pack(push, n)
         /**
-         * @brief Package for manage aggregation, linked to Flags::STA
+         * @brief Package for manage certificate, linked to Flags::CRT
          */
-        struct Station final : public Package
+        struct Certificate final : public Package
         {
             /**
-            * @brief id in db
-            */
+             * @brief id in db
+             */
             uint id;
             /**
-             * @brief name of station
-             */
-            string name;
-            /**
-             * @brief description of station
+             * @brief brief description of aggregation
              */
             string description;
             /**
-             * @brief relay number association
+             * @brief brief manual check if the aggregation start automatically or manually by follow fields
              */
-            uint8_t relayNumber;
+            bool manual = true;
+
+#pragma pack(push, 2)
             /**
-             * @brief watering time in minutes
+             * @brief scheduling data info
              */
-            uint wateringTime;
+            struct Schedule
+            {
+                /**
+                 * @brief minute, values allowed 0 - 59
+                 */
+                uint8_t minute = 0; //0 - 59 or NOT_SET
+
+                /**
+                 * @brief minute, values allowed 0 - 23 or NOT_SET
+                 */
+                uint8_t hour = 0; //0 - 23 or NOT_SET
+
+                /**
+                 * @brief days, values allowed 0x01 - 0x7F or NOT_SET
+                 */
+                uint8_t days = 0x7F; //byte contains day enabled
+            }
+            /**
+             * @brief Instance of schedule data
+             */
+            schedule;
+#pragma pack(pop)
+
+            /**
+             * @brief start scheduling period if enhanced
+             */
+            string start;
+            /**
+             * @brief end scheduling period if enhanced
+             */
+            string end;
+            /**
+             * @brief If true execute sequentially the station otherwise execute all station at the same time
+             * @note not implemented in this version, may be in next version
+             */
+            bool sequential = true;
             /**
              * @brief for manage order of execution lighter is first then weightier
              */

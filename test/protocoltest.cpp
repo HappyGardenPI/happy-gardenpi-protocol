@@ -27,15 +27,16 @@
 
 #include <gtest/gtest.h>
 
-#include <vector>
-
-using std::vector;
+#include <iostream>
+#include <string>
+using namespace std;
 
 #include <hgardenpi-protocol/protocol.hpp>
 #include <hgardenpi-protocol/packages/aggregation.hpp>
+#include <hgardenpi-protocol/packages/certificate.hpp>
+#include <hgardenpi-protocol/packages/finish.hpp>
 #include <hgardenpi-protocol/packages/station.hpp>
 #include <hgardenpi-protocol/packages/synchro.hpp>
-
 using namespace hgardenpi::protocol;
 
 
@@ -54,17 +55,34 @@ TEST(ProtocolTest, decode)
 
 }
 
-TEST(ProtocolTest, encode)
+TEST(ProtocolTest, encodeFIN)
 {
+    auto fin1 = new Finish;
+    auto encode1 = encode(fin1);
+    EXPECT_EQ(encode1->flags, FIN);
 
-    auto s = new Synchro;
-    s->serial = "12345678";
+    auto fin2 = new Finish;
+    auto encode2 = encode(fin2, ACK);
 
-    vector<Package *> packages;
-    packages.push_back(s);
-    packages.push_back(new Aggregation);
-    packages.push_back(new Station);
-    packages.push_back(new Station);
-    auto a = encode(packages);
+    EXPECT_EQ(encode2->flags, FIN | ACK);
+}
 
+TEST(ProtocolTest, encodeSYN)
+{
+    auto syn1 = new Synchro;
+    syn1->serial = new char[5];
+    strncpy(syn1->serial, "test1", 5);
+
+    auto encode1 = encode(syn1);
+    EXPECT_EQ(encode1->flags, SYN);
+    EXPECT_TRUE(string(reinterpret_cast<char *>(encode1->payload)) == "test1");
+
+
+    auto syn2 = new Synchro;
+    syn2->serial = new char[5];
+    strncpy(syn1->serial, "test2", 5);
+
+    auto encode2 = encode(syn2, ACK);
+    EXPECT_EQ(encode2->flags, SYN | ACK);
+    EXPECT_TRUE(string(reinterpret_cast<char *>(encode2->payload)) == "test2");
 }

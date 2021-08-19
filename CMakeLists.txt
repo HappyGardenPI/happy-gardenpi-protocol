@@ -25,22 +25,20 @@ include_directories("/usr/include/machine/")
 add_library(hgardenpi_protocol
         include/hgardenpi-protocol/3thparts/CRC.h
         include/hgardenpi-protocol/packages/aggregation.hpp
+        include/hgardenpi-protocol/packages/certificate.hpp
+        include/hgardenpi-protocol/packages/finish.hpp
         include/hgardenpi-protocol/packages/package.hpp
         include/hgardenpi-protocol/packages/station.hpp
         include/hgardenpi-protocol/packages/synchro.hpp
-        include/hgardenpi-protocol/utils/shiftutils.hpp
-        include/hgardenpi-protocol/utils/stringutils.hpp
         include/hgardenpi-protocol/constants.hpp
         include/hgardenpi-protocol/head.hpp
         include/hgardenpi-protocol/protocol.hpp
-        src/utils/shiftutils.cpp
-        src/utils/stringutils.cpp
         src/protocol.cpp
         )
 
 add_executable(hgardenpi_protocol_test
         test/test.cpp
-        test/sendtest.cpp
+        test/protocoltest.cpp
         )
 
 target_link_libraries(hgardenpi_protocol_test
