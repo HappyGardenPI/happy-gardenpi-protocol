@@ -46,38 +46,41 @@ namespace hgardenpi::protocol
     {
 
         /**
-         * Add data to base Head whit FIN information
-         * @param Head::Ptr allocated and semi filled structure
-         */
-        static void encodeFinish(Head::Ptr &head) noexcept;
-
-        /**
          * Add data to base Head whit SYN information
          * @param Head::Ptr allocated and semi filled structure
-         * @param synchro pointer to structure
+         * @param flag type of structure
+         * @param t pointer to structure
          */
-        static void encodeSynchro(Head::Ptr &head, const Synchro *synchro);
+         template<typename T>
+        static void encodeFlag(Head::Ptr &head, Flags flag, const T *t);
 
         Head::Ptr decode(const uint8_t *data)
         {
-            Head::Ptr ret(new Head{
+            //initialize default return value
+            Head::Ptr ret(new (nothrow) Head{
                 .version = static_cast<uint8_t>((data[0] & 0x80) >> 0x07),
                 .flags = static_cast<uint8_t>(data[0] & 0x7F),
                 .id = static_cast<uint8_t>(data[1]),
                 .length = static_cast<uint8_t>(data[2])
             });
-
-            if (ret->version > 1)
+            if (ret == nullptr)
             {
-                throw runtime_error("head version out of range");
+                throw runtime_error("no memory for head");
             }
+
+            //check max linit of value
             if (ret->flags > 0xE0)
             {
                 throw runtime_error("head flags out of range or more packages set");
             }
+
+            //copy payload from data
             memcpy(ret->payload, &data[2], ret->length);
+
+            //copy crc16 from data
             ret->crc16 = static_cast<uint16_t>((data[ret->length + 4] << 0x08) | data[ret->length + 3]);
 
+            //calculate crc16 from data received
             const uint dataLessCrc16Length = ret->length + 3;
             const uint8_t * dataLessCrc16 = new (nothrow) uint8_t[dataLessCrc16Length];
 
@@ -85,10 +88,12 @@ namespace hgardenpi::protocol
             uint16_t crc16Calc = CRC::Calculate(dataLessCrc16, dataLessCrc16Length, CRC::CRC_16_XMODEM());
             delete[] dataLessCrc16;
 
+            //check crc16 send with that calculate
             if (crc16Calc != ret->crc16)
             {
                 throw runtime_error("crc not match");
             }
+
             return ret;
         }
 
@@ -103,36 +108,52 @@ namespace hgardenpi::protocol
             }
 
             //prepare return head with common information
-            Head::Ptr ret(new Head{
+            Head::Ptr ret(new (nothrow) Head{
                 .version = 0,
                 .flags = additionalFags > NOT_SET ? additionalFags : NOT_SET,
                 .id = 0,
                 .length = 0
             });
+            if (ret == nullptr)
+            {
+                throw runtime_error("no memory for head");
+            }
 
             //set payload to 0
             memset(ret->payload, 0, PACKAGE_MAX_PAYLOAD_SIZE);
 
             //check which child package was packaged
-            if (auto ptr = dynamic_cast<Aggregation *>(package); ptr)
+            if (auto ptr = dynamic_cast<Aggregation *>(package); ptr) //is Flags::AGG package
             {
-                cout << "Aggregation" << endl;
+                encodeFlag(ret, AGG, ptr);
             }
-            else if (auto ptr = dynamic_cast<Certificate *>(package); ptr)
+            else if (auto ptr = dynamic_cast<Certificate *>(package); ptr) //is Flags::CRT package
             {
-                cout << "Certificate" << endl;
+                encodeFlag(ret, CRT, ptr);
             }
-            else if (dynamic_cast<Finish *>(package)) //is FIN package
+            else if (dynamic_cast<Finish *>(package)) //is Flags::FIN package
             {
-                encodeFinish(ret);
+                //add package flag
+                ret->flags |= FIN;
             }
-            else if (auto ptr = dynamic_cast<Station *>(package); ptr)
+            else if (auto ptr = dynamic_cast<Station *>(package); ptr) //is Flags::STA package
             {
-                cout << "Station" << endl;
+                encodeFlag(ret, STA, ptr);
             }
-            else if (auto ptr = dynamic_cast<Synchro *>(package); ptr) //is SYN package
+            else if (auto ptr = dynamic_cast<Synchro *>(package); ptr) //is Flags::SYN package
             {
-                encodeSynchro(ret, ptr);
+                //check right serial size
+                if (strlen(ptr->serial) > PACKAGE_MAX_SERIAL_SIZE)
+                {
+                    throw runtime_error("serial too long max 255 chars");
+                }
+
+                //add package flag
+                ret->flags |= SYN;
+                ret->length = strlen(ptr->serial);
+
+                //copy serial to payload
+                strncpy(reinterpret_cast<char *>(ret->payload), ptr->serial, ret->length);
             }
             else
             {
@@ -153,27 +174,22 @@ namespace hgardenpi::protocol
 
             return ret;
         }
+
+        template<typename T>
+        static void encodeFlag(Head::Ptr &head, Flags flag, const T *t)
+        {
+            //static_assert(is_base_of_v<Package, T>(head, t));
+
+            //add package flag
+            head->flags |= flag;
+
+            //set length of package
+            head->length = sizeof(T);
+
+            //copy structure to payload
+            memcpy(reinterpret_cast<void *>(head->payload), reinterpret_cast<const void *>(t), head->length);
+        }
 #pragma clang diagnostic pop
 
-        inline void encodeFinish(Head::Ptr &head) noexcept
-        {
-            //add package flag
-            head->flags |= FIN;
-        }
-
-        static void encodeSynchro(Head::Ptr &head, const Synchro *synchro)
-        {
-            //check right seial size
-            if (strlen(synchro->serial) > PACKAGE_MAX_SERIAL_SIZE)
-            {
-                throw runtime_error("serial too long max 255 chars");
-            }
-
-            //add package flag
-            head->flags |= SYN;
-
-            //copy serial to payload
-            strncpy(reinterpret_cast<char *>(head->payload), synchro->serial, strlen(synchro->serial));
-        }
     }
 }
