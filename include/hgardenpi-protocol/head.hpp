@@ -64,7 +64,7 @@ namespace hgardenpi::protocol
             /**
              * @brief Payload data
              */
-            uint8_t payload[PACKAGE_MAX_PAYLOAD_SIZE]{};
+            uint8_t payload[HEAD_MAX_PAYLOAD_SIZE]{};
             /**
              * @brief CRC16 XMODEM calculate with version + flags + id + length + payload
              */

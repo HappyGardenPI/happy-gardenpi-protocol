@@ -33,9 +33,12 @@ namespace hgardenpi::protocol
     {
 
 #pragma pack(push, n)
+        /**
+         * @brief base package class
+         */
         struct Package
         {
-            virtual ~Package() = default;
+            virtual inline ~Package() = default;
         };
 #pragma pack(pop)
     }

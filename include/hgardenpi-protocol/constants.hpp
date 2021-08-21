@@ -102,12 +102,17 @@ namespace hgardenpi::protocol
         /**
          * @brief max payload size
          */
-        constexpr const inline uint8_t PACKAGE_MAX_PAYLOAD_SIZE = 255;
+        constexpr const inline uint8_t HEAD_MAX_PAYLOAD_SIZE = 255;
 
         /**
          * @brief max serial size
          */
-        constexpr const inline uint8_t PACKAGE_MAX_SERIAL_SIZE = 32;
+        constexpr const inline uint8_t HEAD_MAX_SERIAL_SIZE = 32;
+
+        /**
+         * @brief max heads size
+         */
+        constexpr const inline uint8_t HEAD_MAX_PARTIAL = 16;
 
     }
 }

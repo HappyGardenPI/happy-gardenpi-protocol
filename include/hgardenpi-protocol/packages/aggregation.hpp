@@ -46,36 +46,36 @@ namespace hgardenpi::protocol
             /**
              * @brief id in db
              */
-            uint id;
+            [[maybe_unused]] uint id;
             /**
              * @brief brief description of aggregation
              */
-            string description;
+            [[maybe_unused]] string description;
             /**
              * @brief brief manual check if the aggregation start automatically or manually by follow fields
              */
-            bool manual = true;
+            [[maybe_unused]] bool manual = true;
 
 #pragma pack(push, 2)
             /**
              * @brief scheduling data info
              */
-            struct Schedule
+            [[maybe_unused]] struct Schedule
             {
                 /**
                  * @brief minute, values allowed 0 - 59
                  */
-                uint8_t minute = 0; //0 - 59 or NOT_SET
+                [[maybe_unused]] uint8_t minute = 0; //0 - 59 or NOT_SET
 
                 /**
                  * @brief minute, values allowed 0 - 23 or NOT_SET
                  */
-                uint8_t hour = 0; //0 - 23 or NOT_SET
+                [[maybe_unused]] uint8_t hour = 0; //0 - 23 or NOT_SET
 
                 /**
                  * @brief days, values allowed 0x01 - 0x7F or NOT_SET
                  */
-                uint8_t days = 0x7F; //byte contains day enabled
+                [[maybe_unused]] uint8_t days = 0x7F; //byte contains day enabled
             }
             /**
              * @brief Instance of schedule data
@@ -86,24 +86,24 @@ namespace hgardenpi::protocol
             /**
              * @brief start scheduling period if enhanced
              */
-            string start;
+            [[maybe_unused]] string start;
             /**
              * @brief end scheduling period if enhanced
              */
-            string end;
+            [[maybe_unused]] string end;
             /**
              * @brief If true execute sequentially the station otherwise execute all station at the same time
              * @note not implemented in this version, may be in next version
              */
-            bool sequential = true;
+            [[maybe_unused]] bool sequential = true;
             /**
              * @brief for manage order of execution lighter is first then weightier
              */
-            uint16_t weight;
+            [[maybe_unused]] uint16_t weight;
             /**
              * @brief status of station
              */
-            Status status = Status::ACTIVE;
+            [[maybe_unused]] Status status = Status::ACTIVE;
         };
 #pragma pack(pop)
     }

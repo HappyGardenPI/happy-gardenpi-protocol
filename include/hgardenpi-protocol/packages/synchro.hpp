@@ -47,7 +47,7 @@ namespace hgardenpi::protocol
             /**
              * @brief serial of device
              */
-            char *serial = nullptr;
+            [[maybe_unused]] char *serial = nullptr;
 
             inline ~Synchro() noexcept override
             {

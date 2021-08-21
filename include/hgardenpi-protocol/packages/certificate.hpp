@@ -44,66 +44,9 @@ namespace hgardenpi::protocol
         struct Certificate final : public Package
         {
             /**
-             * @brief id in db
+             * @brief data payload
              */
-            uint id;
-            /**
-             * @brief brief description of aggregation
-             */
-            string description;
-            /**
-             * @brief brief manual check if the aggregation start automatically or manually by follow fields
-             */
-            bool manual = true;
-
-#pragma pack(push, 2)
-            /**
-             * @brief scheduling data info
-             */
-            struct Schedule
-            {
-                /**
-                 * @brief minute, values allowed 0 - 59
-                 */
-                uint8_t minute = 0; //0 - 59 or NOT_SET
-
-                /**
-                 * @brief minute, values allowed 0 - 23 or NOT_SET
-                 */
-                uint8_t hour = 0; //0 - 23 or NOT_SET
-
-                /**
-                 * @brief days, values allowed 0x01 - 0x7F or NOT_SET
-                 */
-                uint8_t days = 0x7F; //byte contains day enabled
-            }
-            /**
-             * @brief Instance of schedule data
-             */
-            schedule;
-#pragma pack(pop)
-
-            /**
-             * @brief start scheduling period if enhanced
-             */
-            string start;
-            /**
-             * @brief end scheduling period if enhanced
-             */
-            string end;
-            /**
-             * @brief If true execute sequentially the station otherwise execute all station at the same time
-             * @note not implemented in this version, may be in next version
-             */
-            bool sequential = true;
-            /**
-             * @brief for manage order of execution lighter is first then weightier
-             */
-            uint16_t weight;
-            /**
-             * @brief status of station
-             */
-            Status status = Status::ACTIVE;
+            [[maybe_unused]] string certificate;
         };
 #pragma pack(pop)
     }

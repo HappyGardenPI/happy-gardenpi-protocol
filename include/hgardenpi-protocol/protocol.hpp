@@ -57,10 +57,10 @@ namespace hgardenpi::protocol
           * Encode a buffer contain a Happy GardenPI Head
           * @param package package to send, it will be deleted automatically
           * @param additionalFags additional flags to decorate package
-          * @return a Head to send
+          * @return a vector of Head to send
           * @throw runtime_exception if something goes wrong
           */
-         Head::Ptr encode(Package * package, Flags additionalFags = NOT_SET);
+         vector<Head::Ptr> encode(Package * package, Flags additionalFags = NOT_SET);
 
     }
 }

@@ -48,31 +48,36 @@ namespace hgardenpi::protocol
             /**
             * @brief id in db
             */
-            uint id;
+            [[maybe_unused]] uint id;
             /**
              * @brief name of station
              */
-            string name;
+            [[maybe_unused]] string name;
             /**
              * @brief description of station
              */
-            string description;
+            [[maybe_unused]]  string description;
             /**
              * @brief relay number association
              */
-            uint8_t relayNumber;
+            [[maybe_unused]] uint8_t relayNumber;
             /**
              * @brief watering time in minutes
              */
-            uint wateringTime;
+            [[maybe_unused]]  uint wateringTime;
+            /**
+             * @brief watering time left in minutes
+             * @note if greater than 0 the station running
+             */
+            [[maybe_unused]] uint wateringTimeLeft;
             /**
              * @brief for manage order of execution lighter is first then weightier
              */
-            uint16_t weight;
+            [[maybe_unused]] uint16_t weight;
             /**
              * @brief status of station
              */
-            Status status = Status::ACTIVE;
+            [[maybe_unused]] Status status = Status::ACTIVE;
         };
 #pragma pack(pop)
     }
