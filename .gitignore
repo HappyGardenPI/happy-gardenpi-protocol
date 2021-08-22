@@ -122,3 +122,4 @@ _deps
 
 ### MacOS
 .DS_Store
+include/hgardenpi-protocol/config.h
