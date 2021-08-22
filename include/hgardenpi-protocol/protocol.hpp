@@ -34,6 +34,7 @@
 
 #include <hgardenpi-protocol/constants.hpp>
 #include <hgardenpi-protocol/head.hpp>
+#include <hgardenpi-protocol/config.h>
 
 
 namespace hgardenpi::protocol
@@ -41,8 +42,18 @@ namespace hgardenpi::protocol
     inline namespace v1
     {
         using std::vector;
+        using std::tuple;
 
         struct Package;
+
+        /**
+         * Get version of lib
+         * @return return a tuple with version
+         */
+        inline tuple<uint8_t, uint8_t, uint8_t> fetVersion() noexcept
+        {
+            return {HGARDENPI_PROTOCOL_VER_MAJOR, HGARDENPI_PROTOCOL_VER_MINOR, HGARDENPI_PROTOCOL_VER_PATCH};
+        }
 
         /**
          * Decode a buffer contain a Happy GardenPI Head

@@ -6,9 +6,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_EXTENSIONS OFF)
 
-#test macro
-set(TEST 1)
-
 include(FetchContent)
 FetchContent_Declare(
         googletest
@@ -18,7 +15,7 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-configure_file(config.h.in ../include/config.h)
+configure_file(config.h.in ../include/hgardenpi-protocol/config.h)
 include_directories("include")
 include_directories("/usr/include/machine/")
 
