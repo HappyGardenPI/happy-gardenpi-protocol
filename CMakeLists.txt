@@ -16,8 +16,7 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 configure_file(config.h.in ../include/hgardenpi-protocol/config.h)
-include_directories("include")
-include_directories("/usr/include/machine/")
+include_directories(INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 add_library(hgardenpi_protocol
         include/hgardenpi-protocol/3thparts/CRC.h
