@@ -83,7 +83,7 @@ namespace hgardenpi::protocol
          * @param t pointer to structure
          */
         template<typename T>
-        static vector<Head::Ptr> encodeFlag(vector<Head::Ptr> &&ret, PrivateData &data, const T *t);
+        static vector<Head::Ptr> encodeFlag(vector<Head::Ptr> &ret, PrivateData &data, const T *t);
 
         /**
          * Add data to base Head whit SYN information
@@ -93,7 +93,8 @@ namespace hgardenpi::protocol
         template<typename T>
         static inline vector<Head::Ptr> encodeFlag(PrivateData &data, const T *t)
         {
-            return encodeFlag({}, data, t);
+            vector<Head::Ptr> ret;
+            return encodeFlag(ret, data, t);
         }
 
         Head::Ptr decode(const uint8_t *data)
@@ -159,6 +160,9 @@ vector<Head::Ptr> encode(Package *package, Flags additionalFags)
                 //set length of package
                 data.length = sizeof(Aggregation);
 
+                //alloc memory
+                data.payload = new uint8_t [data.length];
+
                 //copy structure to payload
                 memcpy(reinterpret_cast<void *>(data.payload), reinterpret_cast<const void *>(ptr), data.length);
 
@@ -166,19 +170,28 @@ vector<Head::Ptr> encode(Package *package, Flags additionalFags)
                 data.flags = AGG | additionalFags;
 
                 ret = move(encodeFlag(data, ptr));
-            } else if (auto ptr = dynamic_cast<Certificate *>(package); ptr) //is Flags::CRT package
-            {
-                //update payload
-                data.payload = reinterpret_cast<uint8_t *>(ptr->certificate.data());
 
+                delete [] data.payload;
+            }
+            else if (auto ptr = dynamic_cast<Certificate *>(package); ptr) //is Flags::CRT package
+            {
                 //update length
                 data.length = ptr->certificate.size();
+
+                //alloc memory
+                data.payload = new uint8_t [data.length];
+
+                //copy certificate field to payload
+                memcpy(reinterpret_cast<void *>(data.payload),  reinterpret_cast<uint8_t *>(&ptr->certificate[0]), data.length);
 
                 //update flags
                 data.flags = CRT | additionalFags;
 
                 ret = move(encodeFlag(data, ptr));
-            } else if (dynamic_cast<Finish *>(package)) //is Flags::FIN package
+
+                delete[] data.payload;
+            }
+            else if (dynamic_cast<Finish *>(package)) //is Flags::FIN package
             {
                 //create new head instance
                 auto &&head = newHead();
@@ -187,10 +200,14 @@ vector<Head::Ptr> encode(Package *package, Flags additionalFags)
                 head->flags = FIN | additionalFags;
 
                 ret.push_back(head);
-            } else if (auto ptr = dynamic_cast<Station *>(package); ptr) //is Flags::STA package
+            }
+            else if (auto ptr = dynamic_cast<Station *>(package); ptr) //is Flags::STA package
             {
                 //set length of package
                 data.length = sizeof(Station);
+
+                //alloc memory
+                data.payload = new uint8_t [data.length];
 
                 //copy structure to payload
                 memcpy(reinterpret_cast<void *>(data.payload), reinterpret_cast<const void *>(ptr), data.length);
@@ -202,7 +219,10 @@ vector<Head::Ptr> encode(Package *package, Flags additionalFags)
                 data.flags = STA | additionalFags;
 
                 ret = move(encodeFlag(data, ptr));
-            } else if (auto ptr = dynamic_cast<Synchro *>(package); ptr) //is Flags::SYN package
+
+                delete data.payload;
+            }
+            else if (auto ptr = dynamic_cast<Synchro *>(package); ptr) //is Flags::SYN package
             {
                 //check right serial size
                 if (strlen(ptr->serial) > HEAD_MAX_SERIAL_SIZE)
@@ -221,19 +241,25 @@ vector<Head::Ptr> encode(Package *package, Flags additionalFags)
                 strncpy(reinterpret_cast<char *>(head->payload), ptr->serial, head->length);
 
                 ret.push_back(head);
-            } else
+            }
+            else
             {
                 throw runtime_error("class not child of Package");
             }
 
-//            //calculate size of crc16 and alloc it
-//            size_t dataLessCrc16Length = sizeof(uint8_t) + sizeof(ret->id) + sizeof(ret->length) + (sizeof (uint8_t) * ret->length);
-//            const uint8_t * crc16 = new (nothrow) uint8_t[dataLessCrc16Length];
-//
-//            //calculate crc16
-//            memcpy((void *) crc16, ret.get(), dataLessCrc16Length);
-//            ret->crc16 = CRC::Calculate(crc16, dataLessCrc16Length, CRC::CRC_16_XMODEM());
-//            delete[] crc16;
+            //update crc16 for all heads
+            for (auto &&it : ret)
+            {
+                //calculate size of crc16 and alloc it
+                size_t dataLessCrc16Length = sizeof(uint8_t) + sizeof(it->id) + sizeof(it->length) + (sizeof (uint8_t) * it->length);
+                const uint8_t * crc16 = new (nothrow) uint8_t[dataLessCrc16Length];
+
+                //calculate crc16
+                memcpy((void *) crc16, it.get(), dataLessCrc16Length);
+                it->crc16 = CRC::Calculate(crc16, dataLessCrc16Length, CRC::CRC_16_XMODEM());
+                delete[] crc16;
+            }
+
 
             //free package
             delete package;
@@ -277,17 +303,22 @@ vector<Head::Ptr> encode(Package *package, Flags additionalFags)
         }
 
         template<typename T>
-        static vector<Head::Ptr> encodeFlag(vector<Head::Ptr> &&ret, PrivateData &data, const T *t)
+        [[maybe_unused]] static vector<Head::Ptr> encodeFlag(vector<Head::Ptr> &ret, PrivateData &data, const T *t)
         {
             //verify length dimension
             if (data.length < HEAD_MAX_PAYLOAD_SIZE)
             {
-                //move pointer to filled payload
-                data.payloadPtr = data.payload;
+                //move pointer to filled payload if it's first head, il ret > 0 it means we are in recursion loop
+                if (ret.empty())
+                {
+                    data.payloadPtr = data.payload;
+                }
+
 
                 //create head
                 ret.push_back(move(newHead(data)));
-            } else
+            }
+            else if (data.length > 0)
             {
                 //check how many heads already build
                 if (ret.size() >= HEAD_MAX_PARTIAL)
@@ -295,13 +326,22 @@ vector<Head::Ptr> encode(Package *package, Flags additionalFags)
                     throw runtime_error("data to big, exceed HEAD_MAX_PARTIAL");
                 }
 
+                //create data for elaborate in newHead
                 PrivateData dataLocal;
-                dataLocal.payloadPtr = data.payload;
+                dataLocal.payload = data.payload;
+                dataLocal.payloadPtr = dataLocal.payload;
                 dataLocal.length = HEAD_MAX_PAYLOAD_SIZE;
+                dataLocal.flags = data.flags | PRT;
+
+                //create head
                 ret.push_back(move(newHead(dataLocal)));
 
-                auto &&heads = encodeFlag(data, t);
-                ret.insert(ret.end(), heads.begin(), heads.end());
+                //update data for next package
+                dataLocal.payloadPtr += HEAD_MAX_PAYLOAD_SIZE;
+                dataLocal.length = data.length - HEAD_MAX_PAYLOAD_SIZE;
+
+                //create one more head
+                encodeFlag(ret, dataLocal, t);
             }
 
             return ret;

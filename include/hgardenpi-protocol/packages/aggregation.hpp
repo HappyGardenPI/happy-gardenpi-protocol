@@ -46,7 +46,7 @@ namespace hgardenpi::protocol
             /**
              * @brief id in db
              */
-            [[maybe_unused]] uint id;
+            [[maybe_unused]] uint id = 0;
             /**
              * @brief brief description of aggregation
              */
@@ -99,7 +99,7 @@ namespace hgardenpi::protocol
             /**
              * @brief for manage order of execution lighter is first then weightier
              */
-            [[maybe_unused]] uint16_t weight;
+            [[maybe_unused]] uint16_t weight = 0;
             /**
              * @brief status of station
              */

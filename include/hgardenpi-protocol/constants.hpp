@@ -69,12 +69,12 @@ namespace hgardenpi::protocol
 
             //flags
             /**
-             * @brief Partial package, empty package for end communication
+             * @brief Partial flag
              * @note this flag can be added to flag/package to decoration of the information passed
              */
-            PAR = 0x20,
+            PRT = 0x20,
             /**
-             * @brief End package, empty package for end communication
+             * @brief Acknowledge flag
              * @note this flag can be added to flag/package to decoration of the information passed
              */
             ACK = 0x40,
