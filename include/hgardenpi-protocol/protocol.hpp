@@ -58,7 +58,6 @@ namespace hgardenpi::protocol
         /**
          * Decode a buffer contain a Happy GardenPI Head
          * @param data buffer
-         * @param size od data
          * @return Head instance
          * @throw runtime_exception if something goes wrong
          */

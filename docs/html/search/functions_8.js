@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['send_1156',['Send',['../classupload_1_1_abstract_rpc_server.html#ad6555ae8993a52035191f8572762e741',1,'upload::AbstractRpcServer']]],
-  ['setup_1157',['setUp',['../classgoogletest-filter-unittest_1_1_g_test_filter_unit_test.html#a5aedf9d24243167acee87c9ddba82cc7',1,'googletest-filter-unittest::GTestFilterUnitTest']]],
-  ['stripleadingwhitespace_1158',['StripLeadingWhitespace',['../classcpp_1_1gmock__class__test_1_1_test_case.html#a45ab688a4c3eb09df05804384d013d8a',1,'cpp::gmock_class_test::TestCase']]]
+  ['_7epackage_171',['~Package',['../structhgardenpi_1_1protocol_1_1v1_1_1_package.html#a7652a47d68f952a14e3cda3f812fb61d',1,'hgardenpi::protocol::v1::Package']]],
+  ['_7esynchro_172',['~Synchro',['../structhgardenpi_1_1protocol_1_1v1_1_1_synchro.html#a6234694b28579a5f0d229322a91f8597',1,'hgardenpi::protocol::v1::Synchro']]]
 ];

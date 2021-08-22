@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['normalizexml_1150',['NormalizeXml',['../classgtest__xml__test__utils_1_1_g_test_x_m_l_test_case.html#ac4823e96c3b5327b25a340a3605447d9',1,'gtest_xml_test_utils::GTestXMLTestCase']]]
+  ['operator_5b_5d_167',['operator[]',['../struct_c_r_c_1_1_table.html#a84eaebd5423d4695aa32ec8d3ca53907',1,'CRC::Table']]]
 ];

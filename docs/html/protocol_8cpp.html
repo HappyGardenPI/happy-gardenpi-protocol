@@ -68,6 +68,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
@@ -75,7 +76,21 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;<a class="el" href="protocol_8hpp_source.html">hgardenpi-protocol/protocol.hpp</a>&gt;</code><br />
+<code>#include &lt;stdexcept&gt;</code><br />
+<code>#include &lt;iostream&gt;</code><br />
+<code>#include &lt;memory&gt;</code><br />
+<code>#include &lt;<a class="el" href="_c_r_c_8h_source.html">hgardenpi-protocol/3thparts/CRC.h</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="aggregation_8hpp_source.html">hgardenpi-protocol/packages/aggregation.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="certificate_8hpp_source.html">hgardenpi-protocol/packages/certificate.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="finish_8hpp_source.html">hgardenpi-protocol/packages/finish.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="station_8hpp_source.html">hgardenpi-protocol/packages/station.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="synchro_8hpp_source.html">hgardenpi-protocol/packages/synchro.hpp</a>&gt;</code><br />
 </div><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structhgardenpi_1_1protocol_1_1v1_1_1_private_data.html">hgardenpi::protocol::v1::PrivateData</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespacehgardenpi"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehgardenpi.html">hgardenpi</a></td></tr>
@@ -87,10 +102,10 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:aeaf4fcd9b1bfd180da015bd1e98736a4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehgardenpi_1_1protocol_1_1v1.html#aeaf4fcd9b1bfd180da015bd1e98736a4">hgardenpi::protocol::v1::encode</a> ()</td></tr>
-<tr class="separator:aeaf4fcd9b1bfd180da015bd1e98736a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a23fd6b50be502c8893ec29782e5f98ad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehgardenpi_1_1protocol_1_1v1.html#a23fd6b50be502c8893ec29782e5f98ad">hgardenpi::protocol::v1::decode</a> ()</td></tr>
-<tr class="separator:a23fd6b50be502c8893ec29782e5f98ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e1da309e96837226b6d0dde20199731"><td class="memItemLeft" align="right" valign="top">Head::Ptr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehgardenpi_1_1protocol_1_1v1.html#a9e1da309e96837226b6d0dde20199731">hgardenpi::protocol::v1::decode</a> (const uint8_t *data)</td></tr>
+<tr class="separator:a9e1da309e96837226b6d0dde20199731"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af30542a99ff0e595c9971754d1cdd4c6"><td class="memItemLeft" align="right" valign="top">vector&lt; Head::Ptr &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehgardenpi_1_1protocol_1_1v1.html#af30542a99ff0e595c9971754d1cdd4c6">hgardenpi::protocol::v1::encode</a> (Package *package, Flags additionalFags=NOT_SET)</td></tr>
+<tr class="separator:af30542a99ff0e595c9971754d1cdd4c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

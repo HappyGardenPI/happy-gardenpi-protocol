@@ -74,7 +74,11 @@ $(function() {
 <div class="title">protocol.hpp File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-
+<div class="textblock"><code>#include &lt;vector&gt;</code><br />
+<code>#include &lt;<a class="el" href="constants_8hpp_source.html">hgardenpi-protocol/constants.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="head_8hpp_source.html">hgardenpi-protocol/head.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="config_8h_source.html">hgardenpi-protocol/config.h</a>&gt;</code><br />
+</div>
 <p><a href="protocol_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -88,10 +92,12 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:aeaf4fcd9b1bfd180da015bd1e98736a4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehgardenpi_1_1protocol_1_1v1.html#aeaf4fcd9b1bfd180da015bd1e98736a4">hgardenpi::protocol::v1::encode</a> ()</td></tr>
-<tr class="separator:aeaf4fcd9b1bfd180da015bd1e98736a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a23fd6b50be502c8893ec29782e5f98ad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehgardenpi_1_1protocol_1_1v1.html#a23fd6b50be502c8893ec29782e5f98ad">hgardenpi::protocol::v1::decode</a> ()</td></tr>
-<tr class="separator:a23fd6b50be502c8893ec29782e5f98ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc02bbc946a2e45703645d329bcba421"><td class="memItemLeft" align="right" valign="top">tuple&lt; uint8_t, uint8_t, uint8_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehgardenpi_1_1protocol_1_1v1.html#afc02bbc946a2e45703645d329bcba421">hgardenpi::protocol::v1::fetVersion</a> () noexcept</td></tr>
+<tr class="separator:afc02bbc946a2e45703645d329bcba421"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e1da309e96837226b6d0dde20199731"><td class="memItemLeft" align="right" valign="top">Head::Ptr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehgardenpi_1_1protocol_1_1v1.html#a9e1da309e96837226b6d0dde20199731">hgardenpi::protocol::v1::decode</a> (const uint8_t *data)</td></tr>
+<tr class="separator:a9e1da309e96837226b6d0dde20199731"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af30542a99ff0e595c9971754d1cdd4c6"><td class="memItemLeft" align="right" valign="top">vector&lt; Head::Ptr &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehgardenpi_1_1protocol_1_1v1.html#af30542a99ff0e595c9971754d1cdd4c6">hgardenpi::protocol::v1::encode</a> (Package *package, Flags additionalFags=NOT_SET)</td></tr>
+<tr class="separator:af30542a99ff0e595c9971754d1cdd4c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->
