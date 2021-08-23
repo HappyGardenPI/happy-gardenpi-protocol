@@ -15,8 +15,7 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-configure_file(config.h.in ../include/hgardenpi-protocol/config.h)
-include_directories(INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+configure_file(config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/include/hgardenpi-protocol/config.h)
 
 add_library(hgardenpi_protocol
         include/hgardenpi-protocol/3thparts/CRC.h
@@ -31,6 +30,8 @@ add_library(hgardenpi_protocol
         include/hgardenpi-protocol/protocol.hpp
         src/protocol.cpp
         )
+
+target_include_directories (hgardenpi_protocol PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 add_executable(hgardenpi_protocol_test
         test/test.cpp
