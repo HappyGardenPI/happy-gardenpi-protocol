@@ -30,6 +30,8 @@
 #include <stdexcept>
 #include <iostream>
 #include <memory>
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "UnreachableCallsOfFunction"
 using namespace std;
 
 #include <cstring>
@@ -52,22 +54,22 @@ namespace hgardenpi::protocol
             /**
              * @brief common payload
              */
-            [[maybe_unused]] uint8_t *payload = nullptr;
+            uint8_t *payload = nullptr;
 
             /**
              * @brief common payload ptr
              */
-            [[maybe_unused]] uint8_t *payloadPtr = nullptr;
+            uint8_t *payloadPtr = nullptr;
 
             /**
              * @brief common payload length
              */
-            [[maybe_unused]] size_t length = 0;
+            size_t length = 0;
 
             /**
              * @brief flag of Head packages
              */
-            [[maybe_unused]]  uint8_t flags = NOT_SET;
+            uint8_t flags = NOT_SET;
         };
 
 
@@ -371,3 +373,5 @@ vector<Head::Ptr> encode(Package *package, Flags additionalFags)
 
     }
 }
+
+#pragma clang diagnostic pop

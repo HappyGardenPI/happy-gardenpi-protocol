@@ -46,7 +46,7 @@ namespace hgardenpi::protocol
             /**
              * @brief data payload
              */
-            [[maybe_unused]] string certificate;
+            string certificate;
         };
 #pragma pack(pop)
     }
