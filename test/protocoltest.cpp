@@ -27,7 +27,7 @@
 
 #include <gtest/gtest.h>
 
-#include <iostream>
+#include <fstream>
 #include <string>
 using namespace std;
 
@@ -92,29 +92,36 @@ TEST(ProtocolTest, encodeAGG)
 
 TEST(ProtocolTest, encodeCRT)
 {
+
+    string ctrExample = "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQB/nAmOjTmezNUDKYvEeIRf2YnwM9/uUG1d0BYsc8/tRtx+RGi7N2lUbp728MXGwdnL9od4cItzky/zVdLZE2cycOa18xBK9cOWmcKS0A8FYBxEQWJ/q9YVUgZbFKfYGaGQxsER+A0w/fX8ALuk78ktP31K69LcQgxIsl7rNzxsoOQKJ/CIxOGMMxczYTiEoLvQhapFQMs3FL96didKr/QbrfB1WT6s3838SEaXfgZvLef1YB2xmfhbT9OXFE3FXvh2UPBfN+ffE7iiayQf/2XR+8j4N4bW30DiPtOQLGUrH1y5X/rpNZNlWW2+jGIxqZtgWg7lTy3mXy5x836Sj/6L";
+
     auto crt1 = new Certificate;
-    crt1->certificate = "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQB/nAmOjTmezNUDKYvEeIRf2YnwM9/uUG1d0BYsc8/tRtx+RGi7N2lUbp728MXGwdnL9od4cItzky/zVdLZE2cycOa18xBK9cOWmcKS0A8FYBxEQWJ/q9YVUgZbFKfYGaGQxsER+A0w/fX8ALuk78ktP31K69LcQgxIsl7rNzxsoOQKJ/CIxOGMMxczYTiEoLvQhapFQMs3FL96didKr/QbrfB1WT6s3838SEaXfgZvLef1YB2xmfhbT9OXFE3FXvh2UPBfN+ffE7iiayQf/2XR+8j4N4bW30DiPtOQLGUrH1y5X/rpNZNlWW2+jGIxqZtgWg7lTy3mXy5x836Sj/6L";
+    crt1->certificate = ctrExample;
 
     auto encode1 = encode(crt1);
-    EXPECT_EQ(encode1.size(), 2);
+    EXPECT_EQ(encode1.size(), 3);
     EXPECT_EQ(encode1[0]->flags, CRT | PRT);
     EXPECT_EQ(encode1[1]->flags, CRT | PRT);
+    EXPECT_EQ(encode1[2]->flags, FIN);
 
-    string partial1 = reinterpret_cast<char *>(encode1[0]->payload);
-    string partial2 = reinterpret_cast<char *>(encode1[1]->payload);
-    EXPECT_EQ(crt1->certificate, partial1 + partial2);
+    stringstream ss1;
+    ss1 << reinterpret_cast<char *>(encode1[0]->payload);
+    ss1 << reinterpret_cast<char *>(encode1[1]->payload);
+    EXPECT_EQ(ctrExample, ss1.str());
 
     auto crt2 = new Certificate;
-    crt2->certificate = "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQB/nAmOjTmezNUDKYvEeIRf2YnwM9/uUG1d0BYsc8/tRtx+RGi7N2lUbp728MXGwdnL9od4cItzky/zVdLZE2cycOa18xBK9cOWmcKS0A8FYBxEQWJ/q9YVUgZbFKfYGaGQxsER+A0w/fX8ALuk78ktP31K69LcQgxIsl7rNzxsoOQKJ/CIxOGMMxczYTiEoLvQhapFQMs3FL96didKr/QbrfB1WT6s3838SEaXfgZvLef1YB2xmfhbT9OXFE3FXvh2UPBfN+ffE7iiayQf/2XR+8j4N4bW30DiPtOQLGUrH1y5X/rpNZNlWW2+jGIxqZtgWg7lTy3mXy5x836Sj/6L";
+    crt2->certificate = ctrExample;
 
     auto encode2 = encode(crt2, ACK);
-    EXPECT_EQ(encode2.size(), 2);
+    EXPECT_EQ(encode2.size(), 3);
     EXPECT_EQ(encode2[0]->flags, CRT | PRT | ACK);
     EXPECT_EQ(encode2[1]->flags, CRT | PRT | ACK);
+    EXPECT_EQ(encode2[2]->flags, FIN | ACK);
 
-    string partial3 = reinterpret_cast<char *>(encode2[0]->payload);
-    string partial4 = reinterpret_cast<char *>(encode2[1]->payload);
-    EXPECT_EQ(crt2->certificate, partial4 + partial3);
+    stringstream ss2;
+    ss2 << reinterpret_cast<char *>(encode2[0]->payload);
+    ss2 << reinterpret_cast<char *>(encode2[1]->payload);
+    EXPECT_EQ(ctrExample, ss2.str());
 }
 
 TEST(ProtocolTest, encodeFIN)

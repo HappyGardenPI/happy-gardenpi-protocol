@@ -344,6 +344,25 @@ vector<Head::Ptr> encode(Package *package, Flags additionalFags)
                 encodeFlag(ret, dataLocal, t);
             }
 
+            if (ret.size() > 1 && !(ret.back()->flags & FIN))
+            {
+                auto fin = new Finish;
+
+                uint8_t flags = NOT_SET;
+                if (data.flags & ACK)
+                {
+                    flags |= ACK;
+                }
+
+                auto &&enc = encode(fin, static_cast<Flags>(flags));
+
+                if (!enc.empty())
+                {
+                    ret.push_back(enc[0]);
+                }
+
+            }
+
             return ret;
         }
 
