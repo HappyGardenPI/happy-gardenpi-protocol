@@ -28,6 +28,7 @@
 #pragma once
 
 #include <cstdlib>
+#include <cstdint>
 
 namespace hgardenpi::protocol
 {

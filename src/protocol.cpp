@@ -30,8 +30,9 @@
 #include <stdexcept>
 #include <iostream>
 #include <memory>
-
 using namespace std;
+
+#include <cstring>
 
 #include <hgardenpi-protocol/3thparts/CRC.h>
 
