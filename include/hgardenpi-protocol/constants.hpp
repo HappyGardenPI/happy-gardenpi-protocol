@@ -68,7 +68,7 @@ namespace hgardenpi::protocol
              */
             FIN = 0x10,
             /**
-             * @brief End package, empty package for end communication
+             * @brief Error package, empty package for communicate an error
              * @note this flag can contain only one flag/package
              */
             ERR = 0x03,
