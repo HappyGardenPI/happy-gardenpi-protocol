@@ -21,6 +21,7 @@ add_library(hgardenpi_protocol
         include/hgardenpi-protocol/3thparts/CRC.h
         include/hgardenpi-protocol/packages/aggregation.hpp
         include/hgardenpi-protocol/packages/certificate.hpp
+        include/hgardenpi-protocol/packages/error.hpp
         include/hgardenpi-protocol/packages/finish.hpp
         include/hgardenpi-protocol/packages/package.hpp
         include/hgardenpi-protocol/packages/station.hpp
