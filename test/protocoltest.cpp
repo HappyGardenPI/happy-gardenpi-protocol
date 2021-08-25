@@ -222,7 +222,7 @@ TEST(ProtocolTest, encodeSYN)
 
     auto syn2 = new Synchro;
     syn2->serial = new char[5];
-    strncpy(syn1->serial, "test2", 5);
+    strncpy(syn2->serial, "test2", 5);
 
     auto encode2 = encode(syn2, ACK);
     EXPECT_EQ(encode2.size(), 1);
