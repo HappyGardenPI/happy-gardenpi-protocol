@@ -67,6 +67,11 @@ namespace hgardenpi::protocol
              * @note this flag can contain only one flag/package
              */
             FIN = 0x10,
+            /**
+             * @brief Error package, empty package for communicate an error
+             * @note this flag can contain only one flag/package
+             */
+            ERR = 0x03,
 
             //flags
             /**

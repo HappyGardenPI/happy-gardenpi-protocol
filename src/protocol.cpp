@@ -30,6 +30,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <memory>
+
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "UnreachableCallsOfFunction"
 using namespace std;
@@ -43,6 +44,7 @@ using namespace std;
 #include <hgardenpi-protocol/packages/finish.hpp>
 #include <hgardenpi-protocol/packages/station.hpp>
 #include <hgardenpi-protocol/packages/synchro.hpp>
+#include <hgardenpi-protocol/packages/error.hpp>
 
 namespace hgardenpi::protocol
 {
@@ -146,7 +148,7 @@ namespace hgardenpi::protocol
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wshadow"
 
-vector<Head::Ptr> encode(Package *package, Flags additionalFags)
+        vector<Head::Ptr> encode(Package *package, Flags additionalFags)
         {
             //check if package is null
             if (package == nullptr)
@@ -164,7 +166,7 @@ vector<Head::Ptr> encode(Package *package, Flags additionalFags)
                 data.length = sizeof(Aggregation);
 
                 //alloc memory
-                data.payload = new uint8_t [data.length];
+                data.payload = new uint8_t[data.length];
 
                 //copy structure to payload
                 memcpy(reinterpret_cast<void *>(data.payload), reinterpret_cast<const void *>(ptr), data.length);
@@ -174,7 +176,7 @@ vector<Head::Ptr> encode(Package *package, Flags additionalFags)
 
                 ret = move(encodeFlag(data, ptr));
 
-                delete [] data.payload;
+                delete[] data.payload;
             }
             else if (auto ptr = dynamic_cast<Certificate *>(package); ptr) //is Flags::CRT package
             {
@@ -182,10 +184,11 @@ vector<Head::Ptr> encode(Package *package, Flags additionalFags)
                 data.length = ptr->certificate.size();
 
                 //alloc memory
-                data.payload = new uint8_t [data.length];
+                data.payload = new uint8_t[data.length];
 
                 //copy certificate field to payload
-                memcpy(reinterpret_cast<void *>(data.payload),  reinterpret_cast<uint8_t *>(&ptr->certificate[0]), data.length);
+                memcpy(reinterpret_cast<void *>(data.payload), reinterpret_cast<uint8_t *>(&ptr->certificate[0]),
+                       data.length);
 
                 //update flags
                 data.flags = CRT | additionalFags;
@@ -210,7 +213,7 @@ vector<Head::Ptr> encode(Package *package, Flags additionalFags)
                 data.length = sizeof(Station);
 
                 //alloc memory
-                data.payload = new uint8_t [data.length];
+                data.payload = new uint8_t[data.length];
 
                 //copy structure to payload
                 memcpy(reinterpret_cast<void *>(data.payload), reinterpret_cast<const void *>(ptr), data.length);
@@ -224,6 +227,25 @@ vector<Head::Ptr> encode(Package *package, Flags additionalFags)
                 ret = move(encodeFlag(data, ptr));
 
                 delete data.payload;
+            }
+            else if (auto ptr = dynamic_cast<Error *>(package); ptr) //is Flags::ERR package
+            {
+                //update length
+                data.length = ptr->msg.size();
+
+                //alloc memory
+                data.payload = new uint8_t[data.length];
+
+                //copy certificate field to payload
+                memcpy(reinterpret_cast<void *>(data.payload), reinterpret_cast<uint8_t *>(&ptr->msg[0]),
+                       data.length);
+
+                //update flags
+                data.flags = ERR | additionalFags;
+
+                ret = move(encodeFlag(data, ptr));
+
+                delete[] data.payload;
             }
             else if (auto ptr = dynamic_cast<Synchro *>(package); ptr) //is Flags::SYN package
             {
@@ -254,8 +276,9 @@ vector<Head::Ptr> encode(Package *package, Flags additionalFags)
             for (auto &&it : ret)
             {
                 //calculate size of crc16 and alloc it
-                size_t dataLessCrc16Length = sizeof(uint8_t) + sizeof(it->id) + sizeof(it->length) + (sizeof (uint8_t) * it->length);
-                const uint8_t * crc16 = new (nothrow) uint8_t[dataLessCrc16Length];
+                size_t dataLessCrc16Length =
+                        sizeof(uint8_t) + sizeof(it->id) + sizeof(it->length) + (sizeof(uint8_t) * it->length);
+                const uint8_t *crc16 = new(nothrow) uint8_t[dataLessCrc16Length];
 
                 //calculate crc16
                 memcpy((void *) crc16, it.get(), dataLessCrc16Length);
