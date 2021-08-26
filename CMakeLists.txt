@@ -35,7 +35,6 @@ add_library(hgardenpi_protocol
 target_include_directories (hgardenpi_protocol PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 add_executable(hgardenpi_protocol_test
-        test/test.cpp
         test/protocoltest.cpp
         )
 
