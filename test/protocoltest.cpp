@@ -229,3 +229,22 @@ TEST(ProtocolTest, encodeSYN)
     EXPECT_EQ(encode2.begin()->get()->flags, SYN | ACK);
     EXPECT_TRUE(string(reinterpret_cast<char *>(encode2.begin()->get()->payload)) == "test2");
 }
+
+TEST(ProtocolTest, encodeDecodeSYN)
+{
+    auto syn1 = new Synchro;
+    syn1->serial = new char[5];
+    strncpy(syn1->serial, "test1", 5);
+
+    auto encode1 = encode(syn1);
+    EXPECT_EQ(encode1.size(), 1);
+    EXPECT_EQ(encode1.begin()->get()->flags, SYN);
+
+    auto synEnc = encode1.begin()->get();
+    EXPECT_TRUE(string(reinterpret_cast<char *>(synEnc->payload)) == "test1");
+
+    auto &&head = decode(reinterpret_cast<const uint8_t *>(synEnc));
+
+    EXPECT_TRUE(string(reinterpret_cast<char *>(synEnc->payload)) == string(reinterpret_cast<char *>(head->payload)));
+
+}
