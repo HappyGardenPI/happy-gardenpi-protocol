@@ -26,9 +26,11 @@ add_library(hgardenpi_protocol
         include/hgardenpi-protocol/packages/package.hpp
         include/hgardenpi-protocol/packages/station.hpp
         include/hgardenpi-protocol/packages/synchro.hpp
+        include/hgardenpi-protocol/utilities/stringutils.hpp
         include/hgardenpi-protocol/constants.hpp
         include/hgardenpi-protocol/head.hpp
         include/hgardenpi-protocol/protocol.hpp
+        src/utilities/stringutils.cpp
         src/protocol.cpp
         )
 
