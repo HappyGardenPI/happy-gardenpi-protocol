@@ -66,7 +66,7 @@ namespace hgardenpi::protocol
             /**
              * @brief common payload length
              */
-            size_t length = 0;
+            size_t payloadLength = 0;
 
             /**
              * @brief flag of Head packages
@@ -116,11 +116,22 @@ namespace hgardenpi::protocol
                 throw runtime_error("no memory for head");
             }
 
+            if (ret->version > 1)
+            {
+                throw runtime_error("version of range");
+            }
+
             //check max linit of value
             if (ret->flags > 0xE0)
             {
                 throw runtime_error("head flags out of range or more packages set");
             }
+
+            //alloc heap
+            ret->payload = new uint8_t[ret->length];
+
+            //set payload to 0
+            memset(ret->payload, 0, ret->length);
 
             //copy payload from data
             memcpy(ret->payload, &data[2], ret->length);
@@ -163,13 +174,13 @@ namespace hgardenpi::protocol
             if (auto ptr = dynamic_cast<Aggregation *>(package); ptr) //is Flags::AGG package
             {
                 //set length of package
-                data.length = sizeof(Aggregation);
+                data.payloadLength = sizeof(Aggregation);
 
                 //alloc memory
-                data.payload = new uint8_t[data.length];
+                data.payload = new uint8_t[data.payloadLength];
 
                 //copy structure to payload
-                memcpy(reinterpret_cast<void *>(data.payload), reinterpret_cast<const void *>(ptr), data.length);
+                memcpy(reinterpret_cast<void *>(data.payload), reinterpret_cast<const void *>(ptr), data.payloadLength);
 
                 //update flags
                 data.flags = AGG | additionalFags;
@@ -181,14 +192,14 @@ namespace hgardenpi::protocol
             else if (auto ptr = dynamic_cast<Certificate *>(package); ptr) //is Flags::CRT package
             {
                 //update length
-                data.length = ptr->certificate.size();
+                data.payloadLength = ptr->certificate.size();
 
                 //alloc memory
-                data.payload = new uint8_t[data.length];
+                data.payload = new uint8_t[data.payloadLength];
 
                 //copy certificate field to payload
                 memcpy(reinterpret_cast<void *>(data.payload), reinterpret_cast<uint8_t *>(&ptr->certificate[0]),
-                       data.length);
+                       data.payloadLength);
 
                 //update flags
                 data.flags = CRT | additionalFags;
@@ -210,13 +221,13 @@ namespace hgardenpi::protocol
             else if (auto ptr = dynamic_cast<Station *>(package); ptr) //is Flags::STA package
             {
                 //set length of package
-                data.length = sizeof(Station);
+                data.payloadLength = sizeof(Station);
 
                 //alloc memory
-                data.payload = new uint8_t[data.length];
+                data.payload = new uint8_t[data.payloadLength];
 
                 //copy structure to payload
-                memcpy(reinterpret_cast<void *>(data.payload), reinterpret_cast<const void *>(ptr), data.length);
+                memcpy(reinterpret_cast<void *>(data.payload), reinterpret_cast<const void *>(ptr), data.payloadLength);
 
                 //create new head instance
                 auto &&head = newHead();
@@ -231,14 +242,14 @@ namespace hgardenpi::protocol
             else if (auto ptr = dynamic_cast<Error *>(package); ptr) //is Flags::ERR package
             {
                 //update length
-                data.length = ptr->msg.size();
+                data.payloadLength = ptr->msg.size();
 
                 //alloc memory
-                data.payload = new uint8_t[data.length];
+                data.payload = new uint8_t[data.payloadLength];
 
                 //copy certificate field to payload
                 memcpy(reinterpret_cast<void *>(data.payload), reinterpret_cast<uint8_t *>(&ptr->msg[0]),
-                       data.length);
+                       data.payloadLength);
 
                 //update flags
                 data.flags = ERR | additionalFags;
@@ -281,7 +292,7 @@ namespace hgardenpi::protocol
                 const uint8_t *crc16 = new(nothrow) uint8_t[dataLessCrc16Length];
 
                 //calculate crc16
-                memcpy((void *) crc16, it.get(), dataLessCrc16Length);
+                memcpy((void *) crc16, reinterpret_cast<const void *>(it.get()), dataLessCrc16Length);
                 it->crc16 = CRC::Calculate(crc16, dataLessCrc16Length, CRC::CRC_16_XMODEM());
                 delete[] crc16;
             }
@@ -307,23 +318,26 @@ namespace hgardenpi::protocol
                 throw runtime_error("no memory for head");
             }
 
-            //set payload to 0
-            memset(ret->payload, 0, HEAD_MAX_PAYLOAD_SIZE);
+            //alloc heap
+            ret->payload = new uint8_t[ret->length];
 
             return ret;
         }
 
         static Head::Ptr newHead(PrivateData &data)
         {
-            if (data.length > HEAD_MAX_PAYLOAD_SIZE)
+            if (data.payloadLength > HEAD_MAX_PAYLOAD_SIZE)
             {
                 throw runtime_error("payload length exceed");
             }
 
             Head::Ptr head = newHead();
-            head->length = data.length;
+            head->length = data.payloadLength;
             head->flags = data.flags;
-            memcpy(head->payload, data.payloadPtr, data.length);
+
+            //alloc heap
+            head->payload = new uint8_t[data.payloadLength];
+            memcpy(head->payload, data.payloadPtr, data.payloadLength);
 
             return head;
         }
@@ -332,7 +346,7 @@ namespace hgardenpi::protocol
         [[maybe_unused]] static vector<Head::Ptr> encodeFlag(vector<Head::Ptr> &ret, PrivateData &data, const T *t)
         {
             //verify length dimension
-            if (data.length < HEAD_MAX_PAYLOAD_SIZE)
+            if (data.payloadLength < HEAD_MAX_PAYLOAD_SIZE)
             {
                 //move pointer to filled payload if it's first head, il ret > 0 it means we are in recursion loop
                 if (ret.empty())
@@ -344,7 +358,7 @@ namespace hgardenpi::protocol
                 //create head
                 ret.push_back(move(newHead(data)));
             }
-            else if (data.length > 0)
+            else if (data.payloadLength > 0)
             {
                 //check how many heads already build
                 if (ret.size() >= HEAD_MAX_PARTIAL)
@@ -356,7 +370,7 @@ namespace hgardenpi::protocol
                 PrivateData dataLocal;
                 dataLocal.payload = data.payload;
                 dataLocal.payloadPtr = dataLocal.payload;
-                dataLocal.length = HEAD_MAX_PAYLOAD_SIZE;
+                dataLocal.payloadLength = HEAD_MAX_PAYLOAD_SIZE;
                 dataLocal.flags = data.flags | PRT;
 
                 //create head
@@ -364,7 +378,7 @@ namespace hgardenpi::protocol
 
                 //update data for next package
                 dataLocal.payloadPtr += HEAD_MAX_PAYLOAD_SIZE;
-                dataLocal.length = data.length - HEAD_MAX_PAYLOAD_SIZE;
+                dataLocal.payloadLength = data.payloadLength - HEAD_MAX_PAYLOAD_SIZE;
 
                 //create one more head
                 encodeFlag(ret, dataLocal, t);
@@ -390,6 +404,32 @@ namespace hgardenpi::protocol
             }
 
             return ret;
+        }
+
+        tuple<uint8_t *, size_t> fromHeadToBuffer(const Head::Ptr &head)
+        {
+            if (!head.get())
+            {
+                throw runtime_error("head nullptr");
+            }
+
+            auto ret = new uint8_t [5 + head->length];
+
+            ret[0] = (head->version << 0x07) | head->flags;
+            ret[1] = head->id;
+            ret[2] = head->length;
+
+            uint8_t *ptrPayload = head->payload;
+            for (uint8_t i = 0; i < head->length; i++)
+            {
+                ret[3 + i] = *ptrPayload;
+                ptrPayload++;
+            }
+
+            ret[3 + head->length] = (head->crc16 & 0x00FF) >> 0x08;
+            ret[4 + head->length] = head->crc16 & 0xFF00;
+
+            return {ret, 5 + head->length};
         }
 
 #pragma clang diagnostic pop

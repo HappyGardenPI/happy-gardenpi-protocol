@@ -41,9 +41,18 @@ namespace hgardenpi::protocol
         /**
          * Head of data
          */
-        struct Head
+        struct Head final
         {
             typedef shared_ptr<Head> Ptr;
+
+            inline ~Head()
+            {
+                if (payload)
+                {
+                    delete[] payload;
+                    payload = nullptr;
+                }
+            }
 
             /**
              * @brief Protocol version
@@ -64,7 +73,7 @@ namespace hgardenpi::protocol
             /**
              * @brief Payload data
              */
-            uint8_t payload[HEAD_MAX_PAYLOAD_SIZE]{};
+            uint8_t *payload = nullptr;
             /**
              * @brief CRC16 XMODEM calculate with version + flags + id + length + payload
              */

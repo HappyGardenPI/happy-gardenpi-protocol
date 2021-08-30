@@ -38,6 +38,7 @@ using namespace std;
 #include <hgardenpi-protocol/packages/station.hpp>
 #include <hgardenpi-protocol/packages/synchro.hpp>
 #include <hgardenpi-protocol/packages/error.hpp>
+#include <hgardenpi-protocol/utilities/stringutils.hpp>
 using namespace hgardenpi::protocol;
 
 
@@ -239,6 +240,10 @@ TEST(ProtocolTest, encodeDecodeSYN)
     auto encode1 = encode(syn1);
     EXPECT_EQ(encode1.size(), 1);
     EXPECT_EQ(encode1.begin()->get()->flags, SYN);
+
+    auto &&[data, size] = fromHeadToBuffer(encode1[0]);
+
+    cout << stringHexToString(data, size) << endl;
 
     auto synEnc = encode1.begin()->get();
     EXPECT_TRUE(string(reinterpret_cast<char *>(synEnc->payload)) == "test1");

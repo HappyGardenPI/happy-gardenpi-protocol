@@ -31,6 +31,7 @@
 #pragma once
 
 #include <vector>
+#include <tuple>
 
 #include <hgardenpi-protocol/constants.hpp>
 #include <hgardenpi-protocol/head.hpp>
@@ -51,7 +52,7 @@ namespace hgardenpi::protocol
          * @return Head instance
          * @throw runtime_exception if something goes wrong
          */
-         Head::Ptr decode(const uint8_t *data);
+        [[maybe_unused]] Head::Ptr decode(const uint8_t *data);
 
          /**
           * Encode a buffer contain a Happy GardenPI Head
@@ -60,8 +61,26 @@ namespace hgardenpi::protocol
           * @return a vector of Head to send
           * @throw runtime_exception if something goes wrong
           */
-         vector<Head::Ptr> encode(Package * package, Flags additionalFags = NOT_SET);
+         [[maybe_unused]]  vector<Head::Ptr> encode(Package * package, Flags additionalFags = NOT_SET);
 
+         /**
+          * Convert a head::Ptr to buffer ready to send
+           * @param head head to send
+          * @return uint8_t allocated buffer ready to send, to deallocate
+          * @throw runtime_exception if something goes wrong
+          */
+         [[maybe_unused]] tuple<uint8_t *, size_t> fromHeadToBuffer(const Head::Ptr &head);
+
+        /**
+        * Convert a head::Ptr to buffer ready to send
+         * @param head head to send
+        * @return uint8_t allocated buffer ready to send, to deallocate
+        * @throw runtime_exception if something goes wrong
+        */
+        [[maybe_unused]] inline tuple<uint8_t *, size_t> fromHeadToBuffer(const Head::Ptr &&head)
+        {
+            return move(fromHeadToBuffer(head));
+        }
     }
 }
 
