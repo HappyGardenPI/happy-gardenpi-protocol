@@ -128,7 +128,11 @@ namespace hgardenpi::protocol
             }
 
             //alloc heap
-            ret->payload = new uint8_t[ret->length];
+            ret->payload = new(nothrow) uint8_t[ret->length];
+            if (!ret->payload)
+            {
+                throw runtime_error("no memory for head->payload");
+            }
 
             //set payload to 0
             memset(ret->payload, 0, ret->length);
@@ -142,6 +146,10 @@ namespace hgardenpi::protocol
             //calculate crc16 from data received
             const uint dataLessCrc16Length = ret->length + 3;
             const uint8_t *dataLessCrc16 = new(nothrow) uint8_t[dataLessCrc16Length];
+            if (!dataLessCrc16)
+            {
+                throw runtime_error("no memory for dataLessCrc16");
+            }
 
             memcpy((void *) dataLessCrc16, data, dataLessCrc16Length);
             uint16_t crc16Calc = CRC::Calculate(dataLessCrc16, dataLessCrc16Length, CRC::CRC_16_XMODEM());
@@ -177,7 +185,11 @@ namespace hgardenpi::protocol
                 data.payloadLength = sizeof(Aggregation);
 
                 //alloc memory
-                data.payload = new uint8_t[data.payloadLength];
+                data.payload = new(nothrow) uint8_t[data.payloadLength];
+                if (!data.payload)
+                {
+                    throw runtime_error("no memory for data.payload");
+                }
 
                 //copy structure to payload
                 memcpy(reinterpret_cast<void *>(data.payload), reinterpret_cast<const void *>(ptr), data.payloadLength);
@@ -195,7 +207,11 @@ namespace hgardenpi::protocol
                 data.payloadLength = ptr->certificate.size();
 
                 //alloc memory
-                data.payload = new uint8_t[data.payloadLength];
+                data.payload = new(nothrow) uint8_t[data.payloadLength];
+                if (!data.payload)
+                {
+                    throw runtime_error("no memory for data.payload");
+                }
 
                 //copy certificate field to payload
                 memcpy(reinterpret_cast<void *>(data.payload), reinterpret_cast<uint8_t *>(&ptr->certificate[0]),
@@ -224,7 +240,11 @@ namespace hgardenpi::protocol
                 data.payloadLength = sizeof(Station);
 
                 //alloc memory
-                data.payload = new uint8_t[data.payloadLength];
+                data.payload = new(nothrow) uint8_t[data.payloadLength];
+                if (!data.payload)
+                {
+                    throw runtime_error("no memory for data.payload");
+                }
 
                 //copy structure to payload
                 memcpy(reinterpret_cast<void *>(data.payload), reinterpret_cast<const void *>(ptr), data.payloadLength);
@@ -245,7 +265,11 @@ namespace hgardenpi::protocol
                 data.payloadLength = ptr->msg.size();
 
                 //alloc memory
-                data.payload = new uint8_t[data.payloadLength];
+                data.payload = new(nothrow) uint8_t[data.payloadLength];
+                if (!data.payload)
+                {
+                    throw runtime_error("no memory for data.payload");
+                }
 
                 //copy certificate field to payload
                 memcpy(reinterpret_cast<void *>(data.payload), reinterpret_cast<uint8_t *>(&ptr->msg[0]),
@@ -290,6 +314,10 @@ namespace hgardenpi::protocol
                 size_t dataLessCrc16Length =
                         sizeof(uint8_t) + sizeof(it->id) + sizeof(it->length) + (sizeof(uint8_t) * it->length);
                 const uint8_t *crc16 = new(nothrow) uint8_t[dataLessCrc16Length];
+                if (!crc16)
+                {
+                    throw runtime_error("no memory for crc16");
+                }
 
                 //calculate crc16
                 memcpy((void *) crc16, reinterpret_cast<const void *>(it.get()), dataLessCrc16Length);
@@ -319,7 +347,11 @@ namespace hgardenpi::protocol
             }
 
             //alloc heap
-            ret->payload = new uint8_t[ret->length];
+            ret->payload = new(nothrow) uint8_t[ret->length];
+            if (!ret->payload)
+            {
+                throw runtime_error("no memory for ret->payload");
+            }
 
             return ret;
         }
@@ -336,7 +368,12 @@ namespace hgardenpi::protocol
             head->flags = data.flags;
 
             //alloc heap
-            head->payload = new uint8_t[data.payloadLength];
+            head->payload = new(nothrow) uint8_t[data.payloadLength];
+            if (!head->payload)
+            {
+                throw runtime_error("no memory for head->payload");
+            }
+
             memcpy(head->payload, data.payloadPtr, data.payloadLength);
 
             return head;
@@ -386,7 +423,11 @@ namespace hgardenpi::protocol
 
             if (ret.size() > 1 && !(ret.back()->flags & FIN))
             {
-                auto fin = new Finish;
+                auto fin = new(nothrow) Finish;
+                if (!fin)
+                {
+                    throw runtime_error("no memory for fin");
+                }
 
                 uint8_t flags = NOT_SET;
                 if (data.flags & ACK)
@@ -413,7 +454,11 @@ namespace hgardenpi::protocol
                 throw runtime_error("head nullptr");
             }
 
-            auto ret = new uint8_t [5 + head->length];
+            auto ret = new(nothrow) uint8_t [5 + head->length];
+            if (!ret)
+            {
+                throw runtime_error("no memory for ret");
+            }
 
             ret[0] = (head->version << 0x07) | head->flags;
             ret[1] = head->id;
