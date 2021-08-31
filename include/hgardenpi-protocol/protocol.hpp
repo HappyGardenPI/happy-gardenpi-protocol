@@ -58,29 +58,10 @@ namespace hgardenpi::protocol
           * Encode a buffer contain a Happy GardenPI Head
           * @param package package to send, it will be deleted automatically
           * @param additionalFags additional flags to decorate package
-          * @return a vector of Head to send
+          * @return a vector of buffer to send
           * @throw runtime_exception if something goes wrong
           */
-         [[maybe_unused]]  vector<Head::Ptr> encode(Package * package, Flags additionalFags = NOT_SET);
-
-         /**
-          * Convert a head::Ptr to buffer ready to send
-           * @param head head to send
-          * @return uint8_t allocated buffer ready to send, to deallocate
-          * @throw runtime_exception if something goes wrong
-          */
-         [[maybe_unused]] tuple<uint8_t *, size_t> fromHeadToBuffer(const Head::Ptr &head);
-
-        /**
-        * Convert a head::Ptr to buffer ready to send
-         * @param head head to send
-        * @return uint8_t allocated buffer ready to send, to deallocate
-        * @throw runtime_exception if something goes wrong
-        */
-        [[maybe_unused]] inline tuple<uint8_t *, size_t> fromHeadToBuffer(const Head::Ptr &&head)
-        {
-            return move(fromHeadToBuffer(head));
-        }
+         [[maybe_unused]]  vector<tuple<uint8_t *, size_t>> encode(Package * package, Flags additionalFags = NOT_SET);
     }
 }
 

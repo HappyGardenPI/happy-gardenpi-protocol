@@ -51,7 +51,7 @@ namespace hgardenpi::protocol
     inline namespace v1
     {
 
-        struct PrivateData
+        struct Data
         {
             /**
              * @brief common payload
@@ -84,22 +84,49 @@ namespace hgardenpi::protocol
         /**
          * Add data to base Head whit SYN information
          * @param ret ???
-         * @param data ???
+         * @param data to encode
          * @param t pointer to structure
          */
         template<typename T>
-        static vector<Head::Ptr> encodeFlag(vector<Head::Ptr> &ret, PrivateData &data, const T *t);
+        static vector<Head::Ptr> encodeData(vector<Head::Ptr> &ret, Data &data, const T *t);
 
         /**
          * Add data to base Head whit SYN information
-         * @param heads or rather a vector Head::Ptr
+         * @param data to encode
          * @param t pointer to structure
          */
         template<typename T>
-        static inline vector<Head::Ptr> encodeFlag(PrivateData &data, const T *t)
+        static inline vector<Head::Ptr> encodeData(Data &data, const T *t)
         {
             vector<Head::Ptr> ret;
-            return encodeFlag(ret, data, t);
+            return encodeData(ret, data, t);
+        }
+
+        /**
+         * Encode package and split it in more Head if needed
+         * @param package package to send, it will be deleted automatically
+         * @param additionalFags additional flags to decorate package
+         * @return a vector of Head to send
+         * @throw runtime_exception if something goes wrong
+         */
+        vector<Head::Ptr> recursiveEncode(Package *package, Flags additionalFags);
+
+        /**
+          * Convert a head::Ptr to buffer ready to send
+           * @param head head to send
+          * @return uint8_t allocated buffer ready to send, to deallocate
+          * @throw runtime_exception if something goes wrong
+          */
+         static tuple<uint8_t *, size_t> fromHeadToBuffer(const Head::Ptr &head);
+
+         vector<tuple<uint8_t *, size_t>> encode(Package * package, Flags additionalFags)
+        {
+            vector<tuple<uint8_t *, size_t>> ret;
+            for(auto &&it : recursiveEncode(package, additionalFags))
+            {
+                ret.push_back(fromHeadToBuffer(it));
+            }
+            return ret;
         }
 
         Head::Ptr decode(const uint8_t *data)
@@ -167,7 +194,7 @@ namespace hgardenpi::protocol
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wshadow"
 
-        vector<Head::Ptr> encode(Package *package, Flags additionalFags)
+        vector<Head::Ptr> recursiveEncode(Package *package, Flags additionalFags)
         {
             //check if package is null
             if (package == nullptr)
@@ -176,7 +203,7 @@ namespace hgardenpi::protocol
             }
 
             vector<Head::Ptr> ret;
-            PrivateData data;
+            Data data;
 
             //check which child package was packaged
             if (auto ptr = dynamic_cast<Aggregation *>(package); ptr) //is Flags::AGG package
@@ -197,7 +224,7 @@ namespace hgardenpi::protocol
                 //update flags
                 data.flags = AGG | additionalFags;
 
-                ret = move(encodeFlag(data, ptr));
+                ret = move(encodeData(data, ptr));
 
                 delete[] data.payload;
             }
@@ -220,7 +247,7 @@ namespace hgardenpi::protocol
                 //update flags
                 data.flags = CRT | additionalFags;
 
-                ret = move(encodeFlag(data, ptr));
+                ret = move(encodeData(data, ptr));
 
                 delete[] data.payload;
             }
@@ -255,7 +282,7 @@ namespace hgardenpi::protocol
                 //update flags
                 data.flags = STA | additionalFags;
 
-                ret = move(encodeFlag(data, ptr));
+                ret = move(encodeData(data, ptr));
 
                 delete data.payload;
             }
@@ -278,7 +305,7 @@ namespace hgardenpi::protocol
                 //update flags
                 data.flags = ERR | additionalFags;
 
-                ret = move(encodeFlag(data, ptr));
+                ret = move(encodeData(data, ptr));
 
                 delete[] data.payload;
             }
@@ -356,7 +383,7 @@ namespace hgardenpi::protocol
             return ret;
         }
 
-        static Head::Ptr newHead(PrivateData &data)
+        static Head::Ptr newHead(Data &data)
         {
             if (data.payloadLength > HEAD_MAX_PAYLOAD_SIZE)
             {
@@ -380,8 +407,10 @@ namespace hgardenpi::protocol
         }
 
         template<typename T>
-        [[maybe_unused]] static vector<Head::Ptr> encodeFlag(vector<Head::Ptr> &ret, PrivateData &data, const T *t)
+        [[maybe_unused]] static vector<Head::Ptr> encodeData(vector<Head::Ptr> &ret, Data &data, const T *t)
         {
+            static_assert(is_base_of<Package, T>::value, "T is non subclass of Package");
+
             //verify length dimension
             if (data.payloadLength < HEAD_MAX_PAYLOAD_SIZE)
             {
@@ -404,7 +433,7 @@ namespace hgardenpi::protocol
                 }
 
                 //create data for elaborate in newHead
-                PrivateData dataLocal;
+                Data dataLocal;
                 dataLocal.payload = data.payload;
                 dataLocal.payloadPtr = dataLocal.payload;
                 dataLocal.payloadLength = HEAD_MAX_PAYLOAD_SIZE;
@@ -418,7 +447,7 @@ namespace hgardenpi::protocol
                 dataLocal.payloadLength = data.payloadLength - HEAD_MAX_PAYLOAD_SIZE;
 
                 //create one more head
-                encodeFlag(ret, dataLocal, t);
+                encodeData(ret, dataLocal, t);
             }
 
             if (ret.size() > 1 && !(ret.back()->flags & FIN))
@@ -435,7 +464,7 @@ namespace hgardenpi::protocol
                     flags |= ACK;
                 }
 
-                auto &&enc = encode(fin, static_cast<Flags>(flags));
+                auto &&enc = recursiveEncode(fin, static_cast<Flags>(flags));
 
                 if (!enc.empty())
                 {
