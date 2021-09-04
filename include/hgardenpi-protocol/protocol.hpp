@@ -42,26 +42,27 @@ namespace hgardenpi::protocol
     inline namespace v1
     {
         using std::vector;
-        using std::tuple;
 
         struct Package;
 
+        typedef std::tuple<uint8_t *, size_t> Buffer;
+
         /**
-         * Decode a buffer contain a Happy GardenPI Head
-         * @param data buffer
-         * @return Head instance
+         * Encode a buffer contain a Happy GardenPI Head
+         * @param package package to send, it will be deleted automatically
+         * @param additionalFags additional flags to decorate package
+         * @return a vector of buffer to send
          * @throw runtime_exception if something goes wrong
          */
-        [[maybe_unused]] Head::Ptr decode(const uint8_t *data);
+        [[maybe_unused]]  vector<Buffer> encode(Package *package, Flags additionalFags = NOT_SET);
 
-         /**
-          * Encode a buffer contain a Happy GardenPI Head
-          * @param package package to send, it will be deleted automatically
-          * @param additionalFags additional flags to decorate package
-          * @return a vector of buffer to send
-          * @throw runtime_exception if something goes wrong
-          */
-         [[maybe_unused]]  vector<tuple<uint8_t *, size_t>> encode(Package * package, Flags additionalFags = NOT_SET);
+        /**
+        * Decode a buffer contain a Happy GardenPI Head
+        * @param data buffer
+        * @return Head instance
+        * @throw runtime_exception if something goes wrong
+        */
+        [[maybe_unused]] Head::Ptr decode(const uint8_t *data);
     }
 }
 
