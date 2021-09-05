@@ -6,6 +6,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_EXTENSIONS OFF)
 
+message(STATUS " start googletest download")
 include(FetchContent)
 FetchContent_Declare(
         googletest
@@ -18,7 +19,6 @@ FetchContent_MakeAvailable(googletest)
 configure_file(config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/include/hgardenpi-protocol/config.h)
 
 add_library(hgardenpi_protocol
-        include/hgardenpi-protocol/3thparts/CRC.h
         include/hgardenpi-protocol/packages/aggregation.hpp
         include/hgardenpi-protocol/packages/certificate.hpp
         include/hgardenpi-protocol/packages/error.hpp
@@ -30,11 +30,18 @@ add_library(hgardenpi_protocol
         include/hgardenpi-protocol/constants.hpp
         include/hgardenpi-protocol/head.hpp
         include/hgardenpi-protocol/protocol.hpp
+        src/3thparts/libcrc/crc8.c
+        src/3thparts/libcrc/crc16.c
+        src/3thparts/libcrc/crcccitt.c
+        src/3thparts/libcrc/crcdnp.c
+        src/3thparts/libcrc/crckrmit.c
+        src/3thparts/libcrc/crcsick.c
+        src/3thparts/libcrc/nmea-chk.c
         src/utilities/stringutils.cpp
         src/protocol.cpp
         )
 
-target_include_directories (hgardenpi_protocol PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories (hgardenpi_protocol PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include )
 
 add_executable(hgardenpi_protocol_test
         test/protocoltest.cpp)

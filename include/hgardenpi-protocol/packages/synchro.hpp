@@ -38,10 +38,10 @@ namespace hgardenpi::protocol
 
         using std::string;
 
-#pragma pack(push, n)
         /**
          * @brief Synchro package utilize for init communication, linked to Flags::SYN
          */
+#pragma pack(push, n)
         struct Synchro final : public Package
         {
             /**

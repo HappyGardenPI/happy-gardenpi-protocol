@@ -37,11 +37,12 @@ namespace hgardenpi::protocol
     {
         using std::string;
 
-#pragma pack(push, n)
+
         /**
          * @brief Package for finish communication, linked to Flags::FIN
          * @note not contain field
          */
+#pragma pack(push, n)
         struct Finish final : public Package {};
 #pragma pack(pop)
     }

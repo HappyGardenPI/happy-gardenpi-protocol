@@ -37,7 +37,7 @@ using namespace std;
 
 #include <cstring>
 
-#include <hgardenpi-protocol/3thparts/CRC.h>
+#include <hgardenpi-protocol/3thparts/libcrc/checksum.h>
 
 #include <hgardenpi-protocol/packages/aggregation.hpp>
 #include <hgardenpi-protocol/packages/certificate.hpp>
@@ -313,7 +313,7 @@ namespace hgardenpi::protocol
 
                 //calculate crc16
                 memcpy((void *) crc16, reinterpret_cast<const void *>(it.get()), dataLessCrc16Length);
-                it->crc16 = CRC::Calculate(crc16, dataLessCrc16Length, CRC::CRC_16_XMODEM());
+                it->crc16 = crc_16(crc16, dataLessCrc16Length);
                 delete[] crc16;
             }
 
@@ -496,7 +496,8 @@ namespace hgardenpi::protocol
             }
 
             memcpy((void *) dataLessCrc16, data, dataLessCrc16Length);
-            uint16_t crc16Calc = CRC::Calculate(dataLessCrc16, dataLessCrc16Length, CRC::CRC_16_XMODEM());
+            //uint16_t crc16Calc = CRC::Calculate(dataLessCrc16, dataLessCrc16Length, CRC::CRC_16_XMODEM());
+            uint16_t crc16Calc = crc_16(dataLessCrc16, dataLessCrc16Length);
             delete[] dataLessCrc16;
 
             //check crc16 send with that calculate

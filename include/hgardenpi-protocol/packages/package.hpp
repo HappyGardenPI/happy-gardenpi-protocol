@@ -32,10 +32,10 @@ namespace hgardenpi::protocol
     inline namespace v1
     {
 
-#pragma pack(push, n)
         /**
          * @brief base package class
          */
+#pragma pack(push, n)
         struct Package
         {
             virtual inline ~Package() = default;

@@ -26,7 +26,6 @@
 //
 
 #pragma once
-#include <string>
 
 #include <hgardenpi-protocol/packages/package.hpp>
 #include <hgardenpi-protocol/constants.hpp>
@@ -35,8 +34,6 @@ namespace hgardenpi::protocol
 {
     inline namespace v1
     {
-        using std::string;
-
 #pragma pack(push, n)
         /**
          * @brief Package for manage aggregation, linked to Flags::AGG
@@ -50,13 +47,12 @@ namespace hgardenpi::protocol
             /**
              * @brief brief description of aggregation
              */
-            string description;
+            char *description = nullptr;
             /**
              * @brief brief manual check if the aggregation start automatically or manually by follow fields
              */
             bool manual = true;
 
-#pragma pack(push, 2)
             /**
              * @brief scheduling data info
              */
@@ -81,16 +77,15 @@ namespace hgardenpi::protocol
              * @brief Instance of schedule data
              */
             schedule;
-#pragma pack(pop)
 
             /**
              * @brief start scheduling period if enhanced
              */
-            string start;
+            char *start = nullptr;
             /**
              * @brief end scheduling period if enhanced
              */
-            string end;
+            char *end = nullptr;
             /**
              * @brief If true execute sequentially the station otherwise execute all station at the same time
              * @note not implemented in this version, may be in next version
@@ -104,6 +99,25 @@ namespace hgardenpi::protocol
              * @brief status of station
              */
             Status status = Status::ACTIVE;
+
+            inline ~Aggregation() noexcept override
+            {
+                if (description)
+                {
+                    delete[] description;
+                    description = nullptr;
+                }
+                if (start)
+                {
+                    delete[] start;
+                    start = nullptr;
+                }
+                if (end)
+                {
+                    delete[] end;
+                    end = nullptr;
+                }
+            }
         };
 #pragma pack(pop)
     }

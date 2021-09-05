@@ -37,10 +37,10 @@ namespace hgardenpi::protocol
     {
         using std::string;
 
-#pragma pack(push, n)
         /**
          * @brief Package for manage error, linked to Flags::ERR
          */
+#pragma pack(push, n)
         struct Error final : public Package
         {
             /**

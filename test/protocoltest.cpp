@@ -60,7 +60,9 @@ TEST(ProtocolTest, decode)
 TEST(ProtocolTest, encodeAGG)
 {
     auto agg1 = new Aggregation;
-    agg1->description = "description";
+
+    agg1->description = new char[32];
+    //agg1->description = "description";
     agg1->schedule.minute = 30;
     agg1->schedule.hour = 13;
     agg1->schedule.days = 0b01111111;

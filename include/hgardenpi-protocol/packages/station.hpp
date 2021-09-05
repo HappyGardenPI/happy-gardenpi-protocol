@@ -39,10 +39,10 @@ namespace hgardenpi::protocol
 
         using std::string;
 
-#pragma pack(push, n)
         /**
          * @brief Package for manage aggregation, linked to Flags::STA
          */
+#pragma pack(push, n)
         struct Station final : public Package
         {
             /**

@@ -89,6 +89,7 @@ namespace hgardenpi::protocol
         /**
          * @brief Status of an element in the project
          */
+#pragma pack(push, n)
         enum class Status : uint8_t
         {
             /**
@@ -104,6 +105,7 @@ namespace hgardenpi::protocol
              */
             ERROR,
         };
+#pragma pack(pop)
 
         /**
          * @brief max payload size
