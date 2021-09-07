@@ -61,8 +61,11 @@ TEST(ProtocolTest, encodeAGG)
 {
     auto agg1 = new Aggregation;
 
-    agg1->description = new char[32];
-    //agg1->description = "description";
+
+    agg1->id = 23;
+    agg1->descriptionSize = strlen("descrizione");
+    agg1->description = new char [agg1->descriptionSize];
+    strncpy(agg1->description, "descrizione", agg1->descriptionSize);
     agg1->schedule.minute = 30;
     agg1->schedule.hour = 13;
     agg1->schedule.days = 0b01111111;

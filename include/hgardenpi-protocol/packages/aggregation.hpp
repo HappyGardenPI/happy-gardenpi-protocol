@@ -34,10 +34,11 @@ namespace hgardenpi::protocol
 {
     inline namespace v1
     {
-#pragma pack(push, n)
+
         /**
          * @brief Package for manage aggregation, linked to Flags::AGG
          */
+#pragma pack(push, n)
         struct Aggregation final : public Package
         {
             /**
@@ -45,11 +46,17 @@ namespace hgardenpi::protocol
              */
             uint id = 0;
             /**
-             * @brief brief description of aggregation
+             * @brief description of aggregation
              */
             char *description = nullptr;
+
             /**
-             * @brief brief manual check if the aggregation start automatically or manually by follow fields
+             * @brief length of description
+             */
+            uint8_t descriptionSize = 0;
+
+            /**
+             * @brief manual check if the aggregation start automatically or manually by follow fields
              */
             bool manual = true;
 
@@ -83,9 +90,17 @@ namespace hgardenpi::protocol
              */
             char *start = nullptr;
             /**
+             * @brief length of start
+             */
+            uint8_t startSize = 0;
+            /**
              * @brief end scheduling period if enhanced
              */
             char *end = nullptr;
+            /**
+             * @brief length of end
+             */
+            uint8_t endSize = 0;
             /**
              * @brief If true execute sequentially the station otherwise execute all station at the same time
              * @note not implemented in this version, may be in next version
@@ -118,6 +133,97 @@ namespace hgardenpi::protocol
                     end = nullptr;
                 }
             }
+
+            inline tuple<uint8_t *, size_t> serialize() const
+            {
+                uint8_t * buf = nullptr;
+                size_t size = 0;
+
+                size += sizeof(uint8_t);
+                if (description && descriptionSize > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
+                {
+                    size += static_cast<int>(numeric_limits<uint8_t>::max());
+                }
+                else
+                {
+                    size += descriptionSize;
+                }
+                size += sizeof(bool);
+                size += sizeof(schedule);
+                if (start && startSize > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
+                {
+                    size += static_cast<int>(numeric_limits<uint8_t>::max());
+                }
+                else
+                {
+                    size += startSize;
+                }
+                if (end && endSize > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
+                {
+                    size += static_cast<int>(numeric_limits<uint8_t>::max());
+                }
+                else
+                {
+                    size += endSize;
+                }
+                size += sizeof(bool);
+                size += sizeof(uint16_t);
+                size += sizeof(status);
+
+                buf = new (nothrow) uint8_t[size];
+                if (!buf)
+                {
+                    throw runtime_error("no memory for serialize");
+                }
+                memset(buf, 0, size);
+
+                size = 0;
+                memcpy(buf + size, &id, sizeof(uint8_t));
+                size += sizeof(uint8_t);
+                if (description && descriptionSize > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
+                {
+                    memcpy(buf + size, &description, static_cast<int>(numeric_limits<uint8_t>::max()));
+                    size += static_cast<int>(numeric_limits<uint8_t>::max());
+                }
+                else
+                {
+                    memcpy(buf + size, &description, descriptionSize);
+                    size += descriptionSize;
+                }
+                memcpy(buf + size, &manual, sizeof(bool));
+                size += sizeof(bool);
+                memcpy(buf + size, &schedule, sizeof(schedule));
+                size += sizeof(schedule);
+                if (start && startSize > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
+                {
+                    memcpy(buf + size, &start, static_cast<int>(numeric_limits<uint8_t>::max()));
+                    size += static_cast<int>(numeric_limits<uint8_t>::max());
+                }
+                else
+                {
+                    memcpy(buf + size, &start, startSize);
+                    size += startSize;
+                }
+                if (end && endSize > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
+                {
+                    memcpy(buf + size, &end, static_cast<int>(numeric_limits<uint8_t>::max()));
+                    size += static_cast<int>(numeric_limits<uint8_t>::max());
+                }
+                else
+                {
+                    memcpy(buf + size, &end, endSize);
+                    size += endSize;
+                }
+                memcpy(buf + size, &sequential, sizeof(bool));
+                size += sizeof(bool);
+                memcpy(buf + size, &weight, sizeof(uint16_t));
+                size += sizeof(uint16_t);
+                memcpy(buf + size, &status, sizeof(status));
+                size += sizeof(status);
+
+                return {buf, size};
+            }
+
         };
 #pragma pack(pop)
     }

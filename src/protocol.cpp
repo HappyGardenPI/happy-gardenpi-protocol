@@ -143,6 +143,7 @@ namespace hgardenpi::protocol
                 {
                     throw runtime_error("no memory for ret");
                 }
+                memset(buf, 0, 5 + head->length);
 
                 buf[0] = (head->version << 0x07) | head->flags;
                 buf[1] = head->id;
@@ -155,8 +156,8 @@ namespace hgardenpi::protocol
                     ptrPayload++;
                 }
 
-                buf[3 + head->length] = (head->crc16 & 0x00FF) >> 0x08;
-                buf[4 + head->length] = head->crc16 & 0xFF00;
+                buf[3 + head->length] = static_cast<uint8_t>((head->crc16 & 0x00FF));
+                buf[4 + head->length] = static_cast<uint8_t>((head->crc16 & 0xFF00) >> 0x08);
 
                 ret.emplace_back(buf, 5 + head->length);
             }
@@ -179,18 +180,41 @@ namespace hgardenpi::protocol
             //check which child package was packaged
             if (auto ptr = dynamic_cast<Aggregation *>(package); ptr) //is Flags::AGG package
             {
-                //set length of package
-                data.payloadLength = sizeof(Aggregation);
+
+                auto &&[buf, size] = ptr->serialize();
 
                 //alloc memory
-                data.payload = new(nothrow) uint8_t[data.payloadLength];
-                if (!data.payload)
-                {
-                    throw runtime_error("no memory for data.payload");
-                }
+                data.payload = buf;
+
+                //set length of package
+                data.payloadLength = static_cast<uint8_t>(size);
+
+                //memcpy(reinterpret_cast<void *>(data.payload), reinterpret_cast<const void *>(buf), data.payloadLength);
+
+                //set length of package
+//                data.payloadLength = sizeof(Aggregation);
+//                if (ptr->description)
+//                {
+//                    data.payloadLength += ptr->descriptionSize;
+//                }
+//                if (ptr->start)
+//                {
+//                    data.payloadLength += ptr->startSize;
+//                }
+//                if (ptr->end)
+//                {
+//                    data.payloadLength += ptr->endSize;
+//                }
+//
+//                //alloc memory
+//                data.payload = new(nothrow) uint8_t[data.payloadLength];
+//                if (!data.payload)
+//                {
+//                    throw runtime_error("no memory for data.payload");
+//                }
 
                 //copy structure to payload
-                memcpy(reinterpret_cast<void *>(data.payload), reinterpret_cast<const void *>(ptr), data.payloadLength);
+                //memcpy(reinterpret_cast<void *>(data.payload), reinterpret_cast<const void *>(ptr), data.payloadLength);
 
                 //update flags
                 data.flags = AGG | additionalFags;
