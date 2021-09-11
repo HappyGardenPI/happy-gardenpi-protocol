@@ -31,7 +31,7 @@
 #pragma once
 
 #include <vector>
-#include <tuple>
+#include <utility>
 
 #include <hgardenpi-protocol/constants.hpp>
 #include <hgardenpi-protocol/head.hpp>
@@ -45,7 +45,7 @@ namespace hgardenpi::protocol
 
         struct Package;
 
-        typedef std::tuple<uint8_t *, size_t> Buffer;
+        typedef std::pair<uint8_t *, size_t> Buffer;
 
         /**
          * Encode a buffer contain a Happy GardenPI Head

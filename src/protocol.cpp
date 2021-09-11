@@ -45,6 +45,7 @@ using namespace std;
 #include <hgardenpi-protocol/packages/station.hpp>
 #include <hgardenpi-protocol/packages/synchro.hpp>
 #include <hgardenpi-protocol/packages/error.hpp>
+#include <cmath>
 
 namespace hgardenpi::protocol
 {
@@ -73,7 +74,6 @@ namespace hgardenpi::protocol
              */
             uint8_t flags = NOT_SET;
         };
-
 
         /**
          * @brief initialize Head::Ptr
@@ -129,7 +129,7 @@ namespace hgardenpi::protocol
         //enter point
         vector<Buffer> encode(Package *package, Flags additionalFags)
         {
-            vector<tuple<uint8_t *, size_t>> ret;
+            vector<Buffer> ret;
             for (auto &&head: encodeStart(package, additionalFags))
             {
 
@@ -155,6 +155,10 @@ namespace hgardenpi::protocol
                     buf[3 + i] = *ptrPayload;
                     ptrPayload++;
                 }
+
+                //calculate size of crc16 and alloc it
+                size_t dataLessCrc16Length = sizeof(uint8_t) + sizeof(head->id) + sizeof(head->length) + (sizeof(uint8_t) * head->length);
+                head->crc16 = crc_16(buf, dataLessCrc16Length);
 
                 buf[3 + head->length] = static_cast<uint8_t>((head->crc16 & 0x00FF));
                 buf[4 + head->length] = static_cast<uint8_t>((head->crc16 & 0xFF00) >> 0x08);
@@ -323,25 +327,6 @@ namespace hgardenpi::protocol
                 throw runtime_error("class not child of Package");
             }
 
-            //update crc16 for all heads
-            for (auto &&it: ret)
-            {
-                //calculate size of crc16 and alloc it
-                size_t dataLessCrc16Length =
-                        sizeof(uint8_t) + sizeof(it->id) + sizeof(it->length) + (sizeof(uint8_t) * it->length);
-                const uint8_t *crc16 = new(nothrow) uint8_t[dataLessCrc16Length];
-                if (!crc16)
-                {
-                    throw runtime_error("no memory for crc16");
-                }
-
-                //calculate crc16
-                memcpy((void *) crc16, reinterpret_cast<const void *>(it.get()), dataLessCrc16Length);
-                it->crc16 = crc_16(crc16, dataLessCrc16Length);
-                delete[] crc16;
-            }
-
-
             //free package
             delete package;
 
@@ -506,23 +491,14 @@ namespace hgardenpi::protocol
             memset(ret->payload, 0, ret->length);
 
             //copy payload from data
-            memcpy(ret->payload, &data[2], ret->length);
+            memcpy(ret->payload, &data[3], ret->length);
 
             //copy crc16 from data
             ret->crc16 = static_cast<uint16_t>((data[ret->length + 4] << 0x08) | data[ret->length + 3]);
 
             //calculate crc16 from data received
             const uint dataLessCrc16Length = ret->length + 3;
-            const uint8_t *dataLessCrc16 = new(nothrow) uint8_t[dataLessCrc16Length];
-            if (!dataLessCrc16)
-            {
-                throw runtime_error("no memory for dataLessCrc16");
-            }
-
-            memcpy((void *) dataLessCrc16, data, dataLessCrc16Length);
-            //uint16_t crc16Calc = CRC::Calculate(dataLessCrc16, dataLessCrc16Length, CRC::CRC_16_XMODEM());
-            uint16_t crc16Calc = crc_16(dataLessCrc16, dataLessCrc16Length);
-            delete[] dataLessCrc16;
+            uint16_t crc16Calc = crc_16(data, dataLessCrc16Length);
 
             //check crc16 send with that calculate
             if (crc16Calc != ret->crc16)
