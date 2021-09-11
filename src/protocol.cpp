@@ -193,33 +193,6 @@ namespace hgardenpi::protocol
                 //set length of package
                 data.payloadLength = static_cast<uint8_t>(size);
 
-                //memcpy(reinterpret_cast<void *>(data.payload), reinterpret_cast<const void *>(buf), data.payloadLength);
-
-                //set length of package
-//                data.payloadLength = sizeof(Aggregation);
-//                if (ptr->description)
-//                {
-//                    data.payloadLength += ptr->descriptionSize;
-//                }
-//                if (ptr->start)
-//                {
-//                    data.payloadLength += ptr->startSize;
-//                }
-//                if (ptr->end)
-//                {
-//                    data.payloadLength += ptr->endSize;
-//                }
-//
-//                //alloc memory
-//                data.payload = new(nothrow) uint8_t[data.payloadLength];
-//                if (!data.payload)
-//                {
-//                    throw runtime_error("no memory for data.payload");
-//                }
-
-                //copy structure to payload
-                //memcpy(reinterpret_cast<void *>(data.payload), reinterpret_cast<const void *>(ptr), data.payloadLength);
-
                 //update flags
                 data.flags = AGG | additionalFags;
 
@@ -498,10 +471,10 @@ namespace hgardenpi::protocol
 
             //calculate crc16 from data received
             const uint dataLessCrc16Length = ret->length + 3;
-            uint16_t crc16Calc = crc_16(data, dataLessCrc16Length);
+            uint16_t crc16 = crc_16(data, dataLessCrc16Length);
 
             //check crc16 send with that calculate
-            if (crc16Calc != ret->crc16)
+            if (crc16 != ret->crc16)
             {
                 throw runtime_error("crc not match");
             }
@@ -509,6 +482,15 @@ namespace hgardenpi::protocol
             return ret;
         }
 
+        void updateIdToBufferEncoded(Buffer &buffer, uint8_t id)
+        {
+            buffer.first[2] = id;
+
+            uint16_t crc16Calc = crc_16(buffer.first, buffer.second - 2);
+
+            buffer.first[buffer.second - 2] = static_cast<uint8_t>((crc16Calc & 0x00FF));
+            buffer.first[buffer.second - 1] = static_cast<uint8_t>((crc16Calc & 0xFF00) >> 0x08);
+        }
 
 
     }

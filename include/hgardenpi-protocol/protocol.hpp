@@ -31,7 +31,6 @@
 #pragma once
 
 #include <vector>
-#include <utility>
 
 #include <hgardenpi-protocol/constants.hpp>
 #include <hgardenpi-protocol/head.hpp>
@@ -44,8 +43,6 @@ namespace hgardenpi::protocol
         using std::vector;
 
         struct Package;
-
-        typedef std::pair<uint8_t *, size_t> Buffer;
 
         /**
          * Encode a buffer contain a Happy GardenPI Head
@@ -63,6 +60,14 @@ namespace hgardenpi::protocol
         * @throw runtime_exception if something goes wrong
         */
         [[maybe_unused]] Head::Ptr decode(const uint8_t *data);
+
+        /**
+         * @brief Update id to buffer to identificate package
+         * @param buffer will be modified
+         * @param id id tu assign
+         */
+        [[maybe_unused]]  void updateIdToBufferEncoded(Buffer &buffer, uint8_t id);
+
     }
 }
 

@@ -28,6 +28,9 @@
 #pragma once
 
 #include <hgardenpi-protocol/packages/package.hpp>
+
+#include <utility>
+
 #include <hgardenpi-protocol/constants.hpp>
 
 namespace hgardenpi::protocol
@@ -44,7 +47,7 @@ namespace hgardenpi::protocol
             /**
              * @brief id in db
              */
-            uint id = 0;
+            unsigned int id = 0;
             /**
              * @brief description of aggregation
              */
@@ -134,96 +137,17 @@ namespace hgardenpi::protocol
                 }
             }
 
-            inline tuple<uint8_t *, size_t> serialize() const
-            {
-                uint8_t * buf = nullptr;
-                size_t size = 0;
+            /**
+             * Serialize self to buffer
+             * @return self serialized
+             */
+            [[nodiscard]] Buffer serialize() const;
 
-                size += sizeof(uint8_t);
-                if (description && descriptionSize > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
-                {
-                    size += static_cast<int>(numeric_limits<uint8_t>::max());
-                }
-                else
-                {
-                    size += descriptionSize;
-                }
-                size += sizeof(bool);
-                size += sizeof(schedule);
-                if (start && startSize > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
-                {
-                    size += static_cast<int>(numeric_limits<uint8_t>::max());
-                }
-                else
-                {
-                    size += startSize;
-                }
-                if (end && endSize > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
-                {
-                    size += static_cast<int>(numeric_limits<uint8_t>::max());
-                }
-                else
-                {
-                    size += endSize;
-                }
-                size += sizeof(bool);
-                size += sizeof(uint16_t);
-                size += sizeof(status);
-
-                buf = new (nothrow) uint8_t[size];
-                if (!buf)
-                {
-                    throw runtime_error("no memory for serialize");
-                }
-                memset(buf, 0, size);
-
-                size = 0;
-                memcpy(buf + size, &id, sizeof(uint8_t));
-                size += sizeof(uint8_t);
-                if (description && descriptionSize > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
-                {
-                    memcpy(buf + size, &description, static_cast<int>(numeric_limits<uint8_t>::max()));
-                    size += static_cast<int>(numeric_limits<uint8_t>::max());
-                }
-                else
-                {
-                    memcpy(buf + size, &description, descriptionSize);
-                    size += descriptionSize;
-                }
-                memcpy(buf + size, &manual, sizeof(bool));
-                size += sizeof(bool);
-                memcpy(buf + size, &schedule, sizeof(schedule));
-                size += sizeof(schedule);
-                if (start && startSize > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
-                {
-                    memcpy(buf + size, &start, static_cast<int>(numeric_limits<uint8_t>::max()));
-                    size += static_cast<int>(numeric_limits<uint8_t>::max());
-                }
-                else
-                {
-                    memcpy(buf + size, &start, startSize);
-                    size += startSize;
-                }
-                if (end && endSize > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
-                {
-                    memcpy(buf + size, &end, static_cast<int>(numeric_limits<uint8_t>::max()));
-                    size += static_cast<int>(numeric_limits<uint8_t>::max());
-                }
-                else
-                {
-                    memcpy(buf + size, &end, endSize);
-                    size += endSize;
-                }
-                memcpy(buf + size, &sequential, sizeof(bool));
-                size += sizeof(bool);
-                memcpy(buf + size, &weight, sizeof(uint16_t));
-                size += sizeof(uint16_t);
-                memcpy(buf + size, &status, sizeof(status));
-                size += sizeof(status);
-
-                return {buf, size};
-            }
-
+            /**
+             * Deserialize from buffer to Aggregation
+             * @return new instance of Aggregation, to deallocate
+             */
+            [[nodiscard]] Aggregation * serialize(const Buffer *buffer) const;
         };
 #pragma pack(pop)
     }

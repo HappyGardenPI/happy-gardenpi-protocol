@@ -63,32 +63,30 @@ TEST(ProtocolTest, decode)
 
 TEST(ProtocolTest, encodeAGG)
 {
-//    auto agg1 = new Aggregation;
-//
-//    agg1->id = 23;
-//    agg1->descriptionSize = strlen("descrizione");
-//    agg1->description = new char [agg1->descriptionSize];
-//    strncpy(agg1->description, "descrizione", agg1->descriptionSize);
-//    agg1->schedule.minute = 30;
-//    agg1->schedule.hour = 13;
-//    agg1->schedule.days = 0b01111111;
-//
-//    auto encode1 = encode(agg1);
-//    EXPECT_EQ(encode1.size(), 1);
-//
-//    cout << stringHexToString(get<0>(encode1[0]), get<1>(encode1[0])) << endl;
-//
-//    auto decode1 = decode(get<0>(encode1[0]));
+    auto agg1 = new Aggregation;
+
+    agg1->descriptionSize = strlen("descrizione");
+    agg1->description = new char [agg1->descriptionSize];
+    strncpy(agg1->description, "descrizione", agg1->descriptionSize);
+    agg1->schedule.minute = 30;
+    agg1->schedule.hour = 13;
+    agg1->schedule.days = 0b01111111;
+
+    auto encode1 = encode(agg1);
+    EXPECT_EQ(encode1.size(), 1);
+
+    cout << stringHexToString(encode1[0].first, encode1[0].second) << endl;
+
+    auto decode1 = decode(encode1[0].first);
+    EXPECT_EQ(decode1->flags, AGG);
 
 
-    //todo: da finire
-//    EXPECT_EQ(get<0>(encode1.begin()), AGG);
 
-//    Aggregation *ret1 = reinterpret_cast<Aggregation *>(encode1.begin()->get()->payload);
-//    EXPECT_EQ(agg1->description, ret1->description);
-//    EXPECT_EQ(agg1->schedule.minute, ret1->schedule.minute);
-//    EXPECT_EQ(agg1->schedule.hour, ret1->schedule.hour);
-//    EXPECT_EQ(agg1->schedule.days, ret1->schedule.days);
+    auto *ret1 = reinterpret_cast<Aggregation *>(decode1->payload);
+    EXPECT_EQ(agg1->description, ret1->description);
+    EXPECT_EQ(agg1->schedule.minute, ret1->schedule.minute);
+    EXPECT_EQ(agg1->schedule.hour, ret1->schedule.hour);
+    EXPECT_EQ(agg1->schedule.days, ret1->schedule.days);
 //
 //    auto agg2 = new Aggregation;
 //    agg2->description = "description1";
@@ -287,7 +285,7 @@ TEST(ProtocolTest, encodeSYN)
     syn2->serial[6] = 0;
     strncpy(syn2->serial, "test2", 6);
 
-    auto encode2 = encode(syn1, ACK);
+    auto encode2 = encode(syn2, ACK);
     EXPECT_EQ(encode2.size(), 1);
 
     auto decode2 = decode(encode2[0].first);
@@ -299,5 +297,5 @@ TEST(ProtocolTest, encodeSYN)
         payloadStr += decode2->payload[i];
     }
 
-    EXPECT_TRUE(payloadStr == "test1");
+    EXPECT_TRUE(payloadStr == "test2");
 }

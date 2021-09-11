@@ -29,11 +29,14 @@
 
 #include <cstdlib>
 #include <cstdint>
+#include <utility>
 
 namespace hgardenpi::protocol
 {
     inline namespace v1
     {
+
+        typedef std::pair<uint8_t *, size_t> Buffer;
 
         /**
          * Flags used in Head

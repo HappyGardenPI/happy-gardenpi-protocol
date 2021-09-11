@@ -38,8 +38,8 @@ add_library(hgardenpi_protocol
         src/3thparts/libcrc/crcsick.c
         src/3thparts/libcrc/nmea-chk.c
         src/utilities/stringutils.cpp
-        src/protocol.cpp
-        )
+        src/packages/aggregation.cpp
+        src/protocol.cpp)
 
 target_include_directories (hgardenpi_protocol PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include )
 
