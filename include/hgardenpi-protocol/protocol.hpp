@@ -66,7 +66,7 @@ namespace hgardenpi::protocol
          * @param buffer will be modified
          * @param id id tu assign
          */
-        [[maybe_unused]]  void updateIdToBufferEncoded(Buffer &buffer, uint8_t id);
+        [[maybe_unused]] void updateIdToBufferEncoded(Buffer &buffer, uint8_t id);
 
     }
 }
