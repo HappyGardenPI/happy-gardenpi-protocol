@@ -45,15 +45,6 @@ namespace hgardenpi::protocol
         {
             typedef shared_ptr<Head> Ptr;
 
-            inline ~Head()
-            {
-                if (payload)
-                {
-                    delete[] payload;
-                    payload = nullptr;
-                }
-            }
-
             /**
              * @brief Protocol version
              */
@@ -78,6 +69,15 @@ namespace hgardenpi::protocol
              * @brief CRC16 XMODEM calculate with version + flags + id + length + payload
              */
             uint16_t crc16 = 0;
+
+            inline ~Head()
+            {
+                if (payload)
+                {
+                    delete[] payload;
+                    payload = nullptr;
+                }
+            }
         };
 #pragma pack(pop)
     }

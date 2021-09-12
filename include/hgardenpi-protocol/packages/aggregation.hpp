@@ -49,20 +49,17 @@ namespace hgardenpi::protocol
              */
             unsigned int id = 0;
             /**
-             * @brief description of aggregation
-             */
-            char *description = nullptr;
-
-            /**
              * @brief length of description
              */
             uint8_t descriptionSize = 0;
-
+            /**
+             * @brief description of aggregation
+             */
+            char *description = nullptr;
             /**
              * @brief manual check if the aggregation start automatically or manually by follow fields
              */
             bool manual = true;
-
             /**
              * @brief scheduling data info
              */
@@ -87,23 +84,22 @@ namespace hgardenpi::protocol
              * @brief Instance of schedule data
              */
             schedule;
-
-            /**
-             * @brief start scheduling period if enhanced
-             */
-            char *start = nullptr;
             /**
              * @brief length of start
              */
             uint8_t startSize = 0;
             /**
-             * @brief end scheduling period if enhanced
+             * @brief start scheduling period if enhanced
              */
-            char *end = nullptr;
+            char *start = nullptr;
             /**
              * @brief length of end
              */
             uint8_t endSize = 0;
+            /**
+             * @brief end scheduling period if enhanced
+             */
+            char *end = nullptr;
             /**
              * @brief If true execute sequentially the station otherwise execute all station at the same time
              * @note not implemented in this version, may be in next version

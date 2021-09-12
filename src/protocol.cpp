@@ -157,9 +157,14 @@ namespace hgardenpi::protocol
                 }
 
                 //calculate size of crc16 and alloc it
-                size_t dataLessCrc16Length = sizeof(uint8_t) + sizeof(head->id) + sizeof(head->length) + (sizeof(uint8_t) * head->length);
-                head->crc16 = crc_16(buf, dataLessCrc16Length);
+                size_t dataLessCrc16Length =
+                        sizeof(uint8_t) + //version and flags
+                        sizeof(uint8_t) + //id
+                        sizeof(uint8_t) + //length
+                        (sizeof(uint8_t) * head->length); //payload
+                head->crc16 = crc_16(&buf[0], dataLessCrc16Length);
 
+                //fill buffer with crc16
                 buf[3 + head->length] = static_cast<uint8_t>((head->crc16 & 0x00FF));
                 buf[4 + head->length] = static_cast<uint8_t>((head->crc16 & 0xFF00) >> 0x08);
 
@@ -302,6 +307,7 @@ namespace hgardenpi::protocol
 
             //free package
             delete package;
+            package = nullptr;
 
             return ret;
         }

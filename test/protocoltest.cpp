@@ -41,30 +41,11 @@ using namespace std;
 #include <hgardenpi-protocol/utilities/stringutils.hpp>
 using namespace hgardenpi::protocol;
 
-
-TEST(ProtocolTest, decode)
-{
-    const uint8_t data[]{0x01, //version and flags
-                         0x01, //id
-                         0x0F, //length
-                         0x63, 0x69, 0x61, 0x6f, 0x5f, 0x73, 0x6f, 0x6e, 0x6f, 0x5f, 0x70, 0x69, 0x70, 0x70, 0x6f, //payload
-                         0xC3, 0x1e //crc16
-    };
-
-//    auto head = decode(data);
-//
-//    EXPECT_EQ(head->version, 0);
-//    EXPECT_EQ(head->flags, 1);
-//    EXPECT_EQ(head->id, 1);
-//    EXPECT_EQ(head->length, 15);
-//    EXPECT_EQ(head->crc16, 49950);
-
-}
-
 TEST(ProtocolTest, encodeAGG)
 {
     auto agg1 = new Aggregation;
 
+    agg1->id = 23;
     agg1->descriptionSize = strlen("descrizione");
     agg1->description = new char [agg1->descriptionSize];
     strncpy(agg1->description, "descrizione", agg1->descriptionSize);

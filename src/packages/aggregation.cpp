@@ -45,7 +45,9 @@ namespace hgardenpi::protocol
             uint8_t *buf = nullptr;
             size_t size = 0;
 
-            size += sizeof(uint8_t);
+            //calculate size fo allocate buffer
+            size += sizeof(uint8_t); //id
+            size += sizeof(uint8_t); //descriptionSize
             if (description && descriptionSize > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
             {
                 size += static_cast<int>(numeric_limits<uint8_t>::max());
@@ -53,8 +55,9 @@ namespace hgardenpi::protocol
             {
                 size += descriptionSize;
             }
-            size += sizeof(bool);
-            size += sizeof(schedule);
+            size += sizeof(bool); //manual
+            size += sizeof(Schedule); //schedule
+            size += sizeof(uint8_t); //startSize
             if (start && startSize > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
             {
                 size += static_cast<int>(numeric_limits<uint8_t>::max());
@@ -62,6 +65,7 @@ namespace hgardenpi::protocol
             {
                 size += startSize;
             }
+            size += sizeof(endSize); //endSize
             if (end && endSize > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
             {
                 size += static_cast<int>(numeric_limits<uint8_t>::max());
@@ -69,10 +73,11 @@ namespace hgardenpi::protocol
             {
                 size += endSize;
             }
-            size += sizeof(bool);
-            size += sizeof(uint16_t);
-            size += sizeof(status);
+            size += sizeof(bool); //sequential
+            size += sizeof(uint16_t); //weight
+            size += sizeof(Status); //status
 
+            //alloc buffer
             buf = new(nothrow) uint8_t[size];
             if (!buf)
             {
@@ -80,51 +85,66 @@ namespace hgardenpi::protocol
             }
             memset(buf, 0, size);
 
+
             size = 0;
             memcpy(buf + size, &id, sizeof(uint8_t));
             size += sizeof(uint8_t);
-            if (description && descriptionSize > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
+            memcpy(buf + size, &descriptionSize, sizeof(uint8_t));
+            size += sizeof(uint8_t);
+            if (descriptionSize)
             {
-                memcpy(buf + size, &description, static_cast<int>(numeric_limits<uint8_t>::max()));
-                size += static_cast<int>(numeric_limits<uint8_t>::max());
-            } else
-            {
-                memcpy(buf + size, &description, descriptionSize);
-                size += descriptionSize;
+                if (description && descriptionSize > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
+                {
+                    memcpy(buf + size, description, static_cast<uint8_t>(numeric_limits<uint8_t>::max()));
+                    size += static_cast<uint8_t>(numeric_limits<uint8_t>::max());
+                } else
+                {
+                    memcpy(buf + size, description, descriptionSize);
+                    size += descriptionSize * sizeof(uint8_t);
+                }
             }
             memcpy(buf + size, &manual, sizeof(bool));
             size += sizeof(bool);
             memcpy(buf + size, &schedule, sizeof(schedule));
             size += sizeof(schedule);
-            if (start && startSize > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
+            memcpy(buf + size, &startSize, sizeof(uint8_t));
+            size += sizeof(uint8_t);
+            if (startSize)
             {
-                memcpy(buf + size, &start, static_cast<int>(numeric_limits<uint8_t>::max()));
-                size += static_cast<int>(numeric_limits<uint8_t>::max());
-            } else
-            {
-                memcpy(buf + size, &start, startSize);
-                size += startSize;
+                if (start && startSize > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
+                {
+                    memcpy(buf + size, start, static_cast<uint8_t>(numeric_limits<uint8_t>::max()));
+                    size += static_cast<uint8_t>(numeric_limits<uint8_t>::max());
+                } else
+                {
+                    memcpy(buf + size, start, startSize);
+                    size += startSize * sizeof(uint8_t);
+                }
             }
-            if (end && endSize > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
+            memcpy(buf + size, &endSize, sizeof(uint8_t));
+            size += sizeof(uint8_t);
+            if (endSize)
             {
-                memcpy(buf + size, &end, static_cast<int>(numeric_limits<uint8_t>::max()));
-                size += static_cast<int>(numeric_limits<uint8_t>::max());
-            } else
-            {
-                memcpy(buf + size, &end, endSize);
-                size += endSize;
+                if (end && endSize > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
+                {
+                    memcpy(buf + size, end, static_cast<uint8_t>(numeric_limits<uint8_t>::max()));
+                    size += static_cast<uint8_t>(numeric_limits<uint8_t>::max());
+                } else
+                {
+                    memcpy(buf + size, end, endSize);
+                    size += endSize * sizeof(uint8_t);
+                }
             }
             memcpy(buf + size, &sequential, sizeof(bool));
             size += sizeof(bool);
             memcpy(buf + size, &weight, sizeof(uint16_t));
             size += sizeof(uint16_t);
             memcpy(buf + size, &status, sizeof(status));
-            size += sizeof(status);
 
             return {buf, size};
         }
 
-        Aggregation * serialize(const Buffer *buffer) const
+        Aggregation * Aggregation::serialize(const Buffer *buffer) const
         {
             return nullptr; //TODO: da fare la deserializzazione
         }
