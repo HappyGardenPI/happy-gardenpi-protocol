@@ -43,10 +43,37 @@ namespace hgardenpi::protocol
          */
         struct Certificate final : public Package
         {
+
+            /**
+             * @brief data payload length
+             */
+            uint8_t certificateLen = 0;
             /**
              * @brief data payload
              */
-            string certificate;
+            char *certificate = nullptr;
+
+            /**
+             * Deserialize from buffer to Certificate
+             * @return new instance of Certificate or nullptr if error, to deallocate
+             */
+            [[nodiscard]] static inline Certificate * deserialize(const uint8_t *buffer) noexcept
+            {
+                if (!buffer)
+                {
+                    return nullptr;
+                }
+                auto ret = new Certificate;
+
+                ret->certificateLen = buffer[0];
+
+
+                ret->certificate = new char[ret->certificateLen];
+                memcpy(ret->certificate, buffer + 1, ret->certificateLen);
+                memcpy(ret->certificate, buffer + 1, ret->certificateLen);
+
+                return ret;
+            }
         };
 #pragma pack(pop)
     }

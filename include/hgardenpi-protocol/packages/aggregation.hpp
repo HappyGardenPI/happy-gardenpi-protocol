@@ -30,6 +30,7 @@
 #include <hgardenpi-protocol/packages/package.hpp>
 
 #include <utility>
+#include <string>
 
 #include <hgardenpi-protocol/constants.hpp>
 
@@ -37,6 +38,8 @@ namespace hgardenpi::protocol
 {
     inline namespace v1
     {
+
+        using std::string;
 
         /**
          * @brief Package for manage aggregation, linked to Flags::AGG
@@ -47,7 +50,7 @@ namespace hgardenpi::protocol
             /**
              * @brief id in db
              */
-            unsigned int id = 0;
+            uint32_t id = 0;
             /**
              * @brief length of description
              */
@@ -133,6 +136,12 @@ namespace hgardenpi::protocol
                 }
             }
 
+            [[nodiscard]] string getDescription() const noexcept;
+
+            [[nodiscard]] string getStart() const noexcept;
+
+            [[nodiscard]] string getEnd() const noexcept;
+
             /**
              * Serialize self to buffer
              * @return self serialized
@@ -141,9 +150,9 @@ namespace hgardenpi::protocol
 
             /**
              * Deserialize from buffer to Aggregation
-             * @return new instance of Aggregation, to deallocate
+             * @return new instance of Aggregation or nullptr if error, to deallocate
              */
-            [[nodiscard]] Aggregation * serialize(const Buffer *buffer) const;
+            [[nodiscard]] static Aggregation * deserialize(const uint8_t *buffer) noexcept;
         };
 #pragma pack(pop)
     }

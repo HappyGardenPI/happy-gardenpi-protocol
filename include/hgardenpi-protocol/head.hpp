@@ -37,10 +37,12 @@ namespace hgardenpi::protocol
     {
         using std::shared_ptr;
 
-#pragma pack(push, n)
+        class Package;
+
         /**
          * Head of data
          */
+#pragma pack(push, n)
         struct Head final
         {
             typedef shared_ptr<Head> Ptr;
@@ -78,6 +80,12 @@ namespace hgardenpi::protocol
                     payload = nullptr;
                 }
             }
+
+            /**
+             * Deserialize from buffer to Aggregation
+             * @return new instance of Package null if something goes wrong, to deallocate
+             */
+            [[nodiscard]] Package * deserialize() const noexcept;
         };
 #pragma pack(pop)
     }

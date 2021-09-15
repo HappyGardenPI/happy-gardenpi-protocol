@@ -30,7 +30,6 @@
 #include <limits>
 #include <new>
 #include <stdexcept>
-#include <memory>
 using namespace std;
 
 #include "hgardenpi-protocol/constants.hpp"
@@ -39,6 +38,31 @@ namespace hgardenpi::protocol
 {
     inline namespace v1
     {
+        static inline string bufferToString(const char *buffer, size_t size)
+        {
+            string ret;
+            for (size_t i = 0; i < size; i++)
+            {
+                ret += buffer[i];
+            }
+            return ret;
+        }
+
+        [[nodiscard]] string Aggregation::getDescription() const noexcept
+        {
+            return move(bufferToString(description, descriptionSize));
+        }
+
+        [[nodiscard]] string Aggregation::getStart() const noexcept
+        {
+            return move(bufferToString(start, startSize));
+        }
+
+        [[nodiscard]] string Aggregation::getEnd() const noexcept
+        {
+            return move(bufferToString(end, endSize));
+        }
+
 
         Buffer Aggregation::serialize() const
         {
@@ -144,9 +168,55 @@ namespace hgardenpi::protocol
             return {buf, size};
         }
 
-        Aggregation * Aggregation::serialize(const Buffer *buffer) const
+        Aggregation * Aggregation::deserialize(const uint8_t *buffer) noexcept
         {
-            return nullptr; //TODO: da fare la deserializzazione
+            if (!buffer)
+            {
+                return nullptr;
+            }
+            size_t size = 0;
+
+            auto *ret = new Aggregation;
+            ret->id = buffer[size];
+            size += sizeof(uint8_t); //id
+            ret->descriptionSize = buffer[size];
+            size += sizeof(uint8_t); //descriptionSize
+            if (ret->descriptionSize > 0)
+            {
+                ret->description = new char[ret->descriptionSize];
+                memset(ret->description, 0, ret->descriptionSize);
+                memcpy(ret->description, buffer + size, ret->descriptionSize);
+                size += ret->descriptionSize * sizeof(uint8_t); //description
+            }
+            ret->manual = buffer[size];
+            size += sizeof(bool); //manual
+            memcpy(&ret->schedule, buffer + size, sizeof(schedule));
+            size += sizeof(Schedule); //Schedule
+            ret->startSize = buffer[size];
+            size += sizeof(uint8_t); //startSize
+            if (ret->startSize > 0)
+            {
+                ret->start = new char[ret->startSize];
+                memset(ret->start, 0, ret->startSize);
+                memcpy(ret->start, buffer + size, ret->startSize);
+                size += ret->startSize * sizeof(uint8_t); //start
+            }
+            ret->endSize = buffer[size];
+            size += sizeof(uint8_t); //endSize
+            if (ret->endSize > 0)
+            {
+                ret->end = new char[ret->endSize];
+                memset(ret->end, 0, ret->endSize);
+                memcpy(ret->end, buffer + size, ret->endSize);
+                size += ret->endSize * sizeof(uint8_t); //end
+            }
+            ret->sequential = buffer[size];
+            size += sizeof(uint8_t); //sequential
+            ret->weight = buffer[size];
+            size += sizeof(uint8_t); //weight
+            memcpy(&ret->status, buffer + size, sizeof(Status));
+
+            return ret;
         }
     }
 }

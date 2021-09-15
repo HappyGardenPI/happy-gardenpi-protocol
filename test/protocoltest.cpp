@@ -43,99 +43,81 @@ using namespace hgardenpi::protocol;
 
 TEST(ProtocolTest, encodeAGG)
 {
-    auto agg1 = new Aggregation;
+    auto agg = new Aggregation;
 
-    agg1->id = 23;
-    agg1->descriptionSize = strlen("descrizione");
-    agg1->description = new char [agg1->descriptionSize];
-    strncpy(agg1->description, "descrizione", agg1->descriptionSize);
-    agg1->schedule.minute = 30;
-    agg1->schedule.hour = 13;
-    agg1->schedule.days = 0b01111111;
+    agg->id = 23;
+    agg->descriptionSize = strlen("desc");
+    agg->description = new char [agg->descriptionSize];
+    strncpy(agg->description, "desc", agg->descriptionSize);
+    agg->startSize = strlen("start");
+    agg->start = new char [agg->startSize];
+    strncpy(agg->start, "start", agg->startSize);
+    agg->endSize = strlen("end");
+    agg->end = new char [agg->endSize];
+    strncpy(agg->end, "end", agg->endSize);
+    agg->schedule.minute = 30;
+    agg->schedule.hour = 13;
+    agg->schedule.days = 0b0111'1111;
+    agg->sequential = false;
+    agg->weight = 20;
+    agg->status = hgardenpi::protocol::v1::Status::UNACTIVE;
 
-    auto encode1 = encode(agg1);
-    EXPECT_EQ(encode1.size(), 1);
+    auto enc = encode(agg, SYN);
+    EXPECT_EQ(enc.size(), 1);
 
-    cout << stringHexToString(encode1[0].first, encode1[0].second) << endl;
-
-    auto decode1 = decode(encode1[0].first);
-    EXPECT_EQ(decode1->flags, AGG);
+    auto head = decode(enc[0].first);
+    EXPECT_EQ(head->flags, AGG | SYN);
 
 
 
-    auto *ret1 = reinterpret_cast<Aggregation *>(decode1->payload);
-    EXPECT_EQ(agg1->description, ret1->description);
-    EXPECT_EQ(agg1->schedule.minute, ret1->schedule.minute);
-    EXPECT_EQ(agg1->schedule.hour, ret1->schedule.hour);
-    EXPECT_EQ(agg1->schedule.days, ret1->schedule.days);
-//
-//    auto agg2 = new Aggregation;
-//    agg2->description = "description1";
-//    agg2->schedule.minute = 35;
-//    agg2->schedule.hour = 14;
-//    agg2->schedule.days = 0b01100111;
-//
-//    auto encode2 = encode(agg2, ACK);
-//    EXPECT_EQ(encode2.size(), 1);
-//    EXPECT_EQ(encode2.begin()->get()->flags, AGG | ACK);
-//
-//    Aggregation *ret2 = reinterpret_cast<Aggregation *>(encode2.begin()->get()->payload);
-//    EXPECT_EQ(ret2->description, agg2->description);
-//    EXPECT_EQ(ret2->schedule.minute, agg2->schedule.minute);
-//    EXPECT_EQ(ret2->schedule.hour, agg2->schedule.hour);
-//    EXPECT_EQ(ret2->schedule.days, agg2->schedule.days);
+    if (auto *ptr = dynamic_cast<Aggregation *>(head->deserialize()))
+    {
+        EXPECT_TRUE(ptr->getDescription() == string("desc"));
+        EXPECT_TRUE(string(ptr->start) == string("start"));
+        EXPECT_TRUE(string(ptr->end) == string("end"));
+        EXPECT_EQ(ptr->schedule.minute, 30);
+        EXPECT_EQ(ptr->schedule.hour, 13);
+        EXPECT_EQ(ptr->schedule.days, 0b0111'1111);
+        EXPECT_EQ(ptr->sequential, false);
+        EXPECT_EQ(ptr->weight, 20);
+        EXPECT_EQ(ptr->status, hgardenpi::protocol::v1::Status::UNACTIVE);
+        delete ptr;
+    }
 }
 
 TEST(ProtocolTest, encodeCRT)
 {
-//    string crtExample = "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQB/nAmOjTmezNUDKYvEeIRf2YnwM9/uUG1d0BYsc8/tRtx+RGi7N2lUbp728MXGwdnL9od4cItzky/zVdLZE2cycOa18xBK9cOWmcKS0A8FYBxEQWJ/q9YVUgZbFKfYGaGQxsER+A0w/fX8ALuk78ktP31K69LcQgxIsl7rNzxsoOQKJ/CIxOGMMxczYTiEoLvQhapFQMs3FL96didKr/QbrfB1WT6s3838SEaXfgZvLef1YB2xmfhbT9OXFE3FXvh2UPBfN+ffE7iiayQf/2XR+8j4N4bW30DiPtOQLGUrH1y5X/rpNZNlWW2+jGIxqZtgWg7lTy3mXy5x836Sj/6L";
-//
-//    auto err1 = new Certificate;
-//    err1->certificate = crtExample;
-//
-//    auto encode1 = encode(err1);
-//    EXPECT_EQ(encode1.size(), 3);
-//    EXPECT_EQ(encode1[0]->flags, CRT | PRT);
-//    EXPECT_EQ(encode1[1]->flags, CRT | PRT);
-//    EXPECT_EQ(encode1[2]->flags, FIN);
-//
-//    char * payload1 = new char[encode1[0]->length];
-//    memcpy(payload1, encode1[0]->payload, encode1[0]->length);
-//
-//    char * payload2 = new char[encode1[1]->length];
-//    memcpy(payload2, encode1[1]->payload, encode1[1]->length);
-//
-//    EXPECT_EQ(memcmp(&crtExample[0], payload1, encode1[0]->length), 0);
-//    EXPECT_EQ(memcmp(&crtExample[encode1[0]->length], payload2, encode1[1]->length), 0);
-//
-//    delete[] payload1;
-//    payload1 = nullptr;
-//    delete[] payload2;
-//    payload2 = nullptr;
-//
-//    auto err2 = new Certificate;
-//    err2->certificate = crtExample;
-//
-//    auto encode2 = encode(err2, ACK);
-//    EXPECT_EQ(encode2.size(), 3);
-//    EXPECT_EQ(encode2[0]->flags, CRT | PRT | ACK);
-//    EXPECT_EQ(encode2[1]->flags, CRT | PRT | ACK);
-//    EXPECT_EQ(encode2[2]->flags, FIN | ACK);
-//
-//    payload1 = new char[encode2[0]->length];
-//    memcpy(payload1, encode2[0]->payload, encode2[0]->length);
-//
-//    payload2 = new char[encode2[1]->length];
-//    memcpy(payload2, encode2[1]->payload, encode2[1]->length);
-//
-//    EXPECT_EQ(memcmp(&crtExample[0], payload1, encode2[0]->length), 0);
-//    EXPECT_EQ(memcmp(&crtExample[encode2[0]->length], payload2, encode2[1]->length), 0);
-//
-//    delete[] payload1;
-//    payload1 = nullptr;
-//    delete[] payload2;
-//    payload2 = nullptr;
+    string crtExample = "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQB/nAmOjTmezNUDKYvEeIRf2YnwM9/uUG1d0BYsc8/tRtx+RGi7N2lUbp728MXGwdnL9od4cItzky/zVdLZE2cycOa18xBK9cOWmcKS0A8FYBxEQWJ/q9YVUgZbFKfYGaGQxsER+A0w/fX8ALuk78ktP31K69LcQgxIsl7rNzxsoOQKJ/CIxOGMMxczYTiEoLvQhapFQMs3FL96didKr/QbrfB1WT6s3838SEaXfgZvLef1YB2xmfhbT9OXFE3FXvh2UPBfN+ffE7iiayQf/2XR+8j4N4bW30DiPtOQLGUrH1y5X/rpNZNlWW2+jGIxqZtgWg7lTy3mXy5x836Sj/6L";
 
+    auto crt = new Certificate;
+    crt->certificateLen = strlen("descrizione");
+    crt->certificate = new char [crt->certificateLen];
+    strncpy(crt->certificate, "descrizione", crt->certificateLen);
+
+    auto enc = encode(crt, ACK);
+    EXPECT_EQ(enc.size(), 3);
+
+    auto head0 = decode(enc[0].first);
+    EXPECT_EQ(head0->flags, CRT | PRT | ACK);
+
+    auto head1 = decode(enc[1].first);
+    EXPECT_EQ(head1->flags, CRT | PRT | ACK);
+
+    auto head2 = decode(enc[2].first);
+    EXPECT_EQ(head2->flags,  FIN | ACK);
+
+    string crtRet;
+    if (auto *ptr = dynamic_cast<Certificate *>(head0->deserialize()))
+    {
+        crtRet += ptr->certificate;
+        delete ptr;
+    }
+    if (auto *ptr = dynamic_cast<Certificate *>(head1->deserialize()))
+    {
+        crtRet += ptr->certificate;
+        delete ptr;
+    }
+    EXPECT_TRUE(crtExample == crtRet);
 }
 
 TEST(ProtocolTest, encodeERR)

@@ -207,7 +207,7 @@ namespace hgardenpi::protocol
             } else if (auto ptr = dynamic_cast<Certificate *>(package); ptr) //is Flags::CRT package
             {
                 //update length
-                data.payloadLength = ptr->certificate.size();
+                data.payloadLength = ptr->certificateLen;
 
                 //alloc memory
                 data.payload = new(nothrow) uint8_t[data.payloadLength];

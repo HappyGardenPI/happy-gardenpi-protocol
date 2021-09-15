@@ -48,7 +48,7 @@ namespace hgardenpi::protocol
             /**
             * @brief id in db
             */
-            uint id = 0;
+            uint32_t id = 0;
             /**
              * @brief name of station
              */
@@ -64,12 +64,12 @@ namespace hgardenpi::protocol
             /**
              * @brief watering time in minutes
              */
-             uint wateringTime = 0;
+            uint32_t wateringTime = 0;
             /**
              * @brief watering time left in minutes
              * @note if greater than 0 the station running
              */
-            uint wateringTimeLeft = 0;
+            uint32_t wateringTimeLeft = 0;
             /**
              * @brief for manage order of execution lighter is first then weightier
              */
