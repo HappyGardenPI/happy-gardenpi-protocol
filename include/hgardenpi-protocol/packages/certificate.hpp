@@ -25,6 +25,8 @@
 // Created by Antonio Salsi on 16/08/21.
 //
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wshadow"
 #pragma once
 #include <string>
 
@@ -47,7 +49,7 @@ namespace hgardenpi::protocol
             /**
              * @brief data payload length
              */
-            uint8_t certificateLen = 0;
+            size_t certificateLen = 0;
             /**
              * @brief data payload
              */
@@ -74,7 +76,18 @@ namespace hgardenpi::protocol
 
                 return ret;
             }
+
+            [[maybe_unused]] [[nodiscard]] string getCertificate() const noexcept;
+
+            [[maybe_unused]] void setCertificate(const string &certificate) noexcept;
+
+            [[maybe_unused]] inline void setCertificate(const string &&certificate) noexcept
+            {
+                setCertificate(certificate);
+            }
         };
 #pragma pack(pop)
     }
 }
+
+#pragma clang diagnostic pop

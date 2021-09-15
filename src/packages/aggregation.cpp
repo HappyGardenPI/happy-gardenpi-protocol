@@ -30,6 +30,8 @@
 #include <limits>
 #include <new>
 #include <stdexcept>
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wshadow"
 using namespace std;
 
 #include "hgardenpi-protocol/constants.hpp"
@@ -218,5 +220,30 @@ namespace hgardenpi::protocol
 
             return ret;
         }
+
+        void Aggregation::setDescription(const string &description) noexcept
+        {
+            descriptionSize = description.size();
+            this->description = new char [descriptionSize];
+            memset(this->description, 0, descriptionSize);
+            memcpy(this->description, &description[0], descriptionSize);
+        }
+
+        void Aggregation::setStart(const string &start) noexcept
+        {
+            startSize = start.size();
+            this->start = new char [startSize];
+            memset(this->start, 0, startSize);
+            memcpy(this->start, &start[0], startSize);
+        }
+
+        void Aggregation::setEnd(const string &end) noexcept
+        {
+            endSize = end.size();
+            this->end = new char [endSize];
+            memset(this->end, 0, endSize);
+            memcpy(this->end, &end[0], endSize);
+        }
     }
 }
+#pragma clang diagnostic pop

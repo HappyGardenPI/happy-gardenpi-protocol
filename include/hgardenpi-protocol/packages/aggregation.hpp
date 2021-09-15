@@ -25,6 +25,8 @@
 // Created by Antonio Salsi on 16/08/21.
 //
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wshadow"
 #pragma once
 
 #include <hgardenpi-protocol/packages/package.hpp>
@@ -136,11 +138,33 @@ namespace hgardenpi::protocol
                 }
             }
 
-            [[nodiscard]] string getDescription() const noexcept;
+            [[maybe_unused]] void setDescription(const string &description) noexcept;
 
-            [[nodiscard]] string getStart() const noexcept;
+            [[maybe_unused]] inline void setDescription(const string &&description) noexcept
+            {
+                setDescription(description);
+            }
 
-            [[nodiscard]] string getEnd() const noexcept;
+
+            [[maybe_unused]] void setStart(const string &start) noexcept;
+
+            [[maybe_unused]] inline void setStart(const string &&start) noexcept
+            {
+                setStart(start);
+            }
+
+            [[maybe_unused]] void setEnd(const string &end) noexcept;
+
+            [[maybe_unused]] inline void setEnd(const string &&end) noexcept
+            {
+                setEnd(end);
+            }
+
+            [[maybe_unused]] [[nodiscard]] string getDescription() const noexcept;
+
+            [[maybe_unused]] [[nodiscard]] string getStart() const noexcept;
+
+            [[maybe_unused]] [[nodiscard]] string getEnd() const noexcept;
 
             /**
              * Serialize self to buffer
@@ -157,3 +181,5 @@ namespace hgardenpi::protocol
 #pragma pack(pop)
     }
 }
+
+#pragma clang diagnostic pop

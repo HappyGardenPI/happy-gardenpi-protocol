@@ -46,15 +46,9 @@ TEST(ProtocolTest, encodeAGG)
     auto agg = new Aggregation;
 
     agg->id = 23;
-    agg->descriptionSize = strlen("desc");
-    agg->description = new char [agg->descriptionSize];
-    strncpy(agg->description, "desc", agg->descriptionSize);
-    agg->startSize = strlen("start");
-    agg->start = new char [agg->startSize];
-    strncpy(agg->start, "start", agg->startSize);
-    agg->endSize = strlen("end");
-    agg->end = new char [agg->endSize];
-    strncpy(agg->end, "end", agg->endSize);
+    agg->setDescription("desc");
+    agg->setStart("start");
+    agg->setEnd("end");
     agg->schedule.minute = 30;
     agg->schedule.hour = 13;
     agg->schedule.days = 0b0111'1111;
@@ -73,8 +67,8 @@ TEST(ProtocolTest, encodeAGG)
     if (auto *ptr = dynamic_cast<Aggregation *>(head->deserialize()))
     {
         EXPECT_TRUE(ptr->getDescription() == string("desc"));
-        EXPECT_TRUE(string(ptr->start) == string("start"));
-        EXPECT_TRUE(string(ptr->end) == string("end"));
+        EXPECT_TRUE(ptr->getStart() == string("start"));
+        EXPECT_TRUE(ptr->getEnd() == string("end"));
         EXPECT_EQ(ptr->schedule.minute, 30);
         EXPECT_EQ(ptr->schedule.hour, 13);
         EXPECT_EQ(ptr->schedule.days, 0b0111'1111);
@@ -90,9 +84,7 @@ TEST(ProtocolTest, encodeCRT)
     string crtExample = "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQB/nAmOjTmezNUDKYvEeIRf2YnwM9/uUG1d0BYsc8/tRtx+RGi7N2lUbp728MXGwdnL9od4cItzky/zVdLZE2cycOa18xBK9cOWmcKS0A8FYBxEQWJ/q9YVUgZbFKfYGaGQxsER+A0w/fX8ALuk78ktP31K69LcQgxIsl7rNzxsoOQKJ/CIxOGMMxczYTiEoLvQhapFQMs3FL96didKr/QbrfB1WT6s3838SEaXfgZvLef1YB2xmfhbT9OXFE3FXvh2UPBfN+ffE7iiayQf/2XR+8j4N4bW30DiPtOQLGUrH1y5X/rpNZNlWW2+jGIxqZtgWg7lTy3mXy5x836Sj/6L";
 
     auto crt = new Certificate;
-    crt->certificateLen = strlen("descrizione");
-    crt->certificate = new char [crt->certificateLen];
-    strncpy(crt->certificate, "descrizione", crt->certificateLen);
+    crt->setCertificate(crtExample);
 
     auto enc = encode(crt, ACK);
     EXPECT_EQ(enc.size(), 3);
@@ -109,12 +101,12 @@ TEST(ProtocolTest, encodeCRT)
     string crtRet;
     if (auto *ptr = dynamic_cast<Certificate *>(head0->deserialize()))
     {
-        crtRet += ptr->certificate;
+        crtRet += ptr->getCertificate();
         delete ptr;
     }
     if (auto *ptr = dynamic_cast<Certificate *>(head1->deserialize()))
     {
-        crtRet += ptr->certificate;
+        crtRet += ptr->getCertificate();
         delete ptr;
     }
     EXPECT_TRUE(crtExample == crtRet);

@@ -39,6 +39,7 @@ add_library(hgardenpi_protocol
         src/3thparts/libcrc/nmea-chk.c
         src/utilities/stringutils.cpp
         src/packages/aggregation.cpp
+        src/packages/certificate.cpp
         src/head.cpp
         src/protocol.cpp)
 
