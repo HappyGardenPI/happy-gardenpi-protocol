@@ -42,6 +42,19 @@ using namespace std;
 #include <hgardenpi-protocol/utilities/stringutils.hpp>
 using namespace hgardenpi::protocol;
 
+
+static string generateRandomString(size_t length)
+{
+    const char* charmap = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const size_t charmapLength = strlen(charmap);
+    auto generator = [&](){ return charmap[rand()%charmapLength]; };
+    string result;
+    result.reserve(length);
+    generate_n(back_inserter(result), length, generator);
+    return result;
+}
+
+
 TEST(ProtocolTest, encodeAGG)
 {
     auto agg = new Aggregation;
@@ -111,20 +124,8 @@ TEST(ProtocolTest, encodeCRT)
             i++;
         }
     }
-    
+
     EXPECT_TRUE(crtExample == crtRet.str());
-}
-
-
-string generateRandomString(size_t length)
-{
-    const char* charmap = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const size_t charmapLength = strlen(charmap);
-    auto generator = [&](){ return charmap[rand()%charmapLength]; };
-    string result;
-    result.reserve(length);
-    generate_n(back_inserter(result), length, generator);
-    return result;
 }
 
 
@@ -166,15 +167,13 @@ TEST(ProtocolTest, encodeERR)
 
 TEST(ProtocolTest, encodeFIN)
 {
-//    auto fin1 = new Finish;
-//    auto encode1 = encode(fin1);
-//    EXPECT_EQ(encode1.size(), 1);
-//    EXPECT_EQ(encode1.begin()->get()->flags, FIN);
-//
-//    auto fin2 = new Finish;
-//    auto encode2 = encode(fin2, ACK);
-//    EXPECT_EQ(encode2.size(), 1);
-//    EXPECT_EQ(encode2.begin()->get()->flags, FIN | ACK);
+    auto fin = new Finish;
+
+    auto enc = encode(fin, ACK);
+    EXPECT_EQ(enc.size(), 1);
+
+    auto head = decode(enc[0].first);
+    EXPECT_EQ(head->flags, FIN | ACK);
 }
 
 TEST(ProtocolTest, encodeSTA)
