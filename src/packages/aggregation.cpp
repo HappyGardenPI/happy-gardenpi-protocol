@@ -52,17 +52,17 @@ namespace hgardenpi::protocol
 
         [[nodiscard]] string Aggregation::getDescription() const noexcept
         {
-            return move(bufferToString(description, descriptionSize));
+            return move(bufferToString(description, descriptionLen));
         }
 
         [[nodiscard]] string Aggregation::getStart() const noexcept
         {
-            return move(bufferToString(start, startSize));
+            return move(bufferToString(start, startLen));
         }
 
         [[nodiscard]] string Aggregation::getEnd() const noexcept
         {
-            return move(bufferToString(end, endSize));
+            return move(bufferToString(end, endLen));
         }
 
 
@@ -74,30 +74,30 @@ namespace hgardenpi::protocol
             //calculate size fo allocate buffer
             size += sizeof(uint8_t); //id
             size += sizeof(uint8_t); //descriptionSize
-            if (description && descriptionSize > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
+            if (description && descriptionLen > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
             {
                 size += static_cast<int>(numeric_limits<uint8_t>::max());
             } else
             {
-                size += descriptionSize;
+                size += descriptionLen;
             }
             size += sizeof(bool); //manual
             size += sizeof(Schedule); //schedule
             size += sizeof(uint8_t); //startSize
-            if (start && startSize > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
+            if (start && startLen > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
             {
                 size += static_cast<int>(numeric_limits<uint8_t>::max());
             } else
             {
-                size += startSize;
+                size += startLen;
             }
-            size += sizeof(endSize); //endSize
-            if (end && endSize > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
+            size += sizeof(endLen); //endSize
+            if (end && endLen > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
             {
                 size += static_cast<int>(numeric_limits<uint8_t>::max());
             } else
             {
-                size += endSize;
+                size += endLen;
             }
             size += sizeof(bool); //sequential
             size += sizeof(uint16_t); //weight
@@ -115,50 +115,50 @@ namespace hgardenpi::protocol
             size = 0;
             memcpy(buf + size, &id, sizeof(uint8_t));
             size += sizeof(uint8_t);
-            memcpy(buf + size, &descriptionSize, sizeof(uint8_t));
+            memcpy(buf + size, &descriptionLen, sizeof(uint8_t));
             size += sizeof(uint8_t);
-            if (descriptionSize)
+            if (descriptionLen)
             {
-                if (description && descriptionSize > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
+                if (description && descriptionLen > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
                 {
                     memcpy(buf + size, description, static_cast<uint8_t>(numeric_limits<uint8_t>::max()));
                     size += static_cast<uint8_t>(numeric_limits<uint8_t>::max());
                 } else
                 {
-                    memcpy(buf + size, description, descriptionSize);
-                    size += descriptionSize * sizeof(uint8_t);
+                    memcpy(buf + size, description, descriptionLen);
+                    size += descriptionLen * sizeof(uint8_t);
                 }
             }
             memcpy(buf + size, &manual, sizeof(bool));
             size += sizeof(bool);
             memcpy(buf + size, &schedule, sizeof(schedule));
             size += sizeof(schedule);
-            memcpy(buf + size, &startSize, sizeof(uint8_t));
+            memcpy(buf + size, &startLen, sizeof(uint8_t));
             size += sizeof(uint8_t);
-            if (startSize)
+            if (startLen)
             {
-                if (start && startSize > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
+                if (start && startLen > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
                 {
                     memcpy(buf + size, start, static_cast<uint8_t>(numeric_limits<uint8_t>::max()));
                     size += static_cast<uint8_t>(numeric_limits<uint8_t>::max());
                 } else
                 {
-                    memcpy(buf + size, start, startSize);
-                    size += startSize * sizeof(uint8_t);
+                    memcpy(buf + size, start, startLen);
+                    size += startLen * sizeof(uint8_t);
                 }
             }
-            memcpy(buf + size, &endSize, sizeof(uint8_t));
+            memcpy(buf + size, &endLen, sizeof(uint8_t));
             size += sizeof(uint8_t);
-            if (endSize)
+            if (endLen)
             {
-                if (end && endSize > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
+                if (end && endLen > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
                 {
                     memcpy(buf + size, end, static_cast<uint8_t>(numeric_limits<uint8_t>::max()));
                     size += static_cast<uint8_t>(numeric_limits<uint8_t>::max());
                 } else
                 {
-                    memcpy(buf + size, end, endSize);
-                    size += endSize * sizeof(uint8_t);
+                    memcpy(buf + size, end, endLen);
+                    size += endLen * sizeof(uint8_t);
                 }
             }
             memcpy(buf + size, &sequential, sizeof(bool));
@@ -170,7 +170,7 @@ namespace hgardenpi::protocol
             return {buf, size};
         }
 
-        Aggregation * Aggregation::deserialize(const uint8_t *buffer) noexcept
+        Aggregation * Aggregation::deserialize(const uint8_t *buffer, uint8_t, uint8_t) noexcept
         {
             if (!buffer)
             {
@@ -181,36 +181,36 @@ namespace hgardenpi::protocol
             auto *ret = new Aggregation;
             ret->id = buffer[size];
             size += sizeof(uint8_t); //id
-            ret->descriptionSize = buffer[size];
+            ret->descriptionLen = buffer[size];
             size += sizeof(uint8_t); //descriptionSize
-            if (ret->descriptionSize > 0)
+            if (ret->descriptionLen > 0)
             {
-                ret->description = new char[ret->descriptionSize];
-                memset(ret->description, 0, ret->descriptionSize);
-                memcpy(ret->description, buffer + size, ret->descriptionSize);
-                size += ret->descriptionSize * sizeof(uint8_t); //description
+                ret->description = new char[ret->descriptionLen];
+                memset(ret->description, 0, ret->descriptionLen);
+                memcpy(ret->description, buffer + size, ret->descriptionLen);
+                size += ret->descriptionLen * sizeof(uint8_t); //description
             }
             ret->manual = buffer[size];
             size += sizeof(bool); //manual
             memcpy(&ret->schedule, buffer + size, sizeof(schedule));
             size += sizeof(Schedule); //Schedule
-            ret->startSize = buffer[size];
+            ret->startLen = buffer[size];
             size += sizeof(uint8_t); //startSize
-            if (ret->startSize > 0)
+            if (ret->startLen > 0)
             {
-                ret->start = new char[ret->startSize];
-                memset(ret->start, 0, ret->startSize);
-                memcpy(ret->start, buffer + size, ret->startSize);
-                size += ret->startSize * sizeof(uint8_t); //start
+                ret->start = new char[ret->startLen];
+                memset(ret->start, 0, ret->startLen);
+                memcpy(ret->start, buffer + size, ret->startLen);
+                size += ret->startLen * sizeof(uint8_t); //start
             }
-            ret->endSize = buffer[size];
+            ret->endLen = buffer[size];
             size += sizeof(uint8_t); //endSize
-            if (ret->endSize > 0)
+            if (ret->endLen > 0)
             {
-                ret->end = new char[ret->endSize];
-                memset(ret->end, 0, ret->endSize);
-                memcpy(ret->end, buffer + size, ret->endSize);
-                size += ret->endSize * sizeof(uint8_t); //end
+                ret->end = new char[ret->endLen];
+                memset(ret->end, 0, ret->endLen);
+                memcpy(ret->end, buffer + size, ret->endLen);
+                size += ret->endLen * sizeof(uint8_t); //end
             }
             ret->sequential = buffer[size];
             size += sizeof(uint8_t); //sequential
@@ -223,26 +223,26 @@ namespace hgardenpi::protocol
 
         void Aggregation::setDescription(const string &description) noexcept
         {
-            descriptionSize = description.size();
-            this->description = new char [descriptionSize];
-            memset(this->description, 0, descriptionSize);
-            memcpy(this->description, &description[0], descriptionSize);
+            descriptionLen = description.size();
+            this->description = new char [descriptionLen];
+            memset(this->description, 0, descriptionLen);
+            memcpy(this->description, &description[0], descriptionLen);
         }
 
         void Aggregation::setStart(const string &start) noexcept
         {
-            startSize = start.size();
-            this->start = new char [startSize];
-            memset(this->start, 0, startSize);
-            memcpy(this->start, &start[0], startSize);
+            startLen = start.size();
+            this->start = new char [startLen];
+            memset(this->start, 0, startLen);
+            memcpy(this->start, &start[0], startLen);
         }
 
         void Aggregation::setEnd(const string &end) noexcept
         {
-            endSize = end.size();
-            this->end = new char [endSize];
-            memset(this->end, 0, endSize);
-            memcpy(this->end, &end[0], endSize);
+            endLen = end.size();
+            this->end = new char [endLen];
+            memset(this->end, 0, endLen);
+            memcpy(this->end, &end[0], endLen);
         }
     }
 }

@@ -56,7 +56,7 @@ namespace hgardenpi::protocol
             /**
              * @brief length of description
              */
-            uint8_t descriptionSize = 0;
+            uint8_t descriptionLen = 0;
             /**
              * @brief description of aggregation
              */
@@ -92,7 +92,7 @@ namespace hgardenpi::protocol
             /**
              * @brief length of start
              */
-            uint8_t startSize = 0;
+            uint8_t startLen = 0;
             /**
              * @brief start scheduling period if enhanced
              */
@@ -100,7 +100,7 @@ namespace hgardenpi::protocol
             /**
              * @brief length of end
              */
-            uint8_t endSize = 0;
+            uint8_t endLen = 0;
             /**
              * @brief end scheduling period if enhanced
              */
@@ -138,45 +138,82 @@ namespace hgardenpi::protocol
                 }
             }
 
+            /**
+             * @brief Set description
+             * @param description
+             */
             [[maybe_unused]] void setDescription(const string &description) noexcept;
 
+            /**
+             * @brief Set description
+             * @param description
+             */
             [[maybe_unused]] inline void setDescription(const string &&description) noexcept
             {
                 setDescription(description);
             }
 
-
+            /**
+             * @brief Set start
+             * @param start
+             */
             [[maybe_unused]] void setStart(const string &start) noexcept;
 
+            /**
+             * @brief Set start
+             * @param start
+             */
             [[maybe_unused]] inline void setStart(const string &&start) noexcept
             {
                 setStart(start);
             }
 
+            /**
+             * @brief Set end
+             * @param end
+             */
             [[maybe_unused]] void setEnd(const string &end) noexcept;
 
+            /**
+             * @brief Set end
+             * @param end
+             */
             [[maybe_unused]] inline void setEnd(const string &&end) noexcept
             {
                 setEnd(end);
             }
 
+            /**
+             * @brief Get description
+             * @return description
+             */
             [[maybe_unused]] [[nodiscard]] string getDescription() const noexcept;
 
+            /**
+             * @brief Get start
+             * @return start
+             */
             [[maybe_unused]] [[nodiscard]] string getStart() const noexcept;
 
+            /**
+             * @brief Get end
+             * @return end
+             */
             [[maybe_unused]] [[nodiscard]] string getEnd() const noexcept;
 
             /**
-             * Serialize self to buffer
+             * @brief Serialize self to buffer
+             * @param buffer of data
              * @return self serialized
              */
             [[nodiscard]] Buffer serialize() const;
 
             /**
-             * Deserialize from buffer to Aggregation
+             * @brief Deserialize from buffer to Aggregation
+             * @param buffer of data
              * @return new instance of Aggregation or nullptr if error, to deallocate
              */
-            [[nodiscard]] static Aggregation * deserialize(const uint8_t *buffer) noexcept;
+            [[nodiscard]] static Aggregation * deserialize(const uint8_t *buffer, uint8_t, uint8_t) noexcept;
         };
 #pragma pack(pop)
     }

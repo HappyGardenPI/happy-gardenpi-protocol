@@ -189,7 +189,7 @@ namespace hgardenpi::protocol
          * @brief Split a string fill container by value
          * @param str Source string
          * @param delim char to split
-         * @return vector with string splitted
+         * @param Out put out results
          */
         template <typename Out>
         void split(const string &str, char delim, Out result) noexcept {

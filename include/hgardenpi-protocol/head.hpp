@@ -82,10 +82,11 @@ namespace hgardenpi::protocol
             }
 
             /**
-             * Deserialize from buffer to Aggregation
+             * @brief Deserialize from buffer to Aggregation
+             * @param chunkOfPackage if package is split more set de current package
              * @return new instance of Package null if something goes wrong, to deallocate
              */
-            [[nodiscard]] Package * deserialize() const noexcept;
+            [[nodiscard]] Package * deserialize(uint8_t chunkOfPackage = 0) const noexcept;
         };
 #pragma pack(pop)
     }

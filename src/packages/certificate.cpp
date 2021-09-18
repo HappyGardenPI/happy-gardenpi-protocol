@@ -38,13 +38,66 @@ namespace hgardenpi::protocol
     inline namespace v1
     {
 
+        Buffer Certificate::serialize() const
+        {
+            Buffer ret;
+
+            ret.second = certificateLen + sizeof(certificateLen);
+
+            //alloc memory
+            ret.first = new(nothrow) uint8_t[ret.second];
+            if (!ret.first)
+            {
+                throw runtime_error("no memory for data");
+            }
+
+            //copy cert length
+            memcpy(ret.first, &certificateLen, sizeof(certificateLen));
+
+            //copy certificate field to payload
+            memcpy(ret.first + sizeof(certificateLen), &certificate[0], certificateLen);
+
+            //return Buffer
+            return ret;
+        }
+
+        Certificate * Certificate::deserialize(const uint8_t *buffer, uint8_t length , uint8_t chunkOfPackage) noexcept
+        {
+            if (!buffer)
+            {
+                return nullptr;
+            }
+            auto ret = new Certificate;
+
+
+            if (chunkOfPackage == 0)
+            {
+                //set length of certificate and payload
+                memset(&ret->certificateLen, 0, sizeof(ret->certificateLen));
+                memcpy(&ret->certificateLen, buffer, sizeof(ret->certificateLen));
+
+                ret->certificate = new char[ret->certificateLen];
+                memset(ret->certificate, 0, ret->certificateLen);
+                memcpy(ret->certificate, buffer + sizeof(ret->certificateLen), ret->certificateLen);
+
+            }
+            else
+            {
+                ret->certificateLen = length;
+                ret->certificate = new char[ret->certificateLen];
+                memset(ret->certificate, 0, ret->certificateLen);
+                memcpy(ret->certificate, buffer, ret->certificateLen);
+            }
+            return ret;
+        }
+
         string Certificate::getCertificate() const noexcept
         {
-            string ret;
-            for (size_t i = 0; i < certificateLen; i++)
-            {
-                ret += certificate[i];
-            }
+            char *c = new(nothrow) char[certificateLen + 1];
+            memset(c, 0, certificateLen + 1);
+            memcpy(c, certificate, certificateLen);
+            string ret(c);
+            delete [] c;
             return ret;
         }
 
@@ -55,6 +108,7 @@ namespace hgardenpi::protocol
             memset(this->certificate, 0, certificateLen);
             memcpy(this->certificate, &certificate[0], certificateLen);
         }
+
     }
 }
 #pragma clang diagnostic pop

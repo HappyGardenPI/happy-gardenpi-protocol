@@ -49,38 +49,43 @@ namespace hgardenpi::protocol
             /**
              * @brief data payload length
              */
-            size_t certificateLen = 0;
+            uint16_t certificateLen = 0;
             /**
              * @brief data payload
              */
             char *certificate = nullptr;
 
             /**
-             * Deserialize from buffer to Certificate
+             * Serialize self to buffer
+             * @return self serialized
+             */
+            [[nodiscard]] Buffer serialize() const;
+
+            /**
+             * @brief Deserialize from buffer to Certificate
+             * @param buffer of data
+             * @param length of data
+             * @param chunkOfPackage number of chunk id  is split in more chunks
              * @return new instance of Certificate or nullptr if error, to deallocate
              */
-            [[nodiscard]] static inline Certificate * deserialize(const uint8_t *buffer) noexcept
-            {
-                if (!buffer)
-                {
-                    return nullptr;
-                }
-                auto ret = new Certificate;
+            [[nodiscard]] static Certificate * deserialize(const uint8_t *buffer, uint8_t length , uint8_t chunkOfPackage) noexcept;
 
-                ret->certificateLen = buffer[0];
-
-
-                ret->certificate = new char[ret->certificateLen];
-                memcpy(ret->certificate, buffer + 1, ret->certificateLen);
-                memcpy(ret->certificate, buffer + 1, ret->certificateLen);
-
-                return ret;
-            }
-
+            /**
+             * @brief Get certificate
+             * @return certificate
+             */
             [[maybe_unused]] [[nodiscard]] string getCertificate() const noexcept;
 
+            /**
+             * @brief Set certificate
+             * @param certificate
+             */
             [[maybe_unused]] void setCertificate(const string &certificate) noexcept;
 
+            /**
+             * @brief Set certificate
+             * @param certificate
+             */
             [[maybe_unused]] inline void setCertificate(const string &&certificate) noexcept
             {
                 setCertificate(certificate);

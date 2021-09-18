@@ -36,7 +36,7 @@ namespace hgardenpi::protocol
     inline namespace v1
     {
 
-        typedef std::pair<uint8_t *, size_t> Buffer;
+        typedef std::pair<uint8_t *, uint16_t> Buffer;
 
         /**
          * Flags used in Head

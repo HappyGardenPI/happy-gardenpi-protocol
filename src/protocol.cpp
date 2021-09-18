@@ -67,7 +67,7 @@ namespace hgardenpi::protocol
             /**
              * @brief common payload length
              */
-            size_t payloadLength = 0;
+            uint16_t payloadLength = 0;
 
             /**
              * @brief flag of Head packages
@@ -196,7 +196,7 @@ namespace hgardenpi::protocol
                 data.payload = buf;
 
                 //set length of package
-                data.payloadLength = static_cast<uint8_t>(size);
+                data.payloadLength = size;
 
                 //update flags
                 data.flags = AGG | additionalFags;
@@ -206,19 +206,13 @@ namespace hgardenpi::protocol
                 delete[] data.payload;
             } else if (auto ptr = dynamic_cast<Certificate *>(package); ptr) //is Flags::CRT package
             {
-                //update length
-                data.payloadLength = ptr->certificateLen;
+                auto &&[buf, size] = ptr->serialize();
 
                 //alloc memory
-                data.payload = new(nothrow) uint8_t[data.payloadLength];
-                if (!data.payload)
-                {
-                    throw runtime_error("no memory for data.payload");
-                }
+                data.payload = buf;
 
-                //copy certificate field to payload
-                memcpy(reinterpret_cast<void *>(data.payload), reinterpret_cast<uint8_t *>(&ptr->certificate[0]),
-                       data.payloadLength);
+                //set length of package
+                data.payloadLength = size;
 
                 //update flags
                 data.flags = CRT | additionalFags;

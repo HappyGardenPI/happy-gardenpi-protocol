@@ -38,14 +38,14 @@ namespace hgardenpi::protocol
     inline namespace v1
     {
 
-        [[nodiscard]] Package *Head::deserialize() const noexcept
+        [[nodiscard]] Package *Head::deserialize(uint8_t chunkOfPackage) const noexcept
         {
             Package * ret = nullptr;
             //check which child package was packaged
             if (flags & AGG) //is Flags::AGG package
-                ret = Aggregation::deserialize(payload);
+                ret = Aggregation::deserialize(payload, length, chunkOfPackage);
             else if (flags & CRT) //is Flags::CRT package
-                ret = Certificate::deserialize(payload);
+                ret = Certificate::deserialize(payload, length, chunkOfPackage);
             else if (flags & FIN) //is Flags::FIN package
             {
 

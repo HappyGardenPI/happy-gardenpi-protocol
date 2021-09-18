@@ -89,25 +89,33 @@ TEST(ProtocolTest, encodeCRT)
     auto enc = encode(crt, ACK);
     EXPECT_EQ(enc.size(), 3);
 
-    auto head0 = decode(enc[0].first);
-    EXPECT_EQ(head0->flags, CRT | PRT | ACK);
-
-    auto head1 = decode(enc[1].first);
-    EXPECT_EQ(head1->flags, CRT | PRT | ACK);
-
-    auto head2 = decode(enc[2].first);
-    EXPECT_EQ(head2->flags,  FIN | ACK);
+//    auto head0 = decode(enc[0].first);
+//    EXPECT_EQ(head0->flags, CRT | PRT | ACK);
+//
+//    auto head1 = decode(enc[1].first);
+//    EXPECT_EQ(head1->flags, CRT | PRT | ACK);
+//
+//    auto head2 = decode(enc[2].first);
+//    EXPECT_EQ(head2->flags,  FIN | ACK);
 
     string crtRet;
-    if (auto *ptr = dynamic_cast<Certificate *>(head0->deserialize()))
+    uint16_t i = 0;
+    for (auto &&buffer : enc)
     {
-        crtRet += ptr->getCertificate();
-        delete ptr;
-    }
-    if (auto *ptr = dynamic_cast<Certificate *>(head1->deserialize()))
-    {
-        crtRet += ptr->getCertificate();
-        delete ptr;
+        auto head = decode(buffer.first);
+        if (head->flags & FIN && head->flags & ACK)
+        {
+            break;
+        }
+        if (head->flags & CRT && head->flags & ACK && head->flags & PRT)
+        {
+            if (auto *ptr = dynamic_cast<Certificate *>(head->deserialize(i)))
+            {
+                crtRet += ptr->getCertificate();
+                delete ptr;
+            }
+            i++;
+        }
     }
     EXPECT_TRUE(crtExample == crtRet);
 }
