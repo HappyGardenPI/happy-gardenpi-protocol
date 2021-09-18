@@ -26,6 +26,7 @@
 //
 
 #pragma once
+
 #include <string>
 
 #include <hgardenpi-protocol/packages/package.hpp>
@@ -43,7 +44,26 @@ namespace hgardenpi::protocol
          * @note not contain field
          */
 #pragma pack(push, n)
-        struct Finish final : public Package {};
+
+        struct Finish final : public Package
+        {
+        public:
+
+            /**
+             * Serialize self to buffer
+             * @return self serialized
+             */
+            [[nodiscard]] inline Buffer serialize() const override { return {nullptr, 0}; }
+
+            /**
+             * @brief Deserialize from buffer to Finish
+             * @param buffer of data
+             * @return new instance of Aggregation or nullptr if error, to deallocate
+             */
+            [[nodiscard]] static inline Finish * deserialize(const uint8_t *buffer, uint8_t, uint8_t) noexcept { return new Finish; }
+
+        };
+
 #pragma pack(pop)
     }
 }

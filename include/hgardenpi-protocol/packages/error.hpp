@@ -30,7 +30,6 @@
 #include <string>
 
 #include <hgardenpi-protocol/packages/package.hpp>
-#include <hgardenpi-protocol/constants.hpp>
 
 
 namespace hgardenpi::protocol
@@ -59,7 +58,7 @@ namespace hgardenpi::protocol
              * Serialize self to buffer
              * @return self serialized
              */
-            [[nodiscard]] Buffer serialize() const;
+            [[nodiscard]] Buffer serialize() const override;
 
             /**
              * @brief Deserialize from buffer to Error

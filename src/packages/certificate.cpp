@@ -25,10 +25,13 @@
 // Created by Antonio Salsi on 15/09/21.
 //
 
-#include "hgardenpi-protocol/packages/certificate.hpp"
-
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wshadow"
+
+#include "hgardenpi-protocol/packages/certificate.hpp"
+
+#include <stdexcept>
+#include <cstring>
 using namespace std;
 
 #include "hgardenpi-protocol/constants.hpp"

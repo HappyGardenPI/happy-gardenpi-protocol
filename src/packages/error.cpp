@@ -25,16 +25,17 @@
 // Created by Antonio Salsi on 15/09/21.
 //
 
-#include "hgardenpi-protocol/packages/error.hpp"
-
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wshadow"
-using namespace std;
 
-#include "hgardenpi-protocol/constants.hpp"
+#include "hgardenpi-protocol/packages/error.hpp"
 
 #include <stdexcept>
 #include <memory>
+#include <cstring>
+using namespace std;
+
+#include "hgardenpi-protocol/constants.hpp"
 
 namespace hgardenpi::protocol
 {
@@ -104,12 +105,12 @@ namespace hgardenpi::protocol
             return ret;
         }
 
-        void Error::setMsg(const string &certificate) noexcept
+        void Error::setMsg(const string &msg) noexcept
         {
-            length = certificate.size();
+            length = msg.size();
             this->msg = new char [length];
             memset(this->msg, 0, length);
-            memcpy(this->msg, &certificate[0], length);
+            memcpy(this->msg, &msg[0], length);
         }
 
     }

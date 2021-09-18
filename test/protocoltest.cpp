@@ -29,6 +29,7 @@
 
 #include <fstream>
 #include <string>
+#include <random>
 using namespace std;
 
 #include <hgardenpi-protocol/protocol.hpp>
@@ -89,7 +90,7 @@ TEST(ProtocolTest, encodeCRT)
     auto enc = encode(crt, ACK);
     EXPECT_EQ(enc.size(), 3);
 
-    string crtRet;
+    stringstream crtRet;
     uint16_t i = 0;
     for (auto &&buffer : enc)
     {
@@ -104,23 +105,37 @@ TEST(ProtocolTest, encodeCRT)
             EXPECT_EQ(head->flags, CRT | ACK | PRT);
             if (auto *ptr = dynamic_cast<Certificate *>(head->deserialize(i)))
             {
-                crtRet += ptr->getCertificate();
+                crtRet << ptr->getCertificate();
                 delete ptr;
             }
             i++;
         }
     }
-    EXPECT_TRUE(crtExample == crtRet);
+    
+    EXPECT_TRUE(crtExample == crtRet.str());
 }
+
+
+string generateRandomString(size_t length)
+{
+    const char* charmap = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const size_t charmapLength = strlen(charmap);
+    auto generator = [&](){ return charmap[rand()%charmapLength]; };
+    string result;
+    result.reserve(length);
+    generate_n(back_inserter(result), length, generator);
+    return result;
+}
+
 
 TEST(ProtocolTest, encodeERR)
 {
-    string msgExample = "ssh-rsa 23232323 ERR AAAAB3NzaC1yc2EAAAABJQAAAQB/nAmOjTmezNUDKYvEeIRf2YnwM9/uUG1d0BYsc8/tRtx+RGi7N2lUbp728MXGwdnL9od4cItzky/zVdLZE2cycOa18xBK9cOWmcKS0A8FYBxEQWJ/q9YVUgZbFKfYGaGQxsER+A0w/fX8ALuk78ktP31K69LcQgxIsl7rNzxsoOQKJ/CIxOGMMxczYTiEoLvQhapFQMs3FL96didKr/QbrfB1WT6s3838SEaXfgZvLef1YB2xmfhbT9OXFE3FXvh2UPBfN+ffE7iiayQf/2XR+8j4N4bW30DiPtOQLGUrH1y5X/rpNZNlWW2+jGIxqZtgWg7lTy3mXy5x836Sj/6L";
+    string msgExample = move(generateRandomString(260));
 
-    auto crt = new Error;
-    crt->setMsg(msgExample);
+    auto err = new Error;
+    err->setMsg(msgExample);
 
-    auto enc = encode(crt, ACK);
+    auto enc = encode(err, ACK);
     EXPECT_EQ(enc.size(), 3);
 
     string msgRet;
@@ -136,9 +151,9 @@ TEST(ProtocolTest, encodeERR)
         if (head->flags & ERR && head->flags & ACK && head->flags & PRT)
         {
             EXPECT_EQ(head->flags, ERR | ACK | PRT);
-            if (auto *ptr = dynamic_cast<Certificate *>(head->deserialize(i)))
+            if (auto *ptr = dynamic_cast<Error *>(head->deserialize(i)))
             {
-                msgRet += ptr->getCertificate();
+                msgRet += ptr->getMsg();
                 delete ptr;
             }
             i++;
@@ -146,6 +161,7 @@ TEST(ProtocolTest, encodeERR)
     }
     EXPECT_TRUE(msgExample == msgRet);
 }
+
 
 
 TEST(ProtocolTest, encodeFIN)

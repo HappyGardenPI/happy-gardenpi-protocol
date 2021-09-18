@@ -73,6 +73,7 @@ namespace hgardenpi::protocol
             /**
              * @brief Error package, empty package for communicate an error
              * @note this flag can contain only one flag/package
+             * @note check before syn and crt
              */
             ERR = 0x03,
 

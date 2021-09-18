@@ -25,13 +25,16 @@
 // Created by Antonio Salsi on 11/09/21.
 //
 
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wshadow"
+
 #include "hgardenpi-protocol/packages/aggregation.hpp"
 
 #include <limits>
 #include <new>
 #include <stdexcept>
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wshadow"
+#include <cstring>
 using namespace std;
 
 #include "hgardenpi-protocol/constants.hpp"

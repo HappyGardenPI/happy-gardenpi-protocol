@@ -78,6 +78,19 @@ namespace hgardenpi::protocol
              * @brief status of station
              */
             Status status = Status::ACTIVE;
+
+            /**
+             * Serialize self to buffer
+             * @return self serialized
+             */
+            [[nodiscard]] inline Buffer serialize() const override { return {nullptr, 0}; }
+
+            /**
+             * @brief Deserialize from buffer to Station
+             * @param buffer of data
+             * @return new instance of Aggregation or nullptr if error, to deallocate
+             */
+            [[nodiscard]] static Station * deserialize(const uint8_t *buffer, uint8_t, uint8_t) noexcept { return new Station; }
         };
 #pragma pack(pop)
     }

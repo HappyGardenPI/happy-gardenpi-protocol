@@ -42,23 +42,18 @@ namespace hgardenpi::protocol
         {
             Package * ret = nullptr;
             //check which child package was packaged
-            if (flags & AGG) //is Flags::AGG package
+            if ((flags & AGG) == AGG) //is Flags::AGG package
                 ret = Aggregation::deserialize(payload, length, chunkOfPackage);
-            else if (flags & CRT) //is Flags::CRT package
-                ret = Certificate::deserialize(payload, length, chunkOfPackage);
-            else if (flags & FIN) //is Flags::FIN package
-            {
-
-            } else if (flags & STA) //is Flags::STA package
-            {
-
-            } else if (flags & ERR) //is Flags::ERR package
-            {
+            else if ((flags & ERR) == ERR) //is Flags::ERR package
                 ret = Error::deserialize(payload, length, chunkOfPackage);
-            } else if (flags & SYN) //is Flags::SYN package
-            {
-
-            }
+            else if ((flags & CRT) == CRT) //is Flags::CRT package
+                ret = Certificate::deserialize(payload, length, chunkOfPackage);
+            else if ((flags & FIN) == FIN) //is Flags::FIN package
+                ret = Finish::deserialize(payload, length, chunkOfPackage);
+            else if ((flags & STA) == STA) //is Flags::STA package
+                ret = Station::deserialize(payload, length, chunkOfPackage);
+            else if ((flags & SYN) == SYN) //is Flags::SYN package
+                ret = Synchro::deserialize(payload, length, chunkOfPackage);
             return ret;
         }
 

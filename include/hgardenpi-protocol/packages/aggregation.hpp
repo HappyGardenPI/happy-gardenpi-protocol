@@ -34,8 +34,6 @@
 #include <utility>
 #include <string>
 
-#include <hgardenpi-protocol/constants.hpp>
-
 namespace hgardenpi::protocol
 {
     inline namespace v1
@@ -206,7 +204,7 @@ namespace hgardenpi::protocol
              * @param buffer of data
              * @return self serialized
              */
-            [[nodiscard]] Buffer serialize() const;
+            [[nodiscard]] Buffer serialize() const override;
 
             /**
              * @brief Deserialize from buffer to Aggregation

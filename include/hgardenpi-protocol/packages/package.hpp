@@ -29,6 +29,8 @@
 
 #include <cstdint>
 
+#include <hgardenpi-protocol/constants.hpp>
+
 namespace hgardenpi::protocol
 {
     inline namespace v1
@@ -41,6 +43,13 @@ namespace hgardenpi::protocol
         struct Package
         {
             virtual inline ~Package() = default;
+
+            /**
+             * @brief Serialize self to buffer
+             * @param buffer of data
+             * @return self serialized
+             */
+            [[nodiscard]] virtual Buffer serialize() const = 0;
         };
 #pragma pack(pop)
     }
