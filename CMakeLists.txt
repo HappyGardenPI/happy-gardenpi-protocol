@@ -40,6 +40,7 @@ add_library(hgardenpi_protocol
         src/utilities/stringutils.cpp
         src/packages/aggregation.cpp
         src/packages/certificate.cpp
+        src/packages/error.cpp
         src/head.cpp
         src/protocol.cpp)
 

@@ -49,7 +49,7 @@ namespace hgardenpi::protocol
             /**
              * @brief data payload length
              */
-            uint16_t certificateLen = 0;
+            uint16_t length = 0;
             /**
              * @brief data payload
              */

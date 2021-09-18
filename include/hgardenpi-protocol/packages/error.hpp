@@ -26,15 +26,18 @@
 //
 
 #pragma once
+
 #include <string>
 
 #include <hgardenpi-protocol/packages/package.hpp>
 #include <hgardenpi-protocol/constants.hpp>
 
+
 namespace hgardenpi::protocol
 {
     inline namespace v1
     {
+
         using std::string;
 
         /**
@@ -44,9 +47,50 @@ namespace hgardenpi::protocol
         struct Error final : public Package
         {
             /**
+            * @brief data payload length
+            */
+            uint16_t length = 0;
+            /**
              * @brief message error
              */
-            string msg;
+            char *msg;
+
+            /**
+             * Serialize self to buffer
+             * @return self serialized
+             */
+            [[nodiscard]] Buffer serialize() const;
+
+            /**
+             * @brief Deserialize from buffer to Error
+             * @param buffer of data
+             * @param length of data
+             * @param chunkOfPackage number of chunk id  is split in more chunks
+             * @return new instance of Certificate or nullptr if error, to deallocate
+             */
+            [[nodiscard]] static Error * deserialize(const uint8_t *buffer, uint8_t length , uint8_t chunkOfPackage) noexcept;
+
+            /**
+             * @brief Get msg
+             * @return msg
+             */
+            [[maybe_unused]] [[nodiscard]] string getMsg() const noexcept;
+
+            /**
+             * @brief Set mesg
+             * @param msg
+             */
+            [[maybe_unused]] void setMsg(const string &msg) noexcept;
+
+            /**
+             * @brief Set msg
+             * @param msg
+             */
+            [[maybe_unused]] inline void setMsg(const string &&msg) noexcept
+            {
+                setMsg(msg);
+            }
+
         };
 #pragma pack(pop)
     }

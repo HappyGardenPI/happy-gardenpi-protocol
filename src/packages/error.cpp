@@ -25,7 +25,7 @@
 // Created by Antonio Salsi on 15/09/21.
 //
 
-#include "hgardenpi-protocol/packages/certificate.hpp"
+#include "hgardenpi-protocol/packages/error.hpp"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wshadow"
@@ -33,12 +33,15 @@ using namespace std;
 
 #include "hgardenpi-protocol/constants.hpp"
 
+#include <stdexcept>
+#include <memory>
+
 namespace hgardenpi::protocol
 {
     inline namespace v1
     {
 
-        Buffer Certificate::serialize() const
+        Buffer Error::serialize() const
         {
             Buffer ret;
 
@@ -55,19 +58,19 @@ namespace hgardenpi::protocol
             memcpy(ret.first, &length, sizeof(length));
 
             //copy certificate field to payload
-            memcpy(ret.first + sizeof(length), &certificate[0], length);
+            memcpy(ret.first + sizeof(length), &msg[0], length);
 
             //return Buffer
             return ret;
         }
 
-        Certificate * Certificate::deserialize(const uint8_t *buffer, uint8_t length , uint8_t chunkOfPackage) noexcept
+        Error * Error::deserialize(const uint8_t *buffer, uint8_t length , uint8_t chunkOfPackage) noexcept
         {
             if (!buffer)
             {
                 return nullptr;
             }
-            auto ret = new Certificate;
+            auto ret = new Error;
 
 
             if (chunkOfPackage == 0)
@@ -76,37 +79,37 @@ namespace hgardenpi::protocol
                 memset(&ret->length, 0, sizeof(ret->length));
                 memcpy(&ret->length, buffer, sizeof(ret->length));
 
-                ret->certificate = new char[ret->length];
-                memset(ret->certificate, 0, ret->length);
-                memcpy(ret->certificate, buffer + sizeof(ret->length), ret->length);
+                ret->msg = new char[ret->length];
+                memset(ret->msg, 0, ret->length);
+                memcpy(ret->msg, buffer + sizeof(ret->length), ret->length);
 
             }
             else
             {
                 ret->length = length;
-                ret->certificate = new char[ret->length];
-                memset(ret->certificate, 0, ret->length);
-                memcpy(ret->certificate, buffer, ret->length);
+                ret->msg = new char[ret->length];
+                memset(ret->msg, 0, ret->length);
+                memcpy(ret->msg, buffer, ret->length);
             }
             return ret;
         }
 
-        string Certificate::getCertificate() const noexcept
+        string Error::getMsg() const noexcept
         {
             char *c = new(nothrow) char[length + 1];
             memset(c, 0, length + 1);
-            memcpy(c, certificate, length);
+            memcpy(c, msg, length);
             string ret(c);
             delete [] c;
             return ret;
         }
 
-        void Certificate::setCertificate(const string &certificate) noexcept
+        void Error::setMsg(const string &certificate) noexcept
         {
             length = certificate.size();
-            this->certificate = new char [length];
-            memset(this->certificate, 0, length);
-            memcpy(this->certificate, &certificate[0], length);
+            this->msg = new char [length];
+            memset(this->msg, 0, length);
+            memcpy(this->msg, &certificate[0], length);
         }
 
     }

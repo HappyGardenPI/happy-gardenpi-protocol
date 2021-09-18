@@ -54,7 +54,7 @@ namespace hgardenpi::protocol
 
             } else if (flags & ERR) //is Flags::ERR package
             {
-
+                ret = Error::deserialize(payload, length, chunkOfPackage);
             } else if (flags & SYN) //is Flags::SYN package
             {
 

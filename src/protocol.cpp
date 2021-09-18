@@ -255,19 +255,13 @@ namespace hgardenpi::protocol
                 delete data.payload;
             } else if (auto ptr = dynamic_cast<Error *>(package); ptr) //is Flags::ERR package
             {
-                //update length
-                data.payloadLength = ptr->msg.size();
+                auto &&[buf, size] = ptr->serialize();
 
                 //alloc memory
-                data.payload = new(nothrow) uint8_t[data.payloadLength];
-                if (!data.payload)
-                {
-                    throw runtime_error("no memory for data.payload");
-                }
+                data.payload = buf;
 
-                //copy certificate field to payload
-                memcpy(reinterpret_cast<void *>(data.payload), reinterpret_cast<uint8_t *>(&ptr->msg[0]),
-                       data.payloadLength);
+                //set length of package
+                data.payloadLength = size;
 
                 //update flags
                 data.flags = ERR | additionalFags;
@@ -363,6 +357,10 @@ namespace hgardenpi::protocol
                 if (data.flags & ACK)
                 {
                     flags |= ACK;
+                }
+                if (data.flags & PRT)
+                {
+                    flags |= PRT;
                 }
                 auto &&enc = encodeStart(fin, static_cast<Flags>(flags));
 

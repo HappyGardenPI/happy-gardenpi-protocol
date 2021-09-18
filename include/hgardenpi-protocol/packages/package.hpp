@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include <cstdint>
+
 namespace hgardenpi::protocol
 {
     inline namespace v1
