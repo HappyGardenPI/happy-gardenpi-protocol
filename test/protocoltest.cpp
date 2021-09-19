@@ -154,12 +154,14 @@ TEST(ProtocolTest, encodeERR)
             EXPECT_EQ(head->flags, ERR | ACK | PRT);
             if (auto *ptr = dynamic_cast<Error *>(head->deserialize(i)))
             {
-                msgRet += ptr->getMsg();
+                string s = ptr->getMsg();
+                msgRet += s;
                 delete ptr;
             }
             i++;
         }
     }
+
     EXPECT_TRUE(msgExample == msgRet);
 }
 

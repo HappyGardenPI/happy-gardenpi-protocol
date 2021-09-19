@@ -52,7 +52,16 @@ namespace hgardenpi::protocol
             /**
              * @brief message error
              */
-            char *msg;
+            char *msg = nullptr;
+
+            inline ~Error() noexcept override
+            {
+                if (msg)
+                {
+                    delete [] msg;
+                    msg = nullptr;
+                }
+            }
 
             /**
              * Serialize self to buffer

@@ -54,6 +54,15 @@ namespace hgardenpi::protocol
              */
             char *certificate = nullptr;
 
+            inline ~Certificate() noexcept override
+            {
+                if (certificate)
+                {
+                    delete [] certificate;
+                    certificate = nullptr;
+                }
+            }
+
             /**
              * Serialize self to buffer
              * @return self serialized

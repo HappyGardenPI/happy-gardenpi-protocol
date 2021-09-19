@@ -39,6 +39,11 @@ namespace hgardenpi::protocol
         using std::string;
 
         /**
+         * @brief data payload length
+         */
+        uint16_t length = 0;
+
+        /**
          * @brief Synchro package utilize for init communication, linked to Flags::SYN
          */
 #pragma pack(push, n)
