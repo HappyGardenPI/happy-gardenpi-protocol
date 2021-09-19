@@ -25,6 +25,9 @@
 // Created by Antonio Salsi on 16/08/21.
 //
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wshadow"
+
 #pragma once
 #include <string>
 
@@ -39,16 +42,16 @@ namespace hgardenpi::protocol
         using std::string;
 
         /**
-         * @brief data payload length
-         */
-        uint16_t length = 0;
-
-        /**
          * @brief Synchro package utilize for init communication, linked to Flags::SYN
          */
 #pragma pack(push, n)
         struct Synchro final : public Package
         {
+            /**
+             * @brief data payload length
+             */
+            uint16_t length = 0;
+
             /**
              * @brief serial of device
              */
@@ -64,18 +67,41 @@ namespace hgardenpi::protocol
             }
 
             /**
+ * @brief Get msg
+ * @return msg
+ */
+            [[maybe_unused]] [[nodiscard]] string getSerial() const noexcept;
+
+            /**
+             * @brief Set serial
+             * @param serial
+             */
+            [[maybe_unused]] void setSerial(const string &serial) noexcept;
+
+            /**
+             * @brief Set serial
+             * @param serial
+             */
+            [[maybe_unused]] inline void setSerial(const string &&serial) noexcept
+            {
+                setSerial(serial);
+            }
+
+            /**
              * @brief Deserialize from buffer to Synchro
              * @param buffer of data
              * @return new instance of Aggregation or nullptr if error, to deallocate
              */
-            [[nodiscard]] static Synchro * deserialize(const uint8_t *buffer, uint8_t, uint8_t) noexcept { return new Synchro; }
+            [[nodiscard]] static Synchro * deserialize(const uint8_t *buffer, uint8_t, uint8_t) noexcept;
 
             /**
              * Serialize self to buffer
              * @return self serialized
              */
-            [[nodiscard]] inline Buffer serialize() const override { return {nullptr, 0}; }
+            [[nodiscard]] inline Buffer serialize() const override;
         };
 #pragma pack(pop)
     }
 }
+
+#pragma clang diagnostic pop

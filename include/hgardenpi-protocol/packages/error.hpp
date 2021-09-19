@@ -85,7 +85,7 @@ namespace hgardenpi::protocol
             [[maybe_unused]] [[nodiscard]] string getMsg() const noexcept;
 
             /**
-             * @brief Set mesg
+             * @brief Set msg
              * @param msg
              */
             [[maybe_unused]] void setMsg(const string &msg) noexcept;

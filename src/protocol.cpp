@@ -188,110 +188,37 @@ namespace hgardenpi::protocol
 
             //check which child package was packaged
             if (auto ptr = dynamic_cast<Aggregation *>(package); ptr) //is Flags::AGG package
-            {
-
-                auto &&[buf, size] = ptr->serialize();
-
-                //alloc memory
-                data.payload = buf;
-
-                //set length of package
-                data.payloadLength = size;
-
                 //update flags
                 data.flags = AGG | additionalFags;
-
-                ret = move(encodeRecursive(data, ptr));
-
-                delete[] data.payload;
-            } else if (auto ptr = dynamic_cast<Certificate *>(package); ptr) //is Flags::CRT package
-            {
-                auto &&[buf, size] = ptr->serialize();
-
-                //alloc memory
-                data.payload = buf;
-
-                //set length of package
-                data.payloadLength = size;
-
+            else if (auto ptr = dynamic_cast<Certificate *>(package); ptr) //is Flags::CRT package
                 //update flags
                 data.flags = CRT | additionalFags;
-
-                ret = move(encodeRecursive(data, ptr));
-
-                delete[] data.payload;
-            } else if (dynamic_cast<Finish *>(package)) //is Flags::FIN package
-            {
-                //create new head instance
-                auto &&head = newHead();
-
+            else if (dynamic_cast<Finish *>(package)) //is Flags::FIN package
                 //add package flag
-                head->flags = FIN | additionalFags;
-
-                ret.push_back(head);
-            } else if (auto ptr = dynamic_cast<Station *>(package); ptr) //is Flags::STA package
-            {
-                //set length of package
-                data.payloadLength = sizeof(Station);
-
-                //alloc memory
-                data.payload = new(nothrow) uint8_t[data.payloadLength];
-                if (!data.payload)
-                {
-                    throw runtime_error("no memory for data.payload");
-                }
-
-                //copy structure to payload
-                memcpy(reinterpret_cast<void *>(data.payload), reinterpret_cast<const void *>(ptr), data.payloadLength);
-
-                //create new head instance
-                auto &&head = newHead();
-
+                data.flags = FIN | additionalFags;
+            else if (auto ptr = dynamic_cast<Station *>(package); ptr) //is Flags::STA package
                 //update flags
                 data.flags = STA | additionalFags;
-
-                ret = move(encodeRecursive(data, ptr));
-
-                delete data.payload;
-            } else if (auto ptr = dynamic_cast<Error *>(package); ptr) //is Flags::ERR package
-            {
-                auto &&[buf, size] = ptr->serialize();
-
-                //alloc memory
-                data.payload = buf;
-
-                //set length of package
-                data.payloadLength = size;
-
+            else if (auto ptr = dynamic_cast<Error *>(package); ptr) //is Flags::ERR package
                 //update flags
                 data.flags = ERR | additionalFags;
-
-                ret = move(encodeRecursive(data, ptr));
-
-                delete[] data.payload;
-            } else if (auto ptr = dynamic_cast<Synchro *>(package); ptr) //is Flags::SYN package
-            {
-                //check right serial size
-                if (strlen(ptr->serial) > HEAD_MAX_SERIAL_SIZE)
-                {
-                    throw runtime_error("serial too long max 255 chars");
-                }
-
-                //create new head instance
-                auto &&head = newHead();
-
+            else if (auto ptr = dynamic_cast<Synchro *>(package); ptr) //is Flags::SYN package
                 //add package flag
-                head->flags = SYN | additionalFags;
-                head->length = strlen(ptr->serial);
-
-                //copy serial to payload
-                strncpy(reinterpret_cast<char *>(head->payload), ptr->serial, head->length);
-
-                ret.push_back(head);
-            } else
-            {
+                data.flags = SYN | additionalFags;
+            else
                 throw runtime_error("class not child of Package");
-            }
+
+            auto &&[buf, size] = package->serialize();
+
+            //alloc memory
+            data.payload = buf;
+
+            //set length of package
+            data.payloadLength = size;
+
+            ret = move(encodeRecursive(data, package));
+
+            delete[] data.payload;
 
             //free package
             delete package;

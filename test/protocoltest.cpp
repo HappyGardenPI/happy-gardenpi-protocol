@@ -27,9 +27,7 @@
 
 #include <gtest/gtest.h>
 
-#include <fstream>
 #include <string>
-#include <random>
 using namespace std;
 
 #include <hgardenpi-protocol/protocol.hpp>
@@ -217,41 +215,18 @@ TEST(ProtocolTest, encodeSTA)
 
 TEST(ProtocolTest, encodeSYN)
 {
-    auto syn1 = new Synchro;
-    syn1->serial = new char[6];
-    syn1->serial[6] = 0;
-    strncpy(syn1->serial, "test1", 6);
+    auto syn = new Synchro;
+    syn->setSerial("serial123456789");
 
-    auto encode1 = encode(syn1);
-    EXPECT_EQ(encode1.size(), 1);
+    auto enc = encode(syn, ACK);
+    EXPECT_EQ(enc.size(), 1);
 
-    auto decode1 = decode(encode1[0].first);
-    EXPECT_EQ(decode1->flags, SYN);
+    auto head = decode(enc[0].first);
+    EXPECT_EQ(head->flags, SYN | ACK);
 
-    string payloadStr;
-    for (int i = 0; i < decode1->length; i++)
+    if (auto *ptr = dynamic_cast<Synchro *>(head->deserialize()))
     {
-        payloadStr += decode1->payload[i];
+        EXPECT_TRUE(ptr->getSerial() == "serial123456789");
+        delete ptr;
     }
-
-    EXPECT_TRUE(payloadStr == "test1");
-
-    auto syn2 = new Synchro;
-    syn2->serial = new char[6];
-    syn2->serial[6] = 0;
-    strncpy(syn2->serial, "test2", 6);
-
-    auto encode2 = encode(syn2, ACK);
-    EXPECT_EQ(encode2.size(), 1);
-
-    auto decode2 = decode(encode2[0].first);
-    EXPECT_EQ(decode2->flags, SYN | ACK);
-
-    payloadStr = "";
-    for (int i = 0; i < decode2->length; i++)
-    {
-        payloadStr += decode2->payload[i];
-    }
-
-    EXPECT_TRUE(payloadStr == "test2");
 }
