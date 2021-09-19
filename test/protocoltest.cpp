@@ -160,6 +160,8 @@ TEST(ProtocolTest, encodeERR)
         }
     }
 
+    cout << msgExample << endl;
+    cout << msgRet << endl;
     EXPECT_TRUE(msgExample == msgRet);
 }
 

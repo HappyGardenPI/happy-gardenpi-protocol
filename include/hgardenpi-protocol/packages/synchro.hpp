@@ -98,7 +98,7 @@ namespace hgardenpi::protocol
              * Serialize self to buffer
              * @return self serialized
              */
-            [[nodiscard]] inline Buffer serialize() const override;
+            [[nodiscard]] Buffer serialize() const override;
         };
 #pragma pack(pop)
     }

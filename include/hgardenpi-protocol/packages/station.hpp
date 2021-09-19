@@ -25,6 +25,8 @@
 // Created by Antonio Salsi on 16/08/21.
 //
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wshadow"
 #pragma once
 
 #include <hgardenpi-protocol/packages/package.hpp>
@@ -49,14 +51,23 @@ namespace hgardenpi::protocol
             * @brief id in db
             */
             uint32_t id = 0;
+
+            /**
+            * @brief name length
+            */
+            uint16_t nameLen = 0;
             /**
              * @brief name of station
              */
-            string name;
+            char *name = nullptr;
+            /**
+            * @brief description length
+            */
+            uint16_t descriptionLen = 0;
             /**
              * @brief description of station
              */
-             string description;
+            char *description = nullptr;
             /**
              * @brief relay number association
              */
@@ -79,19 +90,77 @@ namespace hgardenpi::protocol
              */
             Status status = Status::ACTIVE;
 
+            inline ~Station() override
+            {
+                if (name)
+                {
+                    delete[] name;
+                    name = nullptr;
+                }
+                if (description)
+                {
+                    delete[] description;
+                    description = nullptr;
+                }
+            }
+
+            /**
+             * @brief Get name
+             * @return msg
+             */
+            [[maybe_unused]] [[nodiscard]] string getName() const noexcept;
+
+            /**
+             * @brief Set name
+             * @param name
+             */
+            [[maybe_unused]] void setName(const string &name) noexcept;
+
+            /**
+             * @brief Set name
+             * @param name
+             */
+            [[maybe_unused]] inline void setName(const string &&name) noexcept
+            {
+                setName(name);
+            }
+
+            /**
+             * @brief Get description
+             * @return msg
+             */
+            [[maybe_unused]] [[nodiscard]] string getDescription() const noexcept;
+
+            /**
+             * @brief Set description
+             * @param description
+             */
+            [[maybe_unused]] void setDescription(const string &description) noexcept;
+
+            /**
+             * @brief Set description
+             * @param description
+             */
+            [[maybe_unused]] inline void setDescription(const string &&description) noexcept
+            {
+                setDescription(description);
+            }
+
             /**
              * Serialize self to buffer
              * @return self serialized
              */
-            [[nodiscard]] inline Buffer serialize() const override { return {nullptr, 0}; }
+            [[nodiscard]] Buffer serialize() const override;
 
             /**
              * @brief Deserialize from buffer to Station
              * @param buffer of data
              * @return new instance of Aggregation or nullptr if error, to deallocate
              */
-            [[nodiscard]] static Station * deserialize(const uint8_t *buffer, uint8_t, uint8_t) noexcept { return new Station; }
+            [[nodiscard]] static Station * deserialize(const uint8_t *buffer, uint8_t, uint8_t) noexcept;
         };
 #pragma pack(pop)
     }
 }
+
+#pragma clang diagnostic pop

@@ -108,6 +108,26 @@ namespace hgardenpi::protocol
              * @brief element error
              */
             ERROR,
+            /**
+             * @brief insert element
+             */
+             INSERT,
+            /**
+            * @brief insert element
+            */
+            UPDATE,
+            /**
+            * @brief insert element
+            */
+            DELETE,
+            /**
+            * @brief insert element
+            */
+            SHOT,
+            /**
+            * @brief insert element
+            */
+            STOP,
         };
 #pragma pack(pop)
 

@@ -41,9 +41,10 @@ add_library(hgardenpi_protocol
         src/packages/aggregation.cpp
         src/packages/certificate.cpp
         src/packages/error.cpp
+        src/packages/station.cpp
         src/packages/synchro.cpp
         src/head.cpp
-        src/protocol.cpp)
+        src/protocol.cpp src/packages/station.cpp)
 
 target_include_directories (hgardenpi_protocol PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include )
 
