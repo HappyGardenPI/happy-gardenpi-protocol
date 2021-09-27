@@ -33,6 +33,10 @@
 #include <hgardenpi-protocol/packages/synchro.hpp>
 #include <hgardenpi-protocol/packages/error.hpp>
 
+#include <hgardenpi-protocol/utilities/stringutils.hpp>
+#include <iostream>
+using namespace std;
+
 namespace hgardenpi::protocol
 {
     inline namespace v1
@@ -40,6 +44,8 @@ namespace hgardenpi::protocol
 
         [[nodiscard]] Package *Head::deserialize(uint8_t chunkOfPackage) const noexcept
         {
+            cout << "Head::deserialize " << stringHexToString(payload, length) << " " << to_string(length) << endl;
+
             Package * ret = nullptr;
             //check which child package was packaged
             if ((flags & AGG) == AGG) //is Flags::AGG package

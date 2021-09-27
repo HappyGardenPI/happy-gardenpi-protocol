@@ -29,6 +29,8 @@
 #include <vector>
 #include <sstream>
 
+#include <hgardenpi-protocol/constants.hpp>
+
 namespace hgardenpi::protocol
 {
     inline namespace v1
@@ -136,7 +138,7 @@ namespace hgardenpi::protocol
          * @param upperCase force uppercase
          * @return string convderted
          */
-        [[maybe_unused]] string stringHexToString(const uint8_t *bytes, size_t size, bool upperCase = true) noexcept; //
+        [[maybe_unused]] string stringHexToString(const uint8_t *bytes, size_t size, bool upperCase = true) noexcept;
 
         /**
          * @brief Convert string to lower case

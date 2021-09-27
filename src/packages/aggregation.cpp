@@ -170,16 +170,18 @@ namespace hgardenpi::protocol
             size += sizeof(uint16_t);
             memcpy(buf + size, &status, sizeof(status));
 
-            return {buf, size};
+            return {shared_ptr<uint8_t []>(buf), size};
         }
 
-        Aggregation * Aggregation::deserialize(const uint8_t *buffer, uint8_t, uint8_t) noexcept
+        Aggregation * Aggregation::deserialize(const uint8_t *buffer, uint8_t len, uint8_t) noexcept
         {
             if (!buffer)
             {
                 return nullptr;
             }
             size_t size = 0;
+
+            //cout << stringHexToString(buffer, len) << endl;
 
             auto *ret = new Aggregation;
             ret->id = buffer[size];

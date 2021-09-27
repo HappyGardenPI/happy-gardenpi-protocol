@@ -33,9 +33,11 @@
 #include <stdexcept>
 #include <memory>
 #include <cstring>
+#include <iostream>
 using namespace std;
 
-#include "hgardenpi-protocol/constants.hpp"
+#include <hgardenpi-protocol/utilities/stringutils.hpp>
+#include <hgardenpi-protocol/constants.hpp>
 
 namespace hgardenpi::protocol
 {
@@ -60,13 +62,15 @@ namespace hgardenpi::protocol
             memcpy(this->serial, &serial[0], length);
         }
 
-        Synchro *Synchro::deserialize(const uint8_t *buffer, uint8_t, uint8_t) noexcept
+        Synchro *Synchro::deserialize(const uint8_t *buffer, uint8_t len, uint8_t) noexcept
         {
             if (!buffer)
             {
                 return nullptr;
             }
             auto ret = new Synchro;
+
+            cout << "deserialize " << stringHexToString(buffer, len) << " " << to_string(len) << endl;
 
             //set length of certificate and payload
             memset(&ret->length, 0, sizeof(ret->length));
@@ -91,17 +95,19 @@ namespace hgardenpi::protocol
             ret.second = length + sizeof(length);
 
             //alloc memory
-            ret.first = new(nothrow) uint8_t[ret.second];
+            ret.first = shared_ptr<uint8_t []>(new(nothrow) uint8_t[ret.second]);
             if (!ret.first)
             {
                 throw runtime_error("no memory for data");
             }
 
             //copy cert length
-            memcpy(ret.first, &length, sizeof(length));
+            memcpy(ret.first.get(), &length, sizeof(length));
 
             //copy certificate field to payload
-            memcpy(ret.first + sizeof(length), &serial[0], length);
+            memcpy(ret.first.get() + sizeof(length), &serial[0], length);
+
+            cout << "serialize " << stringHexToString(ret.first.get(), ret.second) << " " << to_string(ret.second) << endl;
 
             //return Buffer
             return ret;

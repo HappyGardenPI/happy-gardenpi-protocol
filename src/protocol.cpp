@@ -211,18 +211,18 @@ namespace hgardenpi::protocol
             auto &&[buf, size] = package->serialize();
 
             //alloc memory
-            data.payload = buf;
+            data.payload = buf.get();
 
             //set length of package
             data.payloadLength = size;
 
             ret = move(encodeRecursive(data, package));
 
-            delete[] data.payload;
+            //delete[] data.payload;
 
             //free package
-            delete package;
-            package = nullptr;
+            //delete package;
+//            package = nullptr;
 
             return ret;
         }
@@ -296,6 +296,7 @@ namespace hgardenpi::protocol
                     ret.push_back(enc[0]);
                 }
 
+                delete fin;
             }
 
             return ret;
@@ -333,19 +334,15 @@ namespace hgardenpi::protocol
                 throw runtime_error("payload length exceed");
             }
 
+            //alloc heap
             Head::Ptr head = newHead();
             head->length = data.payloadLength;
             head->flags = data.flags;
 
-            //alloc heap
-            head->payload = new(nothrow) uint8_t[data.payloadLength];
-            if (!head->payload)
-            {
-                throw runtime_error("no memory for head->payload");
-            }
             //set payload to 0
             memset(head->payload, 0, head->length);
 
+            //copy data payload to head
             memcpy(head->payload, data.payloadPtr, data.payloadLength);
 
             return head;
@@ -372,7 +369,7 @@ namespace hgardenpi::protocol
                 throw runtime_error("version of range");
             }
 
-            //check max linit of value
+            //check max init of value
             if (ret->flags > 0xE0)
             {
                 throw runtime_error("head flags out of range or more packages set");
@@ -411,7 +408,7 @@ namespace hgardenpi::protocol
         {
             buffer.first[2] = id;
 
-            uint16_t crc16Calc = crc_16(buffer.first, buffer.second - 2);
+            uint16_t crc16Calc = crc_16(buffer.first.get(), buffer.second - 2);
 
             buffer.first[buffer.second - 2] = static_cast<uint8_t>((crc16Calc & 0x00FF));
             buffer.first[buffer.second - 1] = static_cast<uint8_t>((crc16Calc & 0xFF00) >> 0x08);

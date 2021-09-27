@@ -30,13 +30,14 @@
 #include <cstdlib>
 #include <cstdint>
 #include <utility>
+#include <memory>
 
 namespace hgardenpi::protocol
 {
     inline namespace v1
     {
 
-        typedef std::pair<uint8_t *, uint16_t> Buffer;
+        typedef std::pair<std::shared_ptr<uint8_t []>, uint16_t> Buffer;
 
         /**
          * Flags used in Head

@@ -33,6 +33,7 @@
 #include <stdexcept>
 #include <memory>
 #include <cstring>
+#include <iostream>
 using namespace std;
 
 #include "hgardenpi-protocol/constants.hpp"
@@ -49,17 +50,17 @@ namespace hgardenpi::protocol
             ret.second = length + sizeof(length);
 
             //alloc memory
-            ret.first = new(nothrow) uint8_t[ret.second];
+            ret.first = shared_ptr<uint8_t []>(new(nothrow) uint8_t[ret.second]);
             if (!ret.first)
             {
                 throw runtime_error("no memory for data");
             }
 
             //copy cert length
-            memcpy(ret.first, &length, sizeof(length));
+            memcpy(ret.first.get(), &length, sizeof(length));
 
             //copy certificate field to payload
-            memcpy(ret.first + sizeof(length), &msg[0], length);
+            memcpy(ret.first.get() + sizeof(length), &msg[0], length);
 
             //return Buffer
             return ret;
