@@ -92,7 +92,7 @@ namespace hgardenpi::protocol
              * @param buffer of data
              * @return new instance of Aggregation or nullptr if error, to deallocate
              */
-            [[nodiscard]] static Synchro * deserialize(const uint8_t *buffer, uint8_t, uint8_t) noexcept;
+            [[nodiscard]] static Synchro * deserialize(const uint8_t *buffer, uint8_t, uint8_t);
 
             /**
              * Serialize self to buffer

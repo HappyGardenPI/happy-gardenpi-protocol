@@ -27,6 +27,20 @@
 
 #pragma once
 
+#define HGARDENPI_PROTOCOL_SETTER(field, fieldLength)  \
+fieldLength = field.size(); \
+this->field = new char [fieldLength]; \
+memset(this->field, 0, fieldLength); \
+memcpy(this->field, &field[0], fieldLength);
+
+#define HGARDENPI_PROTOCOL_GETTER(field, fieldLength)  \
+char *c = new(nothrow) char[fieldLength + 1]; \
+memset(c, 0, fieldLength + 1); \
+memcpy(c, field, fieldLength); \
+string ret(c); \
+delete[] c; \
+return ret;
+
 #include <cstdint>
 
 #include <hgardenpi-protocol/constants.hpp>

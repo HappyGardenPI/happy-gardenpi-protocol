@@ -43,31 +43,35 @@ namespace hgardenpi::protocol
 {
     inline namespace v1
     {
-        static inline string bufferToString(const char *buffer, size_t size)
-        {
-            string ret;
-            for (size_t i = 0; i < size; i++)
-            {
-                ret += buffer[i];
-            }
-            return ret;
-        }
-
         [[nodiscard]] string Aggregation::getDescription() const noexcept
         {
-            return move(bufferToString(description, descriptionLen));
+            HGARDENPI_PROTOCOL_GETTER(description, descriptionLen)
         }
 
         [[nodiscard]] string Aggregation::getStart() const noexcept
         {
-            return move(bufferToString(start, startLen));
+            HGARDENPI_PROTOCOL_GETTER(start, startLen)
         }
 
         [[nodiscard]] string Aggregation::getEnd() const noexcept
         {
-            return move(bufferToString(end, endLen));
+            HGARDENPI_PROTOCOL_GETTER(end, endLen)
         }
 
+        void Aggregation::setDescription(const string &description) noexcept
+        {
+            HGARDENPI_PROTOCOL_SETTER(description, descriptionLen)
+        }
+
+        void Aggregation::setStart(const string &start) noexcept
+        {
+            HGARDENPI_PROTOCOL_SETTER(start, startLen)
+        }
+
+        void Aggregation::setEnd(const string &end) noexcept
+        {
+            HGARDENPI_PROTOCOL_SETTER(end, endLen)
+        }
 
         Buffer Aggregation::serialize() const
         {
@@ -173,7 +177,7 @@ namespace hgardenpi::protocol
             return {shared_ptr<uint8_t []>(buf), size};
         }
 
-        Aggregation * Aggregation::deserialize(const uint8_t *buffer, uint8_t len, uint8_t) noexcept
+        Aggregation * Aggregation::deserialize(const uint8_t *buffer, uint8_t len, uint8_t)
         {
             if (!buffer)
             {
@@ -184,6 +188,10 @@ namespace hgardenpi::protocol
             //cout << stringHexToString(buffer, len) << endl;
 
             auto *ret = new Aggregation;
+            if (!ret)
+            {
+                throw runtime_error("no memory for aggregation");
+            }
             ret->id = buffer[size];
             size += sizeof(uint8_t); //id
             ret->descriptionLen = buffer[size];
@@ -224,30 +232,6 @@ namespace hgardenpi::protocol
             memcpy(&ret->status, buffer + size, sizeof(Status));
 
             return ret;
-        }
-
-        void Aggregation::setDescription(const string &description) noexcept
-        {
-            descriptionLen = description.size();
-            this->description = new char [descriptionLen];
-            memset(this->description, 0, descriptionLen);
-            memcpy(this->description, &description[0], descriptionLen);
-        }
-
-        void Aggregation::setStart(const string &start) noexcept
-        {
-            startLen = start.size();
-            this->start = new char [startLen];
-            memset(this->start, 0, startLen);
-            memcpy(this->start, &start[0], startLen);
-        }
-
-        void Aggregation::setEnd(const string &end) noexcept
-        {
-            endLen = end.size();
-            this->end = new char [endLen];
-            memset(this->end, 0, endLen);
-            memcpy(this->end, &end[0], endLen);
         }
     }
 }

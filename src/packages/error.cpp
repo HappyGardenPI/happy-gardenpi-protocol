@@ -66,34 +66,45 @@ namespace hgardenpi::protocol
             return ret;
         }
 
-        Error * Error::deserialize(const uint8_t *buffer, uint8_t length , uint8_t chunkOfPackage) noexcept
+        Error * Error::deserialize(const uint8_t *buffer, uint8_t length , uint8_t chunkOfPackage)
         {
             if (!buffer)
             {
                 return nullptr;
             }
-            auto ret = new Error;
-
+            auto err = new(nothrow) Error;
+            if (!err)
+            {
+                throw runtime_error("no memory for err");
+            }
 
             if (chunkOfPackage == 0)
             {
                 //set length of certificate and payload
-                memset(&ret->length, 0, sizeof(ret->length));
-                memcpy(&ret->length, buffer, sizeof(ret->length));
+                memset(&err->length, 0, sizeof(err->length));
+                memcpy(&err->length, buffer, sizeof(err->length));
 
-                ret->msg = new char[ret->length];
-                memset(ret->msg, 0, ret->length);
-                memcpy(ret->msg, buffer + sizeof(ret->length), ret->length);
+                err->msg = new (nothrow) char[err->length];
+                if (!err->msg)
+                {
+                    throw runtime_error("no memory for msg");
+                }
+                memset(err->msg, 0, err->length);
+                memcpy(err->msg, buffer + sizeof(err->length), err->length);
 
             }
             else
             {
-                ret->length = length;
-                ret->msg = new char[ret->length];
-                memset(ret->msg, 0, ret->length);
-                memcpy(ret->msg, buffer, ret->length);
+                err->length = length;
+                err->msg = new (nothrow) char[err->length];
+                if (!err->msg)
+                {
+                    throw runtime_error("no memory for msg");
+                }
+                memset(err->msg, 0, err->length);
+                memcpy(err->msg, buffer, err->length);
             }
-            return ret;
+            return err;
         }
 
         string Error::getMsg() const noexcept

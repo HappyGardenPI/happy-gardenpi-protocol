@@ -28,7 +28,6 @@
 #include <hgardenpi-protocol/protocol.hpp>
 
 #include <stdexcept>
-#include <iostream>
 #include <memory>
 
 #pragma clang diagnostic push
@@ -67,7 +66,7 @@ namespace hgardenpi::protocol
             /**
              * @brief common payload length
              */
-            uint16_t payloadLength = 0;
+            uint16_t length = 0;
 
             /**
              * @brief flag of Head packages
@@ -75,11 +74,6 @@ namespace hgardenpi::protocol
             uint8_t flags = NOT_SET;
         };
 
-        /**
-         * @brief initialize Head::Ptr
-         * @return a new instance of Head::Ptr semi filled
-         */
-        static Head::Ptr newHead();
 
         /**
          * @brief initialize Head::Ptr with data
@@ -132,7 +126,6 @@ namespace hgardenpi::protocol
             vector<Buffer> ret;
             for (auto &&head: encodeStart(package, additionalFags))
             {
-
                 if (!head)
                 {
                     throw runtime_error("head nullptr");
@@ -170,6 +163,7 @@ namespace hgardenpi::protocol
 
                 ret.emplace_back(buf, 5 + head->length);
             }
+
             return ret;
         }
 #pragma clang diagnostic push
@@ -214,14 +208,12 @@ namespace hgardenpi::protocol
             data.payload = buf.get();
 
             //set length of package
-            data.payloadLength = size;
+            data.length = size;
 
             ret = move(encodeRecursive(data, package));
 
-            //delete[] data.payload;
-
             //free package
-            //delete package;
+//            delete package;
 //            package = nullptr;
 
             return ret;
@@ -233,7 +225,7 @@ namespace hgardenpi::protocol
             static_assert(is_base_of<Package, T>::value, "T is non subclass of Package");
 
             //verify length dimension
-            if (data.payloadLength < HEAD_MAX_PAYLOAD_SIZE)
+            if (data.length < HEAD_MAX_PAYLOAD_SIZE)
             {
                 //move pointer to filled payload if it's first head, il ret > 0 it means we are in recursion loop
                 if (ret.empty())
@@ -243,7 +235,7 @@ namespace hgardenpi::protocol
 
                 //create head
                 ret.push_back(move(newHead(data)));
-            } else if (data.payloadLength > 0)
+            } else if (data.length > 0)
             {
                 //check how many heads already build
                 if (ret.size() >= HEAD_MAX_PARTIAL)
@@ -255,7 +247,7 @@ namespace hgardenpi::protocol
                 Data dataLocal;
                 dataLocal.payload = data.payload;
                 dataLocal.payloadPtr = dataLocal.payload;
-                dataLocal.payloadLength = HEAD_MAX_PAYLOAD_SIZE;
+                dataLocal.length = HEAD_MAX_PAYLOAD_SIZE;
                 dataLocal.flags = data.flags | PRT;
 
                 //create head
@@ -265,7 +257,7 @@ namespace hgardenpi::protocol
                 dataLocal.payloadPtr += HEAD_MAX_PAYLOAD_SIZE;
 
                 //update size for next package
-                dataLocal.payloadLength = data.payloadLength - HEAD_MAX_PAYLOAD_SIZE;
+                dataLocal.length = data.length - HEAD_MAX_PAYLOAD_SIZE;
 
                 //create one more head, in recursive mode
                 encodeDataToHeads(ret, dataLocal, t);
@@ -303,47 +295,41 @@ namespace hgardenpi::protocol
         }
 
 
-        static inline Head::Ptr newHead()
-        {
-            //prepare return head with common information
-            Head::Ptr ret(new(nothrow) Head{
-                    .version = 0,
-                    .flags = NOT_SET,
-                    .id = 0,
-                    .length = 0
-            });
-            if (ret == nullptr)
-            {
-                throw runtime_error("no memory for head");
-            }
-
-            //alloc heap
-            ret->payload = new(nothrow) uint8_t[ret->length];
-            if (!ret->payload)
-            {
-                throw runtime_error("no memory for ret->payload");
-            }
-
-            return ret;
-        }
-
         static Head::Ptr newHead(Data &data)
         {
-            if (data.payloadLength > HEAD_MAX_PAYLOAD_SIZE)
+            if (data.length > HEAD_MAX_PAYLOAD_SIZE)
             {
                 throw runtime_error("payload length exceed");
             }
 
             //alloc heap
-            Head::Ptr head = newHead();
-            head->length = data.payloadLength;
-            head->flags = data.flags;
+            //prepare return head with common information
+            Head::Ptr head(new(nothrow) Head{
+                    .version = 0,
+                    .flags = NOT_SET,
+                    .id = 0,
+                    .length = 0
+            });
+            if (head == nullptr)
+            {
+                throw runtime_error("no memory for head");
+            }
+
+            //alloc heap
+            head->length = data.length;
+            head->payload = new(nothrow) uint8_t[head->length];
+            if (!head->payload)
+            {
+                throw runtime_error("no memory for ret->payload");
+            }
 
             //set payload to 0
             memset(head->payload, 0, head->length);
 
+            head->flags = data.flags;
+
             //copy data payload to head
-            memcpy(head->payload, data.payloadPtr, data.payloadLength);
+            memcpy(head->payload, data.payloadPtr, data.length);
 
             return head;
         }
@@ -392,7 +378,7 @@ namespace hgardenpi::protocol
             ret->crc16 = static_cast<uint16_t>((data[ret->length + 4] << 0x08) | data[ret->length + 3]);
 
             //calculate crc16 from data received
-            const uint dataLessCrc16Length = ret->length + 3;
+            const uint16_t dataLessCrc16Length = ret->length + 3;
             uint16_t crc16 = crc_16(data, dataLessCrc16Length);
 
             //check crc16 send with that calculate

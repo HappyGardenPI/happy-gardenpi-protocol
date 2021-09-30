@@ -44,38 +44,22 @@ namespace hgardenpi::protocol
 
         string Station::getName() const noexcept
         {
-            char *c = new(nothrow) char[nameLen + 1];
-            memset(c, 0, nameLen + 1);
-            memcpy(c, name, nameLen);
-            string ret(c);
-            delete [] c;
-            return ret;
+            HGARDENPI_PROTOCOL_GETTER(name, nameLen)
         }
 
         void Station::setName(const string &name) noexcept
         {
-            nameLen = name.size();
-            this->name = new char [nameLen];
-            memset(this->name, 0, nameLen);
-            memcpy(this->name, &name[0], nameLen);
+            HGARDENPI_PROTOCOL_SETTER(name, nameLen)
         }
 
         string Station::getDescription() const noexcept
         {
-            char *c = new(nothrow) char[descriptionLen + 1];
-            memset(c, 0, descriptionLen + 1);
-            memcpy(c, description, descriptionLen);
-            string ret(c);
-            delete [] c;
-            return ret;
+            HGARDENPI_PROTOCOL_GETTER(description, descriptionLen)
         }
 
         void Station::setDescription(const string &description) noexcept
         {
-            descriptionLen = description.size();
-            this->description = new char [descriptionLen];
-            memset(this->description, 0, descriptionLen);
-            memcpy(this->description, &description[0], descriptionLen);
+            HGARDENPI_PROTOCOL_SETTER(description, descriptionLen)
         }
 
         Buffer Station::serialize() const
@@ -83,7 +67,7 @@ namespace hgardenpi::protocol
             return hgardenpi::protocol::Buffer();
         }
 
-        Station *Station::deserialize(const uint8_t *buffer, uint8_t, uint8_t) noexcept
+        Station *Station::deserialize(const uint8_t *buffer, uint8_t, uint8_t)
         {
             return nullptr;
         }

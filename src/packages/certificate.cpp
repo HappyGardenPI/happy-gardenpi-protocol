@@ -64,34 +64,37 @@ namespace hgardenpi::protocol
             return ret;
         }
 
-        Certificate * Certificate::deserialize(const uint8_t *buffer, uint8_t length , uint8_t chunkOfPackage) noexcept
+        Certificate * Certificate::deserialize(const uint8_t *buffer, uint8_t length , uint8_t chunkOfPackage)
         {
             if (!buffer)
             {
                 return nullptr;
             }
-            auto ret = new Certificate;
-
+            auto cer = new (nothrow) Certificate;
+            if (!cer)
+            {
+                throw runtime_error("no memory for cer");
+            }
 
             if (chunkOfPackage == 0)
             {
                 //set length of certificate and payload
-                memset(&ret->length, 0, sizeof(ret->length));
-                memcpy(&ret->length, buffer, sizeof(ret->length));
+                memset(&cer->length, 0, sizeof(cer->length));
+                memcpy(&cer->length, buffer, sizeof(cer->length));
 
-                ret->certificate = new char[ret->length];
-                memset(ret->certificate, 0, ret->length);
-                memcpy(ret->certificate, buffer + sizeof(ret->length), ret->length);
+                cer->certificate = new char[cer->length];
+                memset(cer->certificate, 0, cer->length);
+                memcpy(cer->certificate, buffer + sizeof(cer->length), cer->length);
 
             }
             else
             {
-                ret->length = length;
-                ret->certificate = new char[ret->length];
-                memset(ret->certificate, 0, ret->length);
-                memcpy(ret->certificate, buffer, ret->length);
+                cer->length = length;
+                cer->certificate = new char[cer->length];
+                memset(cer->certificate, 0, cer->length);
+                memcpy(cer->certificate, buffer, cer->length);
             }
-            return ret;
+            return cer;
         }
 
         string Certificate::getCertificate() const noexcept

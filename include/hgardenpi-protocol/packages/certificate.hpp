@@ -76,7 +76,7 @@ namespace hgardenpi::protocol
              * @param chunkOfPackage number of chunk id  is split in more chunks
              * @return new instance of Certificate or nullptr if error, to deallocate
              */
-            [[nodiscard]] static Certificate * deserialize(const uint8_t *buffer, uint8_t length , uint8_t chunkOfPackage) noexcept;
+            [[nodiscard]] static Certificate * deserialize(const uint8_t *buffer, uint8_t length , uint8_t chunkOfPackage);
 
             /**
              * @brief Get certificate

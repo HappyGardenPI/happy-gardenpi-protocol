@@ -46,41 +46,39 @@ namespace hgardenpi::protocol
 
         string Synchro::getSerial() const noexcept
         {
-            char *c = new(nothrow) char[length + 1];
-            memset(c, 0, length + 1);
-            memcpy(c, serial, length);
-            string ret(c);
-            delete[] c;
-            return ret;
+            HGARDENPI_PROTOCOL_GETTER(serial, length)
         }
 
         void Synchro::setSerial(const string &serial) noexcept
         {
-            length = serial.size();
-            this->serial = new char[length];
-            memset(this->serial, 0, length);
-            memcpy(this->serial, &serial[0], length);
+            HGARDENPI_PROTOCOL_SETTER(serial, length)
         }
 
-        Synchro *Synchro::deserialize(const uint8_t *buffer, uint8_t len, uint8_t) noexcept
+        Synchro *Synchro::deserialize(const uint8_t *buffer, uint8_t len, uint8_t)
         {
             if (!buffer)
             {
                 return nullptr;
             }
-            auto ret = new Synchro;
-
-            cout << "deserialize " << stringHexToString(buffer, len) << " " << to_string(len) << endl;
+            auto syn = new(nothrow) Synchro;
+            if (!syn)
+            {
+                throw runtime_error("no memory for sin");
+            }
 
             //set length of certificate and payload
-            memset(&ret->length, 0, sizeof(ret->length));
-            memcpy(&ret->length, buffer, sizeof(ret->length));
+            memset(&syn->length, 0, sizeof(syn->length));
+            memcpy(&syn->length, buffer, sizeof(syn->length));
 
-            ret->serial = new char[ret->length];
-            memset(ret->serial, 0, ret->length);
-            memcpy(ret->serial, buffer + sizeof(ret->length), ret->length);
+            syn->serial = new(nothrow) char[syn->length];
+            if (!syn->serial)
+            {
+                throw runtime_error("no memory for serial");
+            }
+            memset(syn->serial, 0, syn->length);
+            memcpy(syn->serial, buffer + sizeof(syn->length), syn->length);
 
-            return ret;
+            return syn;
         }
 
         Buffer Synchro::serialize() const
@@ -106,8 +104,6 @@ namespace hgardenpi::protocol
 
             //copy certificate field to payload
             memcpy(ret.first.get() + sizeof(length), &serial[0], length);
-
-            cout << "serialize " << stringHexToString(ret.first.get(), ret.second) << " " << to_string(ret.second) << endl;
 
             //return Buffer
             return ret;

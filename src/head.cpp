@@ -44,8 +44,6 @@ namespace hgardenpi::protocol
 
         [[nodiscard]] Package *Head::deserialize(uint8_t chunkOfPackage) const noexcept
         {
-            cout << "Head::deserialize " << stringHexToString(payload, length) << " " << to_string(length) << endl;
-
             Package * ret = nullptr;
             //check which child package was packaged
             if ((flags & AGG) == AGG) //is Flags::AGG package
