@@ -34,8 +34,8 @@ memset(this->field, 0, fieldLength); \
 memcpy(this->field, &field[0], fieldLength);
 
 #define HGARDENPI_PROTOCOL_GETTER(field, fieldLength)  \
-char *c = new(nothrow) char[fieldLength + 1]; \
-memset(c, 0, fieldLength + 1); \
+char *c = new(nothrow) char[fieldLength]; \
+memset(c, 0, fieldLength); \
 memcpy(c, field, fieldLength); \
 string ret(c); \
 delete[] c; \

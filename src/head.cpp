@@ -42,7 +42,7 @@ namespace hgardenpi::protocol
     inline namespace v1
     {
 
-        [[nodiscard]] Package *Head::deserialize(uint8_t chunkOfPackage) const noexcept
+        [[nodiscard]] Package *Head::deserialize(uint8_t chunkOfPackage) const
         {
             Package * ret = nullptr;
             //check which child package was packaged

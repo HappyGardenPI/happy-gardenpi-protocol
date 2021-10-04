@@ -25,16 +25,18 @@
 // Created by Antonio Salsi on 16/08/21.
 //
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "UnreachableCallsOfFunction"
+
 #include <hgardenpi-protocol/protocol.hpp>
 
 #include <stdexcept>
 #include <memory>
-
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "UnreachableCallsOfFunction"
+#include <iostream>
 using namespace std;
 
 #include <cstring>
+#include <cmath>
 
 #include <hgardenpi-protocol/3thparts/libcrc/checksum.h>
 
@@ -44,7 +46,7 @@ using namespace std;
 #include <hgardenpi-protocol/packages/station.hpp>
 #include <hgardenpi-protocol/packages/synchro.hpp>
 #include <hgardenpi-protocol/packages/error.hpp>
-#include <cmath>
+#include <hgardenpi-protocol/utilities/stringutils.hpp>
 
 namespace hgardenpi::protocol
 {
@@ -166,9 +168,9 @@ namespace hgardenpi::protocol
 
             return ret;
         }
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wshadow"
-
         vector<Head::Ptr> encodeStart(Package *package, Flags additionalFags)
         {
             //check if package is null
@@ -259,6 +261,9 @@ namespace hgardenpi::protocol
                 //update size for next package
                 dataLocal.length = data.length - HEAD_MAX_PAYLOAD_SIZE;
 
+//                if ((data.flags & FIN) != FIN)
+//                    cout <<  "encodeDataToHeads 3 " << stringBytesToString(dataLocal.payload, dataLocal.length) << " " << to_string(dataLocal.length) << endl;
+
                 //create one more head, in recursive mode
                 encodeDataToHeads(ret, dataLocal, t);
             }
@@ -273,11 +278,11 @@ namespace hgardenpi::protocol
                 }
 
                 uint8_t flags = NOT_SET;
-                if (data.flags & ACK)
+                if ((data.flags & ACK) == ACK)
                 {
                     flags |= ACK;
                 }
-                if (data.flags & PRT)
+                if ((data.flags & PRT) == PRT)
                 {
                     flags |= PRT;
                 }

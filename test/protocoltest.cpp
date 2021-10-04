@@ -111,7 +111,7 @@ TEST(ProtocolTest, encodeCRT)
 
     EXPECT_EQ(enc.size(), 3);
 
-    stringstream crtRet;
+    string crtRet;
     uint16_t i = 0;
     for (auto &&buffer : enc)
     {
@@ -126,7 +126,8 @@ TEST(ProtocolTest, encodeCRT)
             EXPECT_EQ(head->flags, CRT | ACK | PRT);
             if (auto *ptr = dynamic_cast<Certificate *>(head->deserialize(i)))
             {
-                crtRet << ptr->getCertificate();
+                cout <<  to_string(i) << ":" << ptr->getCertificate() << "<<>>" << endl;
+                crtRet += ptr->getCertificate();
                 delete ptr;
             }
             i++;
@@ -134,8 +135,8 @@ TEST(ProtocolTest, encodeCRT)
     }
 
     cout << crtExample << endl;
-    cout << crtRet.str() << endl;
-    EXPECT_TRUE(crtExample == crtRet.str());
+    cout << crtRet << endl;
+    EXPECT_TRUE(crtExample == crtRet);
 }
 
 
