@@ -58,7 +58,7 @@ namespace hgardenpi::protocol
             /**
              * @brief Deserialize from buffer to Finish
              * @param buffer of data
-             * @return new instance of Aggregation or nullptr if error, to deallocate
+             * @return new instance of Finish or nullptr if error, to deallocate
              */
             [[nodiscard]] static inline Finish * deserialize(const uint8_t *buffer, uint8_t, uint8_t) noexcept { return new Finish; }
 

@@ -90,10 +90,12 @@ namespace hgardenpi::protocol
             /**
              * @brief Deserialize from buffer to Synchro
              * @param buffer of data
-             * @return new instance of Aggregation or nullptr if error, to deallocate
+             * @param length of data
+             * @param chunkOfPackage number of chunk id  is split in more chunks
+             * @return new instance of Synchro or nullptr if error, to deallocate
              * @throw exception if there are some memory error
              */
-            [[nodiscard]] static Synchro * deserialize(const uint8_t *buffer, uint8_t, uint8_t);
+            [[nodiscard]] static Synchro * deserialize(const uint8_t *buffer, uint8_t length, uint8_t chunkOfPackage);
 
             /**
              * Serialize self to buffer

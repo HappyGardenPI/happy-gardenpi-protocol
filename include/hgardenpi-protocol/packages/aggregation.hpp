@@ -209,10 +209,12 @@ namespace hgardenpi::protocol
             /**
              * @brief Deserialize from buffer to Aggregation
              * @param buffer of data
+             * @param length of data
+             * @param chunkOfPackage number of chunk id  is split in more chunks
              * @return new instance of Aggregation or nullptr if error, to deallocate
              * @throw exception if there are some memory error
              */
-            [[nodiscard]] static Aggregation * deserialize(const uint8_t *buffer, uint8_t, uint8_t) ;
+            [[nodiscard]] static Aggregation * deserialize(const uint8_t *buffer, uint8_t length, uint8_t chunkOfPackage);
         };
 #pragma pack(pop)
     }
