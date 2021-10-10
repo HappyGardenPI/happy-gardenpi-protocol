@@ -52,10 +52,10 @@ namespace hgardenpi::protocol
              */
             SYN = 0x01,
             /**
-             * @brief Certificare package contain certificate for enable point to point communication
+             * @brief Data package contain payload for enable point to point communication
              * @note this flag can contain only one flag/package
              */
-            CRT = 0x02,
+            DAT = 0x02,
             /**
              * @brief Aggregation package contain info about it
              * @note this flag can contain only one flag/package

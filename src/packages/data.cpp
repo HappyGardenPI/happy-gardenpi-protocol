@@ -28,7 +28,7 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wshadow"
 
-#include "hgardenpi-protocol/packages/certificate.hpp"
+#include "hgardenpi-protocol/packages/data.hpp"
 
 #include <stdexcept>
 #include <cstring>
@@ -41,7 +41,7 @@ namespace hgardenpi::protocol
     inline namespace v1
     {
 
-        Buffer Certificate::serialize() const
+        Buffer Data::serialize() const
         {
             Buffer ret;
 
@@ -54,23 +54,23 @@ namespace hgardenpi::protocol
                 throw runtime_error("no memory for data");
             }
 
-            //copy cert length
+            //copy error length
             memcpy(ret.first.get(), &length, sizeof(length));
 
-            //copy certificate field to payload
-            memcpy(ret.first.get() + sizeof(length), &certificate[0], length);
+            //copy error field to payload
+            memcpy(ret.first.get() + sizeof(length), &payload[0], length);
 
             //return Buffer
             return ret;
         }
 
-        Certificate * Certificate::deserialize(const uint8_t *buffer, uint8_t length, uint8_t chunkOfPackage)
+        Data * Data::deserialize(const uint8_t *buffer, uint8_t length, uint8_t chunkOfPackage)
         {
             if (!buffer)
             {
                 return nullptr;
             }
-            auto cer = new (nothrow) Certificate;
+            auto cer = new (nothrow) Data;
             if (!cer)
             {
                 throw runtime_error("no memory for cer");
@@ -78,7 +78,7 @@ namespace hgardenpi::protocol
 
             if (chunkOfPackage == 0)
             {
-                //set length of certificate and payload
+                //set length of payload
                 memset(&cer->length, 0, sizeof(uint16_t));
                 memcpy(&cer->length, buffer, sizeof(uint16_t));
 
@@ -97,17 +97,17 @@ namespace hgardenpi::protocol
             return cer;
         }
 
-        string Certificate::getCertificate() const noexcept
+        string Data::getPayload() const noexcept
         {
-            HGARDENPI_PROTOCOL_GETTER(certificate, length)
+            HGARDENPI_PROTOCOL_GETTER(payload, length)
         }
 
-        void Certificate::setCertificate(const string &certificate) noexcept
+        void Data::setPayload(const string &payload) noexcept
         {
-            HGARDENPI_PROTOCOL_SETTER(certificate, length)
+            HGARDENPI_PROTOCOL_SETTER(payload, length)
         }
 
-        string Certificate::getChunk() const noexcept
+        string Data::getChunk() const noexcept
         {
             HGARDENPI_PROTOCOL_GETTER(chunk, chunkLength)
         }

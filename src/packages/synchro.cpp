@@ -64,7 +64,7 @@ namespace hgardenpi::protocol
                 throw runtime_error("no memory for sin");
             }
 
-            //set length of certificate and payload
+            //set length of payload
             memset(&syn->length, 0, sizeof(syn->length));
             memcpy(&syn->length, buffer, sizeof(syn->length));
 
@@ -97,10 +97,10 @@ namespace hgardenpi::protocol
                 throw runtime_error("no memory for data");
             }
 
-            //copy cert length
+            //copy syn length
             memcpy(ret.first.get(), &length, sizeof(length));
 
-            //copy certificate field to payload
+            //copy syn field to payload
             memcpy(ret.first.get() + sizeof(length), &serial[0], length);
 
             //return Buffer

@@ -27,7 +27,7 @@
 
 #include <hgardenpi-protocol/head.hpp>
 #include <hgardenpi-protocol/packages/aggregation.hpp>
-#include <hgardenpi-protocol/packages/certificate.hpp>
+#include <hgardenpi-protocol/packages/data.hpp>
 #include <hgardenpi-protocol/packages/finish.hpp>
 #include <hgardenpi-protocol/packages/station.hpp>
 #include <hgardenpi-protocol/packages/synchro.hpp>
@@ -46,8 +46,8 @@ namespace hgardenpi::protocol
                 ret = Aggregation::deserialize(payload, length, chunkOfPackage);
             else if ((flags & ERR) == ERR) //is Flags::ERR package
                 ret = Error::deserialize(payload, length, chunkOfPackage);
-            else if ((flags & CRT) == CRT) //is Flags::CRT package
-                ret = Certificate::deserialize(payload, length, chunkOfPackage);
+            else if ((flags & DAT) == DAT) //is Flags::CRT package
+                ret = Data::deserialize(payload, length, chunkOfPackage);
             else if ((flags & FIN) == FIN) //is Flags::FIN package
                 ret = Finish::deserialize(payload, length, chunkOfPackage);
             else if ((flags & STA) == STA) //is Flags::STA package

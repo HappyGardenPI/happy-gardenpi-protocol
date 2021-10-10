@@ -41,7 +41,7 @@ using namespace std;
 #include <hgardenpi-protocol/3thparts/libcrc/checksum.h>
 
 #include <hgardenpi-protocol/packages/aggregation.hpp>
-#include <hgardenpi-protocol/packages/certificate.hpp>
+#include <hgardenpi-protocol/packages/data.hpp>
 #include <hgardenpi-protocol/packages/finish.hpp>
 #include <hgardenpi-protocol/packages/station.hpp>
 #include <hgardenpi-protocol/packages/synchro.hpp>
@@ -52,7 +52,7 @@ namespace hgardenpi::protocol
     inline namespace v1
     {
 
-        struct Data
+        struct DataTransport
         {
             /**
              * @brief common payload
@@ -81,7 +81,7 @@ namespace hgardenpi::protocol
          * @brief data Data container
          * @return a new instance of Head::Ptr semi filled
          */
-        static Head::Ptr newHead(Data &data);
+        static Head::Ptr newHead(DataTransport &data);
 
         /**
           * Convert a head::Ptr to buffer ready to send
@@ -98,7 +98,7 @@ namespace hgardenpi::protocol
          * @param t pointer to structure
          */
         template<typename T>
-        static vector<Head::Ptr> encodeDataToHeads(vector<Head::Ptr> &ret, Data &data, const T *t);
+        static vector<Head::Ptr> encodeDataToHeads(vector<Head::Ptr> &ret, DataTransport &data, const T *t);
 
         /**
          * Encode package and split it in more Head if needed
@@ -115,7 +115,7 @@ namespace hgardenpi::protocol
          * @param t pointer to structure
          */
         template<typename T>
-        static inline vector<Head::Ptr> encodeRecursive(Data &data, const T *t)
+        static inline vector<Head::Ptr> encodeRecursive(DataTransport &data, const T *t)
         {
             vector<Head::Ptr> ret;
             return encodeDataToHeads(ret, data, t);
@@ -179,15 +179,15 @@ namespace hgardenpi::protocol
             }
 
             vector<Head::Ptr> ret;
-            Data data;
+            DataTransport data;
 
             //check which child package was packaged
             if (auto ptr = dynamic_cast<Aggregation *>(package); ptr) //is Flags::AGG package
                 //update flags
                 data.flags = AGG | additionalFags;
-            else if (auto ptr = dynamic_cast<Certificate *>(package); ptr) //is Flags::CRT package
+            else if (auto ptr = dynamic_cast<Data *>(package); ptr) //is Flags::CRT package
                 //update flags
-                data.flags = CRT | additionalFags;
+                data.flags = DAT | additionalFags;
             else if (dynamic_cast<Finish *>(package)) //is Flags::FIN package
                 //add package flag
                 data.flags = FIN | additionalFags;
@@ -217,7 +217,7 @@ namespace hgardenpi::protocol
         }
 
         template<typename T>
-        [[maybe_unused]] static vector<Head::Ptr> encodeDataToHeads(vector<Head::Ptr> &ret, Data &data, const T *t)
+        [[maybe_unused]] static vector<Head::Ptr> encodeDataToHeads(vector<Head::Ptr> &ret, DataTransport &data, const T *t)
         {
             static_assert(is_base_of<Package, T>::value, "T is non subclass of Package");
 
@@ -241,7 +241,7 @@ namespace hgardenpi::protocol
                 }
 
                 //create data for elaborate in newHead
-                Data dataLocal;
+                DataTransport dataLocal;
                 dataLocal.payload = data.payload;
                 dataLocal.payloadPtr = dataLocal.payload;
                 dataLocal.length = HEAD_MAX_PAYLOAD_SIZE;
@@ -292,7 +292,7 @@ namespace hgardenpi::protocol
         }
 
 
-        static Head::Ptr newHead(Data &data)
+        static Head::Ptr newHead(DataTransport &data)
         {
             if (data.length > HEAD_MAX_PAYLOAD_SIZE)
             {

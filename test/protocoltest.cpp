@@ -32,7 +32,7 @@ using namespace std;
 
 #include <hgardenpi-protocol/protocol.hpp>
 #include <hgardenpi-protocol/packages/aggregation.hpp>
-#include <hgardenpi-protocol/packages/certificate.hpp>
+#include <hgardenpi-protocol/packages/data.hpp>
 #include <hgardenpi-protocol/packages/finish.hpp>
 #include <hgardenpi-protocol/packages/station.hpp>
 #include <hgardenpi-protocol/packages/synchro.hpp>
@@ -100,8 +100,8 @@ TEST(ProtocolTest, encodeCRT)
 {
     string crtExample = "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQB/nAmOjTmezNUDKYvEeIRf2YnwM9/uUG1d0BYsc8/tRtx+RGi7N2lUbp728MXGwdnL9od4cItzky/zVdLZE2cycOa18xBK9cOWmcKS0A8FYBxEQWJ/q9YVUgZbFKfYGaGQxsER+A0w/fX8ALuk78ktP31K69LcQgxIsl7rNzxsoOQKJ/CIxOGMMxczYTiEoLvQhapFQMs3FL96didKr/QbrfB1WT6s3838SEaXfgZvLef1YB2xmfhbT9OXFE3FXvh2UPBfN+ffE7iiayQf/2XR+8j4N4bW30DiPtOQLGUrH1y5X/rpNZNlWW2+jGIxqZtgWg7lTy3mXy5x836Sj/6L";
 
-    auto crt = new Certificate;
-    crt->setCertificate(crtExample);
+    auto crt = new Data;
+    crt->setPayload(crtExample);
 
     auto enc = encode(crt, ACK);
 
@@ -119,10 +119,10 @@ TEST(ProtocolTest, encodeCRT)
             EXPECT_EQ(head->flags, FIN | ACK | PRT);
             break;
         }
-        if (head->flags & CRT && head->flags & ACK && head->flags & PRT)
+        if (head->flags & DAT && head->flags & ACK && head->flags & PRT)
         {
-            EXPECT_EQ(head->flags, CRT | ACK | PRT);
-            if (auto *ptr = dynamic_cast<Certificate *>(head->deserialize(i)))
+            EXPECT_EQ(head->flags, DAT | ACK | PRT);
+            if (auto *ptr = dynamic_cast<Data *>(head->deserialize(i)))
             {
                 crtRet += ptr->getChunk();
                 delete ptr;

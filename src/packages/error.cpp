@@ -56,10 +56,10 @@ namespace hgardenpi::protocol
                 throw runtime_error("no memory for data");
             }
 
-            //copy cert length
+            //copy error length
             memcpy(ret.first.get(), &length, sizeof(length));
 
-            //copy certificate field to payload
+            //copy error field to payload
             memcpy(ret.first.get() + sizeof(length), &msg[0], length);
 
             //return Buffer
@@ -80,7 +80,7 @@ namespace hgardenpi::protocol
 
             if (chunkOfPackage == 0)
             {
-                //set length of certificate and payload
+                //set length of error and payload
                 memset(&err->length, 0, sizeof(uint16_t));
                 memcpy(&err->length, buffer, sizeof(uint16_t));
 

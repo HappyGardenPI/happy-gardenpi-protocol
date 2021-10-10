@@ -40,9 +40,9 @@ namespace hgardenpi::protocol
 
 #pragma pack(push, n)
         /**
-         * @brief Package for manage certificate, linked to Flags::CRT
+         * @brief Package for manage data, linked to Flags::CRT
          */
-        struct Certificate final : public Package
+        struct Data final : public Package
         {
 
             /**
@@ -50,9 +50,9 @@ namespace hgardenpi::protocol
              */
             uint16_t length = 0;
             /**
-             * @brief certificate
+             * @brief payload
              */
-            char *certificate = nullptr;
+            char *payload = nullptr;
 
             /**
              * @brief data payload
@@ -63,12 +63,12 @@ namespace hgardenpi::protocol
              */
             uint8_t chunkLength = 0;
 
-            inline ~Certificate() noexcept override
+            inline ~Data() noexcept override
             {
-                if (certificate)
+                if (payload)
                 {
-                    delete [] certificate;
-                    certificate = nullptr;
+                    delete [] payload;
+                    payload = nullptr;
                 }
 
                 if (chunk)
@@ -85,39 +85,39 @@ namespace hgardenpi::protocol
             [[nodiscard]] Buffer serialize() const override;
 
             /**
-             * @brief Deserialize from buffer to Certificate
+             * @brief Deserialize from buffer to Data
              * @param buffer of data
              * @param length of data
              * @param chunkOfPackage number of chunk id  is split in more chunks
-             * @return new instance of Certificate or nullptr if error, to deallocate
+             * @return new instance of Data or nullptr if error, to deallocate
              * @throw exception if there are some memory error
              */
-            [[nodiscard]] static Certificate * deserialize(const uint8_t *buffer, uint8_t length , uint8_t chunkOfPackage);
+            [[nodiscard]] static Data * deserialize(const uint8_t *buffer, uint8_t length , uint8_t chunkOfPackage);
 
             /**
-             * @brief Get certificate
-             * @return certificate
+             * @brief Get payload
+             * @return payload
              */
-            [[maybe_unused]] [[nodiscard]] string getCertificate() const noexcept;
+            [[maybe_unused]] [[nodiscard]] string getPayload() const noexcept;
 
             /**
-             * @brief Set certificate
-             * @param certificate
+             * @brief Set payload
+             * @param payload
              */
-            [[maybe_unused]] void setCertificate(const string &certificate) noexcept;
+            [[maybe_unused]] void setPayload(const string &payload) noexcept;
 
             /**
-             * @brief Set certificate
-             * @param certificate
+             * @brief Set payload
+             * @param payload
              */
-            [[maybe_unused]] inline void setCertificate(const string &&certificate) noexcept
+            [[maybe_unused]] inline void setPayload(const string &&payload) noexcept
             {
-                setCertificate(certificate);
+                setPayload(payload);
             }
 
             /**
              * @brief Get chunk message
-             * @return certificate
+             * @return chunk
              */
             [[maybe_unused]] [[nodiscard]] string getChunk() const noexcept;
         };
