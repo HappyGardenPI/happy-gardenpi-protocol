@@ -55,7 +55,7 @@ namespace hgardenpi::protocol
             /**
             * @brief name length
             */
-            uint16_t nameLen = 0;
+            uint8_t nameLen = 0;
             /**
              * @brief name of station
              */
@@ -63,7 +63,7 @@ namespace hgardenpi::protocol
             /**
             * @brief description length
             */
-            uint16_t descriptionLen = 0;
+            uint8_t descriptionLen = 0;
             /**
              * @brief description of station
              */

@@ -64,7 +64,98 @@ namespace hgardenpi::protocol
 
         Buffer Station::serialize() const
         {
-            return hgardenpi::protocol::Buffer();
+
+            uint8_t *buf = nullptr;
+            size_t size = 0;
+
+            //calculate size fo allocate buffer
+            size += sizeof(uint8_t); //id
+            size += sizeof(uint8_t); //nameLen
+            if (name && nameLen > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
+            {
+                size += static_cast<int>(numeric_limits<uint8_t>::max());
+            } else
+            {
+                size += nameLen;
+            }
+            size += sizeof(bool); //name
+            size += sizeof(uint8_t); //descriptionLen
+            if (description && descriptionLen > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
+            {
+                size += static_cast<int>(numeric_limits<uint8_t>::max());
+            } else
+            {
+                size += descriptionLen;
+            }
+            size += sizeof(bool); //description
+
+            size += sizeof(uint8_t); //relayNumber
+            size += sizeof(uint32_t); //wateringTime
+
+            size += sizeof(bool); //wateringTimeLeft
+            size += sizeof(uint32_t); //weight
+            size += sizeof(uint16_t); //weight
+            size += sizeof(Status); //status
+
+            //alloc buffer
+            buf = new(nothrow) uint8_t[size];
+            if (!buf)
+            {
+                throw runtime_error("no memory for serialize");
+            }
+            memset(buf, 0, size);
+
+            size = 0;
+            memcpy(buf + size, &id, sizeof(uint8_t));
+            size += sizeof(uint8_t);
+
+            memcpy(buf + size, &nameLen, sizeof(uint8_t));
+            size += sizeof(uint8_t);
+
+            if (name)
+            {
+                if (name && nameLen > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
+                {
+                    memcpy(buf + size, name, static_cast<uint8_t>(numeric_limits<uint8_t>::max()));
+                    size += static_cast<uint8_t>(numeric_limits<uint8_t>::max());
+                } else
+                {
+                    memcpy(buf + size, name, nameLen);
+                    size += nameLen * sizeof(uint8_t);
+                }
+            }
+
+            memcpy(buf + size, &descriptionLen, sizeof(uint8_t));
+            size += sizeof(uint8_t);
+
+            if (descriptionLen)
+            {
+                if (description && descriptionLen > static_cast<uint8_t>(numeric_limits<uint8_t>::max()))
+                {
+                    memcpy(buf + size, description, static_cast<uint8_t>(numeric_limits<uint8_t>::max()));
+                    size += static_cast<uint8_t>(numeric_limits<uint8_t>::max());
+                } else
+                {
+                    memcpy(buf + size, description, descriptionLen);
+                    size += descriptionLen * sizeof(uint8_t);
+                }
+            }
+
+            memcpy(buf + size, &relayNumber, sizeof(uint8_t));
+            size += sizeof(uint8_t);
+
+            memcpy(buf + size, &wateringTime, sizeof(uint32_t));
+            size += sizeof(uint32_t);
+
+            memcpy(buf + size, &wateringTimeLeft, sizeof(uint32_t));
+            size += sizeof(uint32_t);
+
+            memcpy(buf + size, &weight, sizeof(uint16_t));
+            size += sizeof(uint16_t);
+
+            memcpy(buf + size, &status, sizeof(status));
+
+            return {shared_ptr<uint8_t []>(buf), size};
         }
 
         Station *Station::deserialize(const uint8_t *buffer, uint8_t, uint8_t)

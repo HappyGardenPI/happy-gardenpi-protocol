@@ -79,8 +79,6 @@ TEST(ProtocolTest, encodeAGG)
 
     if (auto *ptr = dynamic_cast<Aggregation *>(head->deserialize()))
     {
-        using hgardenpi::protocol::v1::Status;
-
         EXPECT_TRUE(ptr->getDescription() == string("desc"));
         EXPECT_TRUE(ptr->getStart() == string("start"));
         EXPECT_TRUE(ptr->getEnd() == string("end"));
@@ -190,39 +188,38 @@ TEST(ProtocolTest, encodeFIN)
 
 TEST(ProtocolTest, encodeSTA)
 {
-//    auto sta1 = new Station;
-//    sta1->name = "station1";
-//    sta1->description = "description1";
-//    sta1->relayNumber = 1;
-//    sta1->wateringTime = 10;
-//    sta1->wateringTimeLeft = 2;
-//    auto encode1 = encode(sta1);
-//
-//    Station *ret1 = reinterpret_cast<Station *>(encode1.begin()->first->payload);
-//    EXPECT_EQ(encode1.size(), 1);
-//    EXPECT_EQ(encode1.begin()->get()->flags, STA);
-//    EXPECT_EQ(ret1->name, sta1->name);
-//    EXPECT_EQ(ret1->description, sta1->description);
-//    EXPECT_EQ(ret1->relayNumber, sta1->relayNumber);
-//    EXPECT_EQ(ret1->wateringTime, sta1->wateringTime);
-//    EXPECT_EQ(ret1->wateringTimeLeft, sta1->wateringTimeLeft);
-//
-//    auto sta2 = new Station;
-//    sta2->name = "station2";
-//    sta2->description = "description2";
-//    sta2->relayNumber = 2;
-//    sta2->wateringTime = 10;
-//    sta2->wateringTimeLeft = 2;
-//    auto encode2 = encode(sta2, ACK);
-//
-//    Station *ret2 = reinterpret_cast<Station *>(encode2.begin()->get()->payload);
-//    EXPECT_EQ(encode2.size(), 1);
-//    EXPECT_EQ(encode2.begin()->get()->flags, STA | ACK);
-//    EXPECT_EQ(ret2->name, sta2->name);
-//    EXPECT_EQ(ret2->description, sta2->description);
-//    EXPECT_EQ(ret2->relayNumber, sta2->relayNumber);
-//    EXPECT_EQ(ret2->wateringTime, sta2->wateringTime);
-//    EXPECT_EQ(ret2->wateringTimeLeft, sta2->wateringTimeLeft);
+    auto sta = new Station;
+    sta->setName("Name");
+    sta->setDescription("Description");
+    sta->relayNumber = 1;
+    sta->wateringTime = 10;
+    sta->wateringTimeLeft = 2;
+    sta->weight = 30;
+    sta->status = Status::INSERT;
+    auto encode1 = encode(sta);
+
+    auto enc = encode(sta, SYN);
+
+    delete sta;
+
+    EXPECT_EQ(enc.size(), 1);
+
+    auto head = decode(enc[0].first.get());
+    EXPECT_EQ(head->flags, STA | SYN);
+
+    if (auto *ptr = dynamic_cast<Station *>(head->deserialize()))
+    {
+
+        EXPECT_TRUE(ptr->getName() == string("Name"));
+        EXPECT_TRUE(ptr->getDescription() == string("Description"));
+        EXPECT_EQ(ptr->relayNumber, 1);
+        EXPECT_EQ(ptr->wateringTime, 10);
+        EXPECT_EQ(ptr->wateringTimeLeft, 2);
+        EXPECT_EQ(ptr->weight, 30);
+        EXPECT_EQ(ptr->status, Status::UNACTIVE);
+        delete ptr;
+    }
+    
 }
 
 
