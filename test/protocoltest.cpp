@@ -94,20 +94,20 @@ TEST(ProtocolTest, encodeAGG)
 
 }
 
-TEST(ProtocolTest, encodeCRT)
+TEST(ProtocolTest, encodeDAT)
 {
-    string crtExample = "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQB/nAmOjTmezNUDKYvEeIRf2YnwM9/uUG1d0BYsc8/tRtx+RGi7N2lUbp728MXGwdnL9od4cItzky/zVdLZE2cycOa18xBK9cOWmcKS0A8FYBxEQWJ/q9YVUgZbFKfYGaGQxsER+A0w/fX8ALuk78ktP31K69LcQgxIsl7rNzxsoOQKJ/CIxOGMMxczYTiEoLvQhapFQMs3FL96didKr/QbrfB1WT6s3838SEaXfgZvLef1YB2xmfhbT9OXFE3FXvh2UPBfN+ffE7iiayQf/2XR+8j4N4bW30DiPtOQLGUrH1y5X/rpNZNlWW2+jGIxqZtgWg7lTy3mXy5x836Sj/6L";
+    string datExample = "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQB/nAmOjTmezNUDKYvEeIRf2YnwM9/uUG1d0BYsc8/tRtx+RGi7N2lUbp728MXGwdnL9od4cItzky/zVdLZE2cycOa18xBK9cOWmcKS0A8FYBxEQWJ/q9YVUgZbFKfYGaGQxsER+A0w/fX8ALuk78ktP31K69LcQgxIsl7rNzxsoOQKJ/CIxOGMMxczYTiEoLvQhapFQMs3FL96didKr/QbrfB1WT6s3838SEaXfgZvLef1YB2xmfhbT9OXFE3FXvh2UPBfN+ffE7iiayQf/2XR+8j4N4bW30DiPtOQLGUrH1y5X/rpNZNlWW2+jGIxqZtgWg7lTy3mXy5x836Sj/6L";
 
-    auto crt = new Data;
-    crt->setPayload(crtExample);
+    auto dat = new Data;
+    dat->setPayload(datExample);
 
-    auto enc = encode(crt, ACK);
+    auto enc = encode(dat, ACK);
 
-    delete crt;
+    delete dat;
 
     EXPECT_EQ(enc.size(), 3);
 
-    string crtRet;
+    string datRet;
     uint16_t i = 0;
     for (auto &&buffer : enc)
     {
@@ -122,14 +122,14 @@ TEST(ProtocolTest, encodeCRT)
             EXPECT_EQ(head->flags, DAT | ACK | PRT);
             if (auto *ptr = dynamic_cast<Data *>(head->deserialize(i)))
             {
-                crtRet += ptr->getChunk();
+                datRet += ptr->getChunk();
                 delete ptr;
             }
             i++;
         }
     }
 
-    EXPECT_TRUE(crtExample == crtRet);
+    EXPECT_TRUE(datExample == datRet);
 }
 
 
@@ -239,6 +239,38 @@ TEST(ProtocolTest, encodeSYN)
         EXPECT_TRUE(ptr->getSerial() == "serial123456789");
         delete ptr;
     }
+
+    delete syn;
+}
+
+TEST(ProtocolTest, encodeChangePackageId)
+{
+    auto syn = new Synchro;
+
+    string &&random = generateRandomString(128);
+
+    syn->setSerial(random);
+
+    auto enc = encode(syn, ACK);
+    EXPECT_EQ(enc.size(), 1);
+
+    updateIdToBufferEncoded(enc[0], 37);
+
+    auto head = decode(enc[0].first.get());
+    EXPECT_EQ(head->flags, SYN | ACK);
+
+    EXPECT_EQ(head->id, 37);
+
+    if (auto *ptr = dynamic_cast<Synchro *>(head->deserialize()))
+    {
+        EXPECT_TRUE(ptr->getSerial() == random);
+
+
+
+        delete ptr;
+    }
+
+
 
     delete syn;
 }

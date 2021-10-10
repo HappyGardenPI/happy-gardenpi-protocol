@@ -45,6 +45,9 @@ namespace hgardenpi::protocol
 #pragma pack(push, n)
         struct Head final
         {
+            /**
+             * @brief Shared pointer of Head
+             */
             typedef shared_ptr<Head> Ptr;
 
             /**

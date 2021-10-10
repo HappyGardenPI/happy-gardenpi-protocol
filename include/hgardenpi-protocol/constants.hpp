@@ -52,7 +52,7 @@ namespace hgardenpi::protocol
              */
             SYN = 0x01,
             /**
-             * @brief Data package contain payload for enable point to point communication
+             * @brief Data package contain payload for transmit data
              * @note this flag can contain only one flag/package
              */
             DAT = 0x02,
@@ -118,15 +118,15 @@ namespace hgardenpi::protocol
             */
             UPDATE,
             /**
-            * @brief insert element
+            * @brief update element
             */
             DELETE,
             /**
-            * @brief insert element
+            * @brief execute element
             */
-            SHOT,
+            EXECUTE,
             /**
-            * @brief insert element
+            * @brief stop execution element
             */
             STOP,
         };
@@ -140,12 +140,12 @@ namespace hgardenpi::protocol
         /**
          * @brief max serial size
          */
-        constexpr const inline uint8_t HEAD_MAX_SERIAL_SIZE = 32;
+        constexpr const inline uint8_t HEAD_MAX_SERIAL_SIZE = 128;
 
         /**
          * @brief max heads size
          */
-        constexpr const inline uint8_t HEAD_MAX_PARTIAL = 16;
+        constexpr const inline uint8_t HEAD_MAX_CHUNK = 16;
 
     }
 }

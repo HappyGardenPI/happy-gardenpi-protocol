@@ -235,9 +235,9 @@ namespace hgardenpi::protocol
             } else if (data.length > 0)
             {
                 //check how many heads already build
-                if (ret.size() >= HEAD_MAX_PARTIAL)
+                if (ret.size() >= HEAD_MAX_CHUNK)
                 {
-                    throw runtime_error("data to big, exceed HEAD_MAX_PARTIAL");
+                    throw runtime_error("data to big, exceed HEAD_MAX_CHUNK");
                 }
 
                 //create data for elaborate in newHead
@@ -389,7 +389,7 @@ namespace hgardenpi::protocol
 
         void updateIdToBufferEncoded(Buffer &buffer, uint8_t id)
         {
-            buffer.first[2] = id;
+            buffer.first[1] = id;
 
             uint16_t crc16Calc = crc_16(buffer.first.get(), buffer.second - 2);
 

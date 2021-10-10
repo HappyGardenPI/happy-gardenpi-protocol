@@ -83,9 +83,9 @@ namespace hgardenpi::protocol
         {
             Buffer ret;
 
-            if (length > HEAD_MAX_SERIAL_SIZE - sizeof(length))
+            if (length > HEAD_MAX_SERIAL_SIZE)
             {
-                throw runtime_error("serial too long max 255 chars");
+                throw runtime_error("serial too long max 128 chars");
             }
 
             ret.second = length + sizeof(length);
