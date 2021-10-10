@@ -33,10 +33,6 @@
 #include <hgardenpi-protocol/packages/synchro.hpp>
 #include <hgardenpi-protocol/packages/error.hpp>
 
-#include <hgardenpi-protocol/utilities/stringutils.hpp>
-#include <iostream>
-using namespace std;
-
 namespace hgardenpi::protocol
 {
     inline namespace v1

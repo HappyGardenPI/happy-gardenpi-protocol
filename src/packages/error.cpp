@@ -81,48 +81,38 @@ namespace hgardenpi::protocol
             if (chunkOfPackage == 0)
             {
                 //set length of certificate and payload
-                memset(&err->length, 0, sizeof(err->length));
-                memcpy(&err->length, buffer, sizeof(err->length));
+                memset(&err->length, 0, sizeof(uint16_t));
+                memcpy(&err->length, buffer, sizeof(uint16_t));
 
-                err->msg = new (nothrow) char[err->length];
-                if (!err->msg)
-                {
-                    throw runtime_error("no memory for msg");
-                }
-                memset(err->msg, 0, err->length);
-                memcpy(err->msg, buffer + sizeof(err->length), err->length);
+                err->chunkLength = length - sizeof(uint16_t);
+                err->chunk = new char[err->chunkLength];
+                memset(err->chunk, 0, err->chunkLength);
+                memcpy(err->chunk, &buffer[sizeof(uint16_t)], err->chunkLength);
 
             }
             else
             {
-                err->length = length;
-                err->msg = new (nothrow) char[err->length];
-                if (!err->msg)
-                {
-                    throw runtime_error("no memory for msg");
-                }
-                memset(err->msg, 0, err->length);
-                memcpy(err->msg, buffer, err->length);
+                err->chunkLength = length;
+                err->chunk = new char[err->chunkLength];
+                memset(err->chunk, 0, err->chunkLength);
+                memcpy(err->chunk, buffer, err->chunkLength);
             }
             return err;
         }
 
         string Error::getMsg() const noexcept
         {
-            char *c = new(nothrow) char[length + 1];
-            memset(c, 0, length + 1);
-            memcpy(c, msg, length);
-            string ret(c);
-            delete [] c;
-            return ret;
+            HGARDENPI_PROTOCOL_GETTER(msg, length)
         }
 
         void Error::setMsg(const string &msg) noexcept
         {
-            length = msg.size();
-            this->msg = new char [length];
-            memset(this->msg, 0, length);
-            memcpy(this->msg, &msg[0], length);
+            HGARDENPI_PROTOCOL_SETTER(msg, length)
+        }
+
+        string Error::getChunk() const noexcept
+        {
+            HGARDENPI_PROTOCOL_GETTER(chunk, chunkLength)
         }
 
     }

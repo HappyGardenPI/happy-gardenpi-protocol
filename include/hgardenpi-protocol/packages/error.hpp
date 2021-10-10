@@ -53,6 +53,14 @@ namespace hgardenpi::protocol
              * @brief message error
              */
             char *msg = nullptr;
+            /**
+             * @brief data payload
+             */
+            char *chunk = nullptr;
+            /**
+             * @brief chunk length
+             */
+            uint8_t chunkLength = 0;
 
             inline ~Error() noexcept override
             {
@@ -60,6 +68,11 @@ namespace hgardenpi::protocol
                 {
                     delete [] msg;
                     msg = nullptr;
+                }
+                if (chunk)
+                {
+                    delete [] chunk;
+                    chunk = nullptr;
                 }
             }
 
@@ -100,6 +113,11 @@ namespace hgardenpi::protocol
                 setMsg(msg);
             }
 
+            /**
+            * @brief Get chunk message
+            * @return certificate
+            */
+            [[maybe_unused]] [[nodiscard]] string getChunk() const noexcept;
         };
 #pragma pack(pop)
     }

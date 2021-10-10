@@ -46,7 +46,6 @@ using namespace std;
 #include <hgardenpi-protocol/packages/station.hpp>
 #include <hgardenpi-protocol/packages/synchro.hpp>
 #include <hgardenpi-protocol/packages/error.hpp>
-#include <hgardenpi-protocol/utilities/stringutils.hpp>
 
 namespace hgardenpi::protocol
 {
@@ -214,10 +213,6 @@ namespace hgardenpi::protocol
 
             ret = move(encodeRecursive(data, package));
 
-            //free package
-//            delete package;
-//            package = nullptr;
-
             return ret;
         }
 
@@ -260,9 +255,6 @@ namespace hgardenpi::protocol
 
                 //update size for next package
                 dataLocal.length = data.length - HEAD_MAX_PAYLOAD_SIZE;
-
-//                if ((data.flags & FIN) != FIN)
-//                    cout <<  "encodeDataToHeads 3 " << stringBytesToString(dataLocal.payload, dataLocal.length) << " " << to_string(dataLocal.length) << endl;
 
                 //create one more head, in recursive mode
                 encodeDataToHeads(ret, dataLocal, t);

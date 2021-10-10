@@ -33,10 +33,8 @@
 #include <stdexcept>
 #include <memory>
 #include <cstring>
-#include <iostream>
 using namespace std;
 
-#include <hgardenpi-protocol/utilities/stringutils.hpp>
 #include <hgardenpi-protocol/constants.hpp>
 
 namespace hgardenpi::protocol

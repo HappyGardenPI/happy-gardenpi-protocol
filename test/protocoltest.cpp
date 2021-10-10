@@ -74,8 +74,6 @@ TEST(ProtocolTest, encodeAGG)
 
     EXPECT_EQ(enc.size(), 1);
 
-    //cout << stringBytesToString(enc[0].first.get(), enc[0].second) << endl;
-
     auto head = decode(enc[0].first.get());
     EXPECT_EQ(head->flags, AGG | SYN);
 
@@ -126,56 +124,56 @@ TEST(ProtocolTest, encodeCRT)
             EXPECT_EQ(head->flags, CRT | ACK | PRT);
             if (auto *ptr = dynamic_cast<Certificate *>(head->deserialize(i)))
             {
-                cout <<  to_string(i) << ":" << ptr->getCertificate() << "<<>>" << endl;
-                crtRet += ptr->getCertificate();
+                crtRet += ptr->getChunk();
                 delete ptr;
             }
             i++;
         }
     }
 
-    cout << crtExample << endl;
-    cout << crtRet << endl;
     EXPECT_TRUE(crtExample == crtRet);
 }
 
 
 TEST(ProtocolTest, encodeERR)
 {
-//    string msgExample = move(generateRandomString(260));
-//
-//    auto err = new Error;
-//    err->setMsg(msgExample);
-//
-//    auto enc = encode(err, ACK);
-//    EXPECT_EQ(enc.size(), 3);
-//
-//    string msgRet;
-//    uint16_t i = 0;
-//    for (auto &&buffer : enc)
-//    {
-//        auto head = decode(buffer.first.get());
-//        if (head->flags & FIN && head->flags & ACK)
-//        {
-//            EXPECT_EQ(head->flags, FIN | ACK | PRT);
-//            break;
-//        }
-//        if (head->flags & ERR && head->flags & ACK && head->flags & PRT)
-//        {
-//            EXPECT_EQ(head->flags, ERR | ACK | PRT);
-//            if (auto *ptr = dynamic_cast<Error *>(head->deserialize(i)))
-//            {
-//                string s = ptr->getMsg();
-//                msgRet += s;
-//                delete ptr;
-//            }
-//            i++;
-//        }
-//    }
-//
-//    cout << msgExample << endl;
-//    cout << msgRet << endl;
-//    EXPECT_TRUE(msgExample == msgRet);
+    string msgExample = move(generateRandomString(260));
+
+    auto err = new Error;
+    err->setMsg(msgExample);
+
+    auto enc = encode(err, ACK);
+    EXPECT_EQ(enc.size(), 3);
+
+    string msgRet;
+    string msgRet2;
+    uint16_t i = 0;
+    for (auto &&buffer : enc)
+    {
+        auto head = decode(buffer.first.get());
+        if (head->flags & FIN && head->flags & ACK)
+        {
+            EXPECT_EQ(head->flags, FIN | ACK | PRT);
+            break;
+        }
+        if (head->flags & ERR && head->flags & ACK && head->flags & PRT)
+        {
+            EXPECT_EQ(head->flags, ERR | ACK | PRT);
+            if (auto *ptr = dynamic_cast<Error *>(head->deserialize(i)))
+            {
+                string &&s = ptr->getChunk();
+                if (i > 0) msgRet2 += " | ";
+                msgRet += s;
+                msgRet2 += s;
+                delete ptr;
+            }
+            i++;
+        }
+    }
+
+    delete err;
+
+    EXPECT_TRUE(msgExample == msgRet);
 }
 
 
@@ -244,8 +242,6 @@ TEST(ProtocolTest, encodeSYN)
 
     if (auto *ptr = dynamic_cast<Synchro *>(head->deserialize()))
     {
-        cout << ptr->getSerial() << endl;
-
         EXPECT_TRUE(ptr->getSerial() == "serial123456789");
         delete ptr;
     }
