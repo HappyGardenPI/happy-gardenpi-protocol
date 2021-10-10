@@ -219,7 +219,7 @@ TEST(ProtocolTest, encodeSTA)
         EXPECT_EQ(ptr->status, Status::UNACTIVE);
         delete ptr;
     }
-    
+
 }
 
 
