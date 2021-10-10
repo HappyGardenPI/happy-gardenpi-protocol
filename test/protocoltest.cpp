@@ -146,7 +146,6 @@ TEST(ProtocolTest, encodeERR)
     EXPECT_EQ(enc.size(), 3);
 
     string msgRet;
-    string msgRet2;
     uint16_t i = 0;
     for (auto &&buffer : enc)
     {
@@ -162,9 +161,7 @@ TEST(ProtocolTest, encodeERR)
             if (auto *ptr = dynamic_cast<Error *>(head->deserialize(i)))
             {
                 string &&s = ptr->getChunk();
-                if (i > 0) msgRet2 += " | ";
                 msgRet += s;
-                msgRet2 += s;
                 delete ptr;
             }
             i++;
