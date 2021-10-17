@@ -34,7 +34,7 @@
 
 namespace hgardenpi::protocol
 {
-    inline namespace v1
+    inline namespace v2
     {
 
         typedef std::pair<std::shared_ptr<uint8_t []>, uint16_t> Buffer;

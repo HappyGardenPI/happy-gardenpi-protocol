@@ -68,14 +68,14 @@ TEST(ProtocolTest, encodeAGG)
     agg->weight = 20;
     agg->status = hgardenpi::protocol::v1::Status::UNACTIVE;
 
-    auto enc = encode(agg, SYN);
+    auto enc = encode(agg, ACK);
 
     delete agg;
 
     EXPECT_EQ(enc.size(), 1);
 
     auto head = decode(enc[0].first.get());
-    EXPECT_EQ(head->flags, AGG | SYN);
+    EXPECT_EQ(head->flags, AGG | ACK);
 
     if (auto *ptr = dynamic_cast<Aggregation *>(head->deserialize()))
     {
@@ -198,14 +198,14 @@ TEST(ProtocolTest, encodeSTA)
     sta->status = Status::INSERT;
     auto encode1 = encode(sta);
 
-    auto enc = encode(sta, SYN);
+    auto enc = encode(sta, ACK);
 
     delete sta;
 
     EXPECT_EQ(enc.size(), 1);
 
     auto head = decode(enc[0].first.get());
-    EXPECT_EQ(head->flags, STA | SYN);
+    EXPECT_EQ(head->flags, STA | ACK);
 
     if (auto *ptr = dynamic_cast<Station *>(head->deserialize()))
     {

@@ -35,7 +35,7 @@
 
 namespace hgardenpi::protocol
 {
-    inline namespace v1
+    inline namespace v2
     {
 
         [[nodiscard]] Package *Head::deserialize(uint8_t chunkOfPackage) const

@@ -41,7 +41,7 @@ using namespace std;
 
 namespace hgardenpi::protocol
 {
-    inline namespace v1
+    inline namespace v2
     {
         [[nodiscard]] string Aggregation::getDescription() const noexcept
         {

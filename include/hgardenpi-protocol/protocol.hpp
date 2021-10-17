@@ -38,7 +38,7 @@
 
 namespace hgardenpi::protocol
 {
-    inline namespace v1
+    inline namespace v2
     {
         using std::vector;
 

@@ -49,7 +49,7 @@ using namespace std;
 
 namespace hgardenpi::protocol
 {
-    inline namespace v1
+    inline namespace v2
     {
 
         struct DataTransport
