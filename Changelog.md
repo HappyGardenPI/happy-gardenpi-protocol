@@ -9,8 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - Add getVersion function
 ### Changed
  - inline namespace from v1 to v2
-
-## [2.0.0] - 2017-06-20
+### Removed
+ - Remove v1 code
+ 
+## [2.0.0] - 2021-10-10
 ### Added
  - Shared pointer management
 ### Changed
