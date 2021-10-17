@@ -38,8 +38,8 @@ using namespace std;
 #include <cstring>
 #include <cmath>
 
+#include <hgardenpi-protocol/config.h>
 #include <hgardenpi-protocol/3thparts/libcrc/checksum.h>
-
 #include <hgardenpi-protocol/packages/aggregation.hpp>
 #include <hgardenpi-protocol/packages/data.hpp>
 #include <hgardenpi-protocol/packages/finish.hpp>
@@ -397,6 +397,14 @@ namespace hgardenpi::protocol
             buffer.first[buffer.second - 1] = static_cast<uint8_t>((crc16Calc & 0xFF00) >> 0x08);
         }
 
+        void getVersion(int &major, int &minor, int &patch)
+        {
+            major = HGARDENPI_PROTOCOL_VER_MAJOR;
+            minor = HGARDENPI_PROTOCOL_VER_MAJOR;
+            patch = HGARDENPI_PROTOCOL_VER_MAJOR;
+
+
+        }
 
     }
 }
