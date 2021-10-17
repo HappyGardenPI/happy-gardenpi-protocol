@@ -33,6 +33,7 @@
 #include <stdexcept>
 #include <memory>
 #include <cstring>
+#include <limits>
 using namespace std;
 
 #include "hgardenpi-protocol/constants.hpp"

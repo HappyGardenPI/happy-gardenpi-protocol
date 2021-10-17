@@ -68,6 +68,15 @@ namespace hgardenpi::protocol
          */
         [[maybe_unused]] void updateIdToBufferEncoded(Buffer &buffer, uint8_t id);
 
+        /**
+         * Get lib version
+         * @param major release reference
+         * @param minor release reference
+         * @param patch release reference
+         */
+        [[maybe_unused]] void getVersion(int &major, int &minor, int &patch);
+
+
     }
 }
 
