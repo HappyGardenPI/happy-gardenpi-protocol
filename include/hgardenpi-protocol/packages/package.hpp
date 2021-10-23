@@ -42,6 +42,7 @@ for (int i = 0; i < fieldLength && field[i]; i++) \
 return ret;
 
 #include <cstdint>
+#include <memory>
 
 #include <hgardenpi-protocol/constants.hpp>
 
@@ -56,6 +57,8 @@ namespace hgardenpi::protocol
 #pragma pack(push, n)
         struct Package
         {
+            typedef std::shared_ptr<Package> Ptr;
+
             virtual inline ~Package() = default;
 
             /**

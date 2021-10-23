@@ -66,7 +66,7 @@ TEST(ProtocolTest, encodeAGG)
     agg->schedule.days = 0b0111'1111;
     agg->sequential = false;
     agg->weight = 20;
-    agg->status = hgardenpi::protocol::v1::Status::UNACTIVE;
+    agg->status = hgardenpi::protocol::v2::Status::UNACTIVE;
 
     auto enc = encode(agg, ACK);
 
@@ -114,12 +114,12 @@ TEST(ProtocolTest, encodeDAT)
         auto head = decode(buffer.first.get());
         if (head->flags & FIN && head->flags & ACK)
         {
-            EXPECT_EQ(head->flags, FIN | ACK | PRT);
+            EXPECT_EQ(head->flags, FIN | ACK | CKN);
             break;
         }
-        if (head->flags & DAT && head->flags & ACK && head->flags & PRT)
+        if (head->flags & DAT && head->flags & ACK && head->flags & CKN)
         {
-            EXPECT_EQ(head->flags, DAT | ACK | PRT);
+            EXPECT_EQ(head->flags, DAT | ACK | CKN);
             if (auto *ptr = dynamic_cast<Data *>(head->deserialize(i)))
             {
                 datRet += ptr->getChunk();
@@ -150,12 +150,12 @@ TEST(ProtocolTest, encodeERR)
         auto head = decode(buffer.first.get());
         if (head->flags & FIN && head->flags & ACK)
         {
-            EXPECT_EQ(head->flags, FIN | ACK | PRT);
+            EXPECT_EQ(head->flags, FIN | ACK | CKN);
             break;
         }
-        if (head->flags & ERR && head->flags & ACK && head->flags & PRT)
+        if (head->flags & ERR && head->flags & ACK && head->flags & CKN)
         {
-            EXPECT_EQ(head->flags, ERR | ACK | PRT);
+            EXPECT_EQ(head->flags, ERR | ACK | CKN);
             if (auto *ptr = dynamic_cast<Error *>(head->deserialize(i)))
             {
                 string &&s = ptr->getChunk();
@@ -264,13 +264,113 @@ TEST(ProtocolTest, encodeChangePackageId)
     if (auto *ptr = dynamic_cast<Synchro *>(head->deserialize()))
     {
         EXPECT_TRUE(ptr->getSerial() == random);
-
-
-
         delete ptr;
     }
 
-
-
     delete syn;
+}
+
+TEST(ProtocolTest, endCommunication)
+{
+    auto fin = new Finish;
+    auto encFin = encode(fin, ACK);
+    auto headFin = decode(encFin[0].first.get());
+    ASSERT_TRUE(::endCommunication(headFin));
+
+    auto err = new Error;
+    err->setMsg(generateRandomString(260));
+    auto encErr = encode(err, ACK);
+    auto headErr = decode(encErr[0].first.get());
+    ASSERT_FALSE(::endCommunication(headErr));
+    headErr = decode(encErr[1].first.get());
+    ASSERT_FALSE(::endCommunication(headErr));
+    headErr = decode(encErr[2].first.get());
+    ASSERT_TRUE(::endCommunication(headErr));
+
+    delete fin;
+    delete err;
+}
+
+TEST(ProtocolTest, composeDecodedChunks)
+{
+    auto sta = new Station;
+    sta->setName("Name");
+    sta->setDescription("Description");
+    sta->relayNumber = 1;
+    sta->wateringTime = 10;
+    sta->wateringTimeLeft = 2;
+    sta->weight = 30;
+    sta->status = Status::INSERT;
+    auto encSta = encode(sta, ACK);
+    auto headSta = decode(encSta[0].first.get());
+    auto pkgSta = composeDecodedChunks({headSta});
+
+    if (shared_ptr<Station> ptr = std::dynamic_pointer_cast<Station>( composeDecodedChunks({headSta}).second ))
+    {
+        EXPECT_TRUE(ptr->getName() == string("Name"));
+        EXPECT_TRUE(ptr->getDescription() == string("Description"));
+        EXPECT_EQ(ptr->relayNumber, 1);
+        EXPECT_EQ(ptr->wateringTime, 10);
+        EXPECT_EQ(ptr->wateringTimeLeft, 2);
+        EXPECT_EQ(ptr->weight, 30);
+        EXPECT_EQ(ptr->status, Status::UNACTIVE);
+    }
+
+    {
+        auto data = new Data;
+        auto &&payload = generateRandomString(260);
+        data->setPayload(payload);
+        auto encDat = encode(data, ACK);
+
+        Heads heads;
+        heads.push_back(move(decode(encDat[0].first.get())));
+        heads.push_back(move(decode(encDat[1].first.get())));
+        heads.push_back(move(decode(encDat[2].first.get())));
+
+        auto &&[flags, pkg] = composeDecodedChunks(heads);
+        if (shared_ptr<Data> ptr = std::dynamic_pointer_cast<Data>(pkg ))
+        {
+            EXPECT_TRUE(ptr->getPayload() == payload);
+        }
+        delete data;
+    }
+
+    {
+        auto err = new Error;
+        auto &&msg = generateRandomString(260);
+        err->setMsg(msg);
+        auto encErr = encode(err, ACK);
+
+        Heads heads;
+        heads.push_back(move(decode(encErr[0].first.get())));
+        heads.push_back(move(decode(encErr[1].first.get())));
+        heads.push_back(move(decode(encErr[2].first.get())));
+
+        auto &&[flags, pkg] = composeDecodedChunks(heads);
+        if (shared_ptr<Error> ptr = std::dynamic_pointer_cast<Error>( pkg ))
+        {
+            EXPECT_TRUE(ptr->getMsg() == msg);
+        }
+        delete err;
+    }
+
+    {
+        auto err = new Error;
+        auto &&msg = generateRandomString(100);
+        err->setMsg(msg);
+        auto encErr = encode(err, ACK);
+
+        Heads heads;
+        heads.push_back(move(decode(encErr[0].first.get())));
+
+        auto &&[flags, pkg] = composeDecodedChunks(heads);
+        if (shared_ptr<Error> ptr = std::dynamic_pointer_cast<Error>( pkg ))
+        {
+            EXPECT_TRUE(ptr->getMsg() == msg);
+        }
+        delete err;
+    }
+
+    delete sta;
+
 }

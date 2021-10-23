@@ -4,13 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.1.0] - 2021-10-23
 ### Added
  - Add getVersion function
+ - Add GCC 10 compatibility
+ - Add composeDecodedChunks()
+ - Add endCommunication()
+ - Add test 
 ### Changed
  - inline namespace from v1 to v2
+ - Fix updateIdToBufferEncoded()
 ### Removed
  - Remove v1 code
+ - Removed vector type and defined new specific type
  
 ## [2.0.0] - 2021-10-10
 ### Added

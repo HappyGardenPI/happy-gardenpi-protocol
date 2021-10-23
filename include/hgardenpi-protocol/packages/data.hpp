@@ -40,7 +40,7 @@ namespace hgardenpi::protocol
 
 #pragma pack(push, n)
         /**
-         * @brief Package for manage data, linked to Flags::CRT
+         * @brief Package for manage data, linked to Flags::DAT
          */
         struct Data final : public Package
         {

@@ -31,6 +31,7 @@
 #include <cstdint>
 #include <utility>
 #include <memory>
+#include <vector>
 
 namespace hgardenpi::protocol
 {
@@ -38,6 +39,7 @@ namespace hgardenpi::protocol
     {
 
         typedef std::pair<std::shared_ptr<uint8_t []>, uint16_t> Buffer;
+        typedef std::vector<Buffer> Buffers;
 
         /**
          * Flags used in Head
@@ -80,10 +82,10 @@ namespace hgardenpi::protocol
 
             //flags
             /**
-             * @brief Partial flag
+             * @brief Chunk flag
              * @note this flag can be added to flag/package to decoration of the information passed
              */
-            PRT = 0x20,
+            CKN = 0x20,
             /**
              * @brief Acknowledge flag
              * @note this flag can be added to flag/package to decoration of the information passed
@@ -146,6 +148,9 @@ namespace hgardenpi::protocol
          * @brief max heads size
          */
         constexpr const inline uint8_t HEAD_MAX_CHUNK = 16;
+
+
+        constexpr const inline uint8_t CURRENT_PROTOCOL_ACTIVE_VERSION = 0;
 
     }
 }

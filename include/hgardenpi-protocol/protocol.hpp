@@ -30,17 +30,19 @@
 #pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
 #pragma once
 
-#include <vector>
+
+#include  <utility>
 
 #include <hgardenpi-protocol/constants.hpp>
 #include <hgardenpi-protocol/head.hpp>
+#include <hgardenpi-protocol/packages/package.hpp>
 
 
 namespace hgardenpi::protocol
 {
     inline namespace v2
     {
-        using std::vector;
+        using std::pair;
 
         struct Package;
 
@@ -51,7 +53,7 @@ namespace hgardenpi::protocol
          * @return a vector of buffer to send
          * @throw runtime_exception if something goes wrong
          */
-        [[maybe_unused]]  vector<Buffer> encode(Package *package, Flags additionalFags = NOT_SET);
+        [[maybe_unused]]  Buffers encode(Package *package, Flags additionalFags = NOT_SET);
 
         /**
         * Decode a buffer contain a Happy GardenPI Head
@@ -76,6 +78,19 @@ namespace hgardenpi::protocol
          */
         [[maybe_unused]] void getVersion(int &major, int &minor, int &patch);
 
+        /**
+         * Compose a decoded package
+         * @param heads of package ptr
+         * @return a pair with type of package and pointer of them
+         */
+        [[maybe_unused]] pair<Flags, Package::Ptr> composeDecodedChunks(const Heads &heads);
+
+        /**
+         * Check if the data transmission is ended
+         * @param head package
+         * @return true if end communication
+         */
+        [[maybe_unused]] bool endCommunication(const Head::Ptr &head) noexcept;
 
     }
 }

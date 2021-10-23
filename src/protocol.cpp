@@ -98,7 +98,7 @@ namespace hgardenpi::protocol
          * @param t pointer to structure
          */
         template<typename T>
-        static vector<Head::Ptr> encodeDataToHeads(vector<Head::Ptr> &ret, DataTransport &data, const T *t);
+        static Heads encodeDataToHeads(Heads &ret, DataTransport &data, const T *t);
 
         /**
          * Encode package and split it in more Head if needed
@@ -107,7 +107,7 @@ namespace hgardenpi::protocol
          * @return a vector of Head to send
          * @throw runtime_exception if something goes wrong
          */
-        vector<Head::Ptr> encodeStart(Package *package, Flags additionalFags);
+        Heads encodeStart(Package *package, Flags additionalFags);
 
         /**
          * Add data to base Head whit SYN information
@@ -115,16 +115,16 @@ namespace hgardenpi::protocol
          * @param t pointer to structure
          */
         template<typename T>
-        static inline vector<Head::Ptr> encodeRecursive(DataTransport &data, const T *t)
+        static inline Heads encodeRecursive(DataTransport &data, const T *t)
         {
-            vector<Head::Ptr> ret;
+            Heads ret;
             return encodeDataToHeads(ret, data, t);
         }
 
         //enter point
-        vector<Buffer> encode(Package *package, Flags additionalFags)
+        Buffers encode(Package *package, Flags additionalFags)
         {
-            vector<Buffer> ret;
+            Buffers ret;
             for (auto &&head: encodeStart(package, additionalFags))
             {
                 if (!head)
@@ -170,7 +170,7 @@ namespace hgardenpi::protocol
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wshadow"
-        vector<Head::Ptr> encodeStart(Package *package, Flags additionalFags)
+        Heads encodeStart(Package *package, Flags additionalFags)
         {
             //check if package is null
             if (package == nullptr)
@@ -178,14 +178,17 @@ namespace hgardenpi::protocol
                 throw runtime_error("package null");
             }
 
-            vector<Head::Ptr> ret;
+            Heads ret;
             DataTransport data;
 
             //check which child package was packaged
             if (auto ptr = dynamic_cast<Aggregation *>(package); ptr) //is Flags::AGG package
                 //update flags
                 data.flags = AGG | additionalFags;
-            else if (auto ptr = dynamic_cast<Data *>(package); ptr) //is Flags::CRT package
+            else if (auto ptr = dynamic_cast<Error *>(package); ptr) //is Flags::ERR package
+                //update flags
+                data.flags = ERR | additionalFags;
+            else if (auto ptr = dynamic_cast<Data *>(package); ptr) //is Flags::DAT package
                 //update flags
                 data.flags = DAT | additionalFags;
             else if (dynamic_cast<Finish *>(package)) //is Flags::FIN package
@@ -194,9 +197,6 @@ namespace hgardenpi::protocol
             else if (auto ptr = dynamic_cast<Station *>(package); ptr) //is Flags::STA package
                 //update flags
                 data.flags = STA | additionalFags;
-            else if (auto ptr = dynamic_cast<Error *>(package); ptr) //is Flags::ERR package
-                //update flags
-                data.flags = ERR | additionalFags;
             else if (auto ptr = dynamic_cast<Synchro *>(package); ptr) //is Flags::SYN package
                 //add package flag
                 data.flags = SYN | additionalFags;
@@ -245,7 +245,7 @@ namespace hgardenpi::protocol
                 dataLocal.payload = data.payload;
                 dataLocal.payloadPtr = dataLocal.payload;
                 dataLocal.length = HEAD_MAX_PAYLOAD_SIZE;
-                dataLocal.flags = data.flags | PRT;
+                dataLocal.flags = data.flags | CKN;
 
                 //create head
                 ret.push_back(move(newHead(dataLocal)));
@@ -274,9 +274,9 @@ namespace hgardenpi::protocol
                 {
                     flags |= ACK;
                 }
-                if ((data.flags & PRT) == PRT)
+                if ((data.flags & CKN) == CKN)
                 {
-                    flags |= PRT;
+                    flags |= CKN;
                 }
                 auto &&enc = encodeStart(fin, static_cast<Flags>(flags));
 
@@ -347,9 +347,9 @@ namespace hgardenpi::protocol
                 throw runtime_error("no memory for head");
             }
 
-            if (ret->version > 1)
+            if (ret->version != CURRENT_PROTOCOL_ACTIVE_VERSION)
             {
-                throw runtime_error("version of range");
+                throw runtime_error("wrong protocol version");
             }
 
             //check max init of value
@@ -389,6 +389,11 @@ namespace hgardenpi::protocol
 
         void updateIdToBufferEncoded(Buffer &buffer, uint8_t id)
         {
+            if (((buffer.first[0] & 0x80) >> 0x07) != CURRENT_PROTOCOL_ACTIVE_VERSION)
+            {
+                throw runtime_error("wrong protocol version");
+            }
+
             buffer.first[1] = id;
 
             uint16_t crc16Calc = crc_16(buffer.first.get(), buffer.second - 2);
@@ -402,10 +407,144 @@ namespace hgardenpi::protocol
             major = HGARDENPI_PROTOCOL_VER_MAJOR;
             minor = HGARDENPI_PROTOCOL_VER_MAJOR;
             patch = HGARDENPI_PROTOCOL_VER_MAJOR;
-
-
         }
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "readability-delete-null-pointer"
+#pragma clang diagnostic ignored "-Wshadow"
+
+        static inline pair<Flags, Package::Ptr> composeDecodedChunksDecode(const Head::Ptr &head) noexcept
+        try
+        {
+            auto des = head->deserialize();
+            pair<Flags, Package::Ptr> ret;
+            if (auto ptr = dynamic_cast<Aggregation *>(des); ptr) //is Flags::AGG package
+            {
+                ret = {AGG, shared_ptr<Aggregation>(ptr)};
+            }
+            else if (auto ptr = dynamic_cast<Error *>(des); ptr) //is Flags::ERR package
+            {
+                ptr->setMsg(ptr->getChunk());
+                ret = {ERR, shared_ptr<Error>(ptr)};
+            }
+            else if (auto ptr = dynamic_cast<Data *>(des); ptr) //is Flags::DAT package
+            {
+                ptr->setPayload(ptr->getChunk());
+                ret = {DAT, shared_ptr<Data>(ptr)};
+            }
+            else if (auto ptr = dynamic_cast<Finish *>(des); ptr) //is Flags::FIN package
+            {
+                ret = {FIN, shared_ptr<Finish>(ptr)};
+            }
+            else if (auto ptr = dynamic_cast<Station *>(des); ptr) //is Flags::STA package
+            {
+                ret = {STA, shared_ptr<Station>(ptr)};
+            }
+            else if (auto ptr = dynamic_cast<Synchro *>(des); ptr) //is Flags::SYN package
+            {
+                ret = {SYN, shared_ptr<Synchro>(ptr)};
+            }
+            else ret = {NOT_SET, nullptr};
+
+            return ret;
+        }
+        catch (...)
+        {
+            return {ERR, nullptr};
+        }
+
+        [[maybe_unused]] pair<Flags, Package::Ptr> composeDecodedChunks(const Heads &heads)
+        {
+            if (heads.empty())
+            {
+                throw runtime_error("no head in vector");
+            }
+            else if (heads.size() == 1)
+            {
+                if(endCommunication(heads[0]))
+                {
+                    return composeDecodedChunksDecode(heads[0]);
+                }
+                else
+                    throw runtime_error("package incomplete");
+            }
+            else
+            {
+                pair<Flags, Package::Ptr> ret;
+                ret.first = NOT_SET;
+                if ((heads[0]->flags & ERR) == ERR) //is Flags::ERR package
+                {
+                    auto chunk = 0;
+                    shared_ptr ret = make_shared<Error>();
+                    for (auto &&head : heads)
+                    {
+                        if ((head->flags & FIN) == FIN)
+                        {
+                            break;
+                        }
+                        if ((head->flags & ERR) == ERR)
+                        {
+                            string &&payload = ret->getMsg();
+
+                            auto retHead = dynamic_cast<Error *>(head->deserialize(chunk));
+                            payload += retHead->getChunk();
+
+                            ret->setMsg(payload);
+
+                            delete retHead;
+                        }
+                        else
+                            throw runtime_error("incompatible chunk inside heads");
+                        chunk++;
+                    }
+                    return {ERR, ret};
+                }
+                else if ((heads[0]->flags & DAT) == DAT) //is Flags::DAT package
+                {
+                    auto chunk = 0;
+                    shared_ptr ret = make_shared<Data>();
+                    auto &&last = *heads.end().base();
+                    for (auto &&head: heads)
+                    {
+                        if ((head->flags & FIN) == FIN)
+                        {
+                            break;
+                        }
+                        if ((head->flags & DAT) == DAT)
+                        {
+                            string &&payload = ret->getPayload();
+
+                            auto retHead = dynamic_cast<Data *>(head->deserialize(chunk));
+                            payload += retHead->getChunk();
+
+                            ret->setPayload(payload);
+
+                            delete retHead;
+                        } else
+                            throw runtime_error("incompatible chunk inside heads");
+                        chunk++;
+                    }
+                    return {DAT, ret};
+                }
+
+                return ret;
+            }
+        }
+#pragma clang diagnostic pop
+
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "bugprone-branch-clone"
+        [[maybe_unused]] bool endCommunication(const Head::Ptr &head) noexcept
+        {
+            if (!head)
+                return true;
+            else if ( (head->flags & CKN) == 0)
+                return true;
+            else if ( (head->flags & CKN) == CKN)
+                return (head->flags & FIN) == FIN;
+            else return false;
+        }
+#pragma clang diagnostic pop
     }
 }
 

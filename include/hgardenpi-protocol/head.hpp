@@ -92,6 +92,8 @@ namespace hgardenpi::protocol
              */
             [[nodiscard]] Package * deserialize(uint8_t chunkOfPackage = 0) const;
         };
+
+        typedef std::vector<Head::Ptr> Heads;
 #pragma pack(pop)
     }
 }
