@@ -405,8 +405,8 @@ namespace hgardenpi::protocol
         void getVersion(int &major, int &minor, int &patch)
         {
             major = HGARDENPI_PROTOCOL_VER_MAJOR;
-            minor = HGARDENPI_PROTOCOL_VER_MAJOR;
-            patch = HGARDENPI_PROTOCOL_VER_MAJOR;
+            minor = HGARDENPI_PROTOCOL_VER_MINOR;
+            patch = HGARDENPI_PROTOCOL_VER_PATCH;
         }
 
 #pragma clang diagnostic push
