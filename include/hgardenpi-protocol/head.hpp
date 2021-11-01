@@ -85,6 +85,12 @@ namespace hgardenpi::protocol
             }
 
             /**
+             * @brief Return payload in HEX format
+             * @return sting HEX format
+             */
+            [[nodiscard]] std::string getPayload() const noexcept;
+
+            /**
              * @brief Deserialize from buffer to Aggregation
              * @param chunkOfPackage if package is split more set de current package
              * @return new instance of Package null if something goes wrong, to deallocate

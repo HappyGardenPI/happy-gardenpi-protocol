@@ -32,6 +32,7 @@
 #include <hgardenpi-protocol/packages/station.hpp>
 #include <hgardenpi-protocol/packages/synchro.hpp>
 #include <hgardenpi-protocol/packages/error.hpp>
+#include <hgardenpi-protocol/utilities/stringutils.hpp>
 
 namespace hgardenpi::protocol
 {
@@ -55,6 +56,11 @@ namespace hgardenpi::protocol
             else if ((flags & SYN) == SYN) //is Flags::SYN package
                 ret = Synchro::deserialize(payload, length, chunkOfPackage);
             return ret;
+        }
+
+        inline string Head::getPayload() const noexcept
+        {
+            return stringHexToString(payload, length);
         }
 
     }
