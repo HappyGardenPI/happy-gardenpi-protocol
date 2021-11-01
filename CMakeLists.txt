@@ -26,6 +26,7 @@ add_library(hgardenpi_protocol
         include/hgardenpi-protocol/packages/package.hpp
         include/hgardenpi-protocol/packages/station.hpp
         include/hgardenpi-protocol/packages/synchro.hpp
+        include/hgardenpi-protocol/utilities/numberutils.hpp
         include/hgardenpi-protocol/utilities/stringutils.hpp
         include/hgardenpi-protocol/constants.hpp
         include/hgardenpi-protocol/head.hpp
@@ -44,7 +45,8 @@ add_library(hgardenpi_protocol
         src/packages/station.cpp
         src/packages/synchro.cpp
         src/head.cpp
-        src/protocol.cpp src/packages/station.cpp)
+        src/protocol.cpp
+        )
 
 target_include_directories (hgardenpi_protocol PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include )
 

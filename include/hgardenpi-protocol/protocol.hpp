@@ -73,7 +73,7 @@ namespace hgardenpi::protocol
         */
         [[maybe_unused]] inline Head::Ptr decode(const Buffer &data)
         {
-          return  decode(data.first.get());
+            return decode(data.first.get());
         }
 
         /**
@@ -84,11 +84,11 @@ namespace hgardenpi::protocol
         */
         [[maybe_unused]] inline Head::Ptr decodeFirst(const Buffers &buffers)
         {
-          if(buffers.empty())
-          {
-            throw runtime_error("buffers empty");
-          }
-          return  decode(buffers[0].first.get());
+            if (buffers.empty())
+            {
+                throw runtime_error("buffers empty");
+            }
+            return decode(buffers[0].first.get());
         }
 
 
@@ -106,10 +106,10 @@ namespace hgardenpi::protocol
          */
         [[maybe_unused]] inline void updateIdToBufferEncoded(Buffers &buffers, uint8_t id)
         {
-          for (auto &&it : buffers)
-          {
-            updateIdToBufferEncoded(it, id);
-          }
+            for (auto &&it: buffers)
+            {
+                updateIdToBufferEncoded(it, id);
+            }
         }
 
         /**
@@ -125,7 +125,7 @@ namespace hgardenpi::protocol
          * @param heads of package ptr
          * @return a pair with type of package and pointer of them
          */
-        [[maybe_unused]] pair<Flags, Package::Ptr> composeDecodedChunks(const Heads &heads);
+        [[maybe_unused]] pair <Flags, Package::Ptr> composeDecodedChunks(const Heads &heads);
 
         /**
          * Check if the data transmission is ended

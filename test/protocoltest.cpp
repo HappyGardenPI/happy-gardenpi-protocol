@@ -38,19 +38,8 @@ using namespace std;
 #include <hgardenpi-protocol/packages/synchro.hpp>
 #include <hgardenpi-protocol/packages/error.hpp>
 #include <hgardenpi-protocol/utilities/stringutils.hpp>
+#include <hgardenpi-protocol/utilities/numberutils.hpp>
 using namespace hgardenpi::protocol;
-
-
-static string generateRandomString(size_t length)
-{
-    const char* charmap = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const size_t charmapLength = strlen(charmap);
-    auto generator = [&](){ return charmap[rand()%charmapLength]; };
-    string result;
-    result.reserve(length);
-    generate_n(back_inserter(result), length, generator);
-    return result;
-}
 
 
 TEST(ProtocolTest, encodeAGG)
@@ -372,5 +361,13 @@ TEST(ProtocolTest, composeDecodedChunks)
     }
 
     delete sta;
+
+}
+
+TEST(ProtocolTest, generateRandomUint8)
+{
+    auto i = generateRandomReal<uint8_t>();
+
+    EXPECT_GT(i, 0);
 
 }

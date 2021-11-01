@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - Add updateIdToBufferEncoded() on vector of buffer
  - Add decode() for Buffer param
  - Add decodeFirst() for Buffers param
+ - Add generateRandomString()
+ - Add generateRandomUint8()
 ### Changed
  - Fix get version in getVersion()
 

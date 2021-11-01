@@ -220,5 +220,12 @@ namespace hgardenpi::protocol
         {
             return split(str, delim);
         }
+
+        /**
+         * @brief Generate a random string
+         * @param length number of char needed
+         * @return new random string
+         */
+        string generateRandomString(size_t length) noexcept;
     }
 }

@@ -106,6 +106,16 @@ namespace hgardenpi::protocol
             return elems;
         }
 
+        string generateRandomString(size_t length) noexcept
+        {
+            const char* charmap = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const size_t charmapLength = strlen(charmap);
+            auto generator = [&](){ return charmap[rand()%charmapLength]; };
+            string result;
+            result.reserve(length);
+            generate_n(back_inserter(result), length, generator);
+            return result;
+        }
 
     }
 }
