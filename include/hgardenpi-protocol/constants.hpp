@@ -33,20 +33,6 @@
 #include <memory>
 #include <vector>
 
-#define HGARDENPI_PROTOCOL_SETTER(field, fieldLength)  \
-fieldLength = field.size(); \
-this->field = new char [fieldLength]; \
-memset(this->field, 0, fieldLength); \
-memcpy(this->field, &field[0], fieldLength);
-
-#define HGARDENPI_PROTOCOL_GETTER(field, fieldLength)  \
-string ret; \
-for (int i = 0; i < fieldLength && field[i]; i++) \
-{ \
-    ret += field[i]; \
-} \
-return ret;
-
 namespace hgardenpi::protocol
 {
     inline namespace v2
