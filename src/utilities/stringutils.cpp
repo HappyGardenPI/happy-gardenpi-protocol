@@ -25,6 +25,7 @@
 #include <hgardenpi-protocol/utilities/stringutils.hpp>
 
 #include <iomanip>
+#include <cstring>
 using namespace std;
 
 namespace hgardenpi::protocol
@@ -108,9 +109,9 @@ namespace hgardenpi::protocol
 
         string generateRandomString(size_t length) noexcept
         {
-            const char* charmap = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            const size_t charmapLength = strlen(charmap);
-            auto generator = [&](){ return charmap[rand()%charmapLength]; };
+            const char* charMap = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const size_t charMapLength = strlen(charMap);
+            auto generator = [&](){ return charMap[rand() % charMapLength]; };
             string result;
             result.reserve(length);
             generate_n(back_inserter(result), length, generator);
