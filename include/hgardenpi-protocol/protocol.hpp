@@ -32,6 +32,7 @@
 
 
 #include  <utility>
+#include  <stdexcept>
 
 #include <hgardenpi-protocol/constants.hpp>
 #include <hgardenpi-protocol/head.hpp>
@@ -43,6 +44,7 @@ namespace hgardenpi::protocol
     inline namespace v2
     {
         using std::pair;
+        using std::runtime_error;
 
         struct Package;
 
@@ -64,11 +66,51 @@ namespace hgardenpi::protocol
         [[maybe_unused]] Head::Ptr decode(const uint8_t *data);
 
         /**
+        * Decode a buffer contain a Happy GardenPI Head
+        * @param data buffer
+        * @return Head instance
+        * @throw runtime_exception if something goes wrong
+        */
+        [[maybe_unused]] inline Head::Ptr decode(const Buffer &data)
+        {
+          return  decode(data.first.get());
+        }
+
+        /**
+        * Decode first buffer of vector of buffer that contain a Happy GardenPI Head
+        * @param data buffers
+        * @return Head instance
+        * @throw runtime_exception if something goes wrong
+        */
+        [[maybe_unused]] inline Head::Ptr decodeFirst(const Buffers &buffers)
+        {
+          if(buffers.empty())
+          {
+            throw runtime_error("buffers empty");
+          }
+          return  decode(buffers[0].first.get());
+        }
+
+
+        /**
          * @brief Update id to buffer to identificate package
          * @param buffer will be modified
          * @param id id to assign
          */
         [[maybe_unused]] void updateIdToBufferEncoded(Buffer &buffer, uint8_t id);
+
+        /**
+         * @brief Update id to buffer to identificate packages
+         * @param buffers will be modified
+         * @param id id to assign
+         */
+        [[maybe_unused]] inline void updateIdToBufferEncoded(Buffers &buffers, uint8_t id)
+        {
+          for (auto &&it : buffers)
+          {
+            updateIdToBufferEncoded(it, id);
+          }
+        }
 
         /**
          * Get lib version
