@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
  - Add method overloading for updateIdToBufferEncoded() on vector of buffer
  - Add method overloading for decode() for Buffer param
- - Add method overloading for decodeFirst() for Buffers param
+ - Add decodeFirst() for Buffers param
  - Add generateRandomString()
  - Add generateRandomIntegral()
 ### Changed
