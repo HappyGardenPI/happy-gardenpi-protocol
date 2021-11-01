@@ -40,26 +40,12 @@ namespace hgardenpi::protocol
         using std::numeric_limits;
 
         template<typename T>
-        [[maybe_unused]] T generateRandomReal() noexcept
+        [[maybe_unused]] T generateRandomIntegral() noexcept
         {
-            if constexpr (
-                    std::is_same<T, uint8_t>::value
-                    || std::is_same<T, uint16_t>::value
-                    || std::is_same<T, uint32_t>::value
-                    || std::is_same<T, uint64_t>::value
-                    || std::is_same<T, int8_t>::value
-                    || std::is_same<T, int16_t>::value
-                    || std::is_same<T, int32_t>::value
-                    || std::is_same<T, int64_t>::value
-                    )
-            {
-
-                default_random_engine defEngine;
-                uniform_int_distribution<int> intDistro(numeric_limits<uint8_t>::min(), numeric_limits<uint8_t>::max());
-                return intDistro(defEngine);
-            }
-            else
-                return 0;
+            static_assert(std::is_integral<T>::value, "can only be integral type");
+            default_random_engine defEngine;
+            uniform_int_distribution<int> intDistro(numeric_limits<uint8_t>::min(), numeric_limits<uint8_t>::max());
+            return intDistro(defEngine);
         }
 
     }

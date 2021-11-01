@@ -364,9 +364,9 @@ TEST(ProtocolTest, composeDecodedChunks)
 
 }
 
-TEST(ProtocolTest, generateRandomUint8)
+TEST(ProtocolTest, generateRandomIntegral)
 {
-    auto i = generateRandomReal<uint8_t>();
+    auto i = generateRandomIntegral<uint8_t>();
 
     EXPECT_GT(i, 0);
 
