@@ -57,5 +57,9 @@ namespace hgardenpi::protocol
             return ret;
         }
 
+        string Head::getPayload() const noexcept
+        {
+            HGARDENPI_PROTOCOL_GETTER(payload, length)
+        }
     }
 }

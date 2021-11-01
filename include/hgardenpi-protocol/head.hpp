@@ -91,6 +91,13 @@ namespace hgardenpi::protocol
              * @throw exception if there are some memory error
              */
             [[nodiscard]] Package * deserialize(uint8_t chunkOfPackage = 0) const;
+
+            /**
+             * @brief Get payload
+             * @return payload
+             */
+            [[maybe_unused]] [[nodiscard]] string getPayload() const noexcept;
+
         };
 
         typedef std::vector<Head::Ptr> Heads;
