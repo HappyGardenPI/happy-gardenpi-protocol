@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - Add decodeFirst() for Buffers param
  - Add generateRandomString()
  - Add generateRandomIntegral()
- - Add getPayload() to Head
+ - Add getHexPayload() to Head
 ### Changed
  - Fix get version in getVersion()
 

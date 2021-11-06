@@ -88,7 +88,7 @@ namespace hgardenpi::protocol
              * @brief Return payload in HEX format
              * @return sting HEX format
              */
-            [[nodiscard]] std::string getPayload() const noexcept;
+            [[nodiscard]] std::string getHexPayload() const noexcept;
 
             /**
              * @brief Deserialize from buffer to Aggregation

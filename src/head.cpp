@@ -58,7 +58,7 @@ namespace hgardenpi::protocol
             return ret;
         }
 
-        inline string Head::getPayload() const noexcept
+        string Head::getHexPayload() const noexcept
         {
             return stringHexToString(payload, length);
         }

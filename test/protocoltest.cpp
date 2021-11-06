@@ -335,6 +335,7 @@ TEST(ProtocolTest, composeDecodedChunks)
         heads.push_back(move(decode(encErr[1].first.get())));
         heads.push_back(move(decode(encErr[2].first.get())));
 
+
         auto &&[flags, pkg] = composeDecodedChunks(heads);
         if (shared_ptr<Error> ptr = std::dynamic_pointer_cast<Error>( pkg ))
         {
@@ -368,6 +369,17 @@ TEST(ProtocolTest, generateRandomIntegral)
 {
     auto i = generateRandomIntegral<uint8_t>();
 
-    EXPECT_GT(i, 0);
+    auto h = make_shared<Head>(Head());
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wwritable-strings"
+    char *payload = "mario e luigi";
+#pragma clang diagnostic pop
+    h->length = strlen(payload);
+    h->payload = new uint8_t [h->length];
+    memcpy(h->payload, payload,h->length);
+
+
+    EXPECT_TRUE(h->getHexPayload() == stringHexToString(h->payload, h->length));
 
 }
