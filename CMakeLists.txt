@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(hgardenpi_protocol  VERSION "2.1.0" LANGUAGES CXX C)
+project(hgardenpi_protocol  VERSION "2.2.0" LANGUAGES CXX C)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_C_STANDARD 11)

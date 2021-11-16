@@ -56,11 +56,14 @@ namespace hgardenpi::protocol
                 throw runtime_error("no memory for data");
             }
 
-            //copy error length
-            memcpy(ret.first.get(), &length, sizeof(length));
+            if (length > 0)
+            {
+                //copy error length
+                memcpy(ret.first.get(), &length, sizeof(length));
 
-            //copy error field to payload
-            memcpy(ret.first.get() + sizeof(length), &msg[0], length);
+                //copy error field to payload
+                memcpy(ret.first.get() + sizeof(length), &msg[0], length);
+            }
 
             //return Buffer
             return ret;
