@@ -111,7 +111,7 @@ namespace hgardenpi::protocol
         {
             const char* charMap = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             const size_t charMapLength = strlen(charMap);
-            auto generator = [&](){ return charMap[rand() % charMapLength]; };
+            auto generator = [&] { return charMap[rand() % charMapLength]; };
             string result;
             result.reserve(length);
             generate_n(back_inserter(result), length, generator);
